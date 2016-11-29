@@ -1,6 +1,6 @@
-package booking;
+package rsvp.booking;
 
-import booking.controller.BookingController;
+import rsvp.booking.controller.BookingController;
 import javafx.application.Application;
 import javafx.stage.Stage;
 

@@ -1,4 +1,4 @@
-package booking.model;
+package rsvp.booking.model;
 
 import javax.persistence.*;
 import java.sql.Date;

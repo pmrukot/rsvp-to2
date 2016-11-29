@@ -1,25 +1,29 @@
-package booking.controller;
+package rsvp.booking.controller;
 
-import booking.Main;
-import booking.model.Booking;
-import booking.persistence.HibernateUtils;
+import com.sun.javafx.collections.ObservableListWrapper;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import rsvp.booking.Main;
+import rsvp.booking.model.Booking;
+import rsvp.booking.persistence.HibernateUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BookingController {
 
@@ -31,12 +35,26 @@ public class BookingController {
         this.primaryStage = primaryStage;
     }
 
+    private ObservableList<Booking> bookings = FXCollections.observableArrayList();
+
     @FXML
-    private DatePicker reservationDate;
+    private DatePicker reservationDatePicker;
 
     @FXML
     private Button createButton;
 
+    @FXML
+    private TableView<Booking> bookingsTable;
+
+    @FXML
+    private TableColumn<Booking, Date> reservationDate;
+
+
+    @FXML
+    private void initialize() {
+        reservationDate.setCellValueFactory(cellData -> new SimpleObjectProperty<Date>(cellData.getValue().getReservationDate()));
+        setData();
+    }
 
     public void initRootLayout() {
         try {
@@ -56,13 +74,13 @@ public class BookingController {
     @FXML
     public void createBooking() {
         Booking booking = new Booking();
-        Date date = Date.valueOf(reservationDate.getValue());
+        Date date = Date.valueOf(reservationDatePicker.getValue());
 
         booking.setReservationDate(date);
         saveBookingToDatabase(booking);
 
-        reservationDate.getEditor().setText(null);
-        reservationDate.setValue(null);
+        reservationDatePicker.getEditor().setText(null);
+        reservationDatePicker.setValue(null);
     }
 
     private void saveBookingToDatabase(Booking booking) {
@@ -73,5 +91,22 @@ public class BookingController {
 
         transaction.commit();
         session.close();
+        bookings.add(booking);
+    }
+
+    private List<Booking> listBooking() {
+        Session session = HibernateUtils.getSession();
+        Transaction transaction = session.beginTransaction();
+
+        List<Booking> result = session.createQuery("from Booking b", Booking.class).getResultList();
+
+        transaction.commit();
+        session.close();
+        return result;
+    }
+
+    public void setData() {
+        bookings.addAll(listBooking());
+        bookingsTable.setItems(bookings);
     }
 }

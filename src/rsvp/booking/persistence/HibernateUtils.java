@@ -1,4 +1,4 @@
-package booking.persistence;
+package rsvp.booking.persistence;
 
 import java.io.File;
 import org.hibernate.Session;
