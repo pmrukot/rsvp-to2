@@ -1,28 +1,25 @@
 package rsvp.booking.controller;
 
-import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.VBox;
 import rsvp.booking.Main;
 import rsvp.booking.model.Booking;
-import rsvp.booking.persistence.HibernateUtils;
+import rsvp.common.persistence.HibernateUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.io.IOException;
 import java.sql.Date;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 public class BookingController {
@@ -60,7 +57,7 @@ public class BookingController {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("view/BookingOverviewPane.fxml"));
-            BorderPane rootLayout = (BorderPane) loader.load();
+            VBox rootLayout = (VBox) loader.load();
 
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
