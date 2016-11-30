@@ -6,9 +6,15 @@ import javax.persistence.*;
 @Table(name = "users")
 public class User {
     public User() {}
-    // todo constructor used to create user from within app
-    // todo login creation policy: concatenate first and last name + number
-    // (something like (select count users with the same first and last name) +1)
+
+    public User(String firstName, String lastName, String password, boolean isAdmin) {
+        this.login = UserUtils.generateLogin(firstName, lastName);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.isAdmin = isAdmin;
+    }
+
     @Id
     //@GeneratedValue(generator = "asigned")
     @Column(name = "login")
