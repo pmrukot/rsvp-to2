@@ -6,7 +6,9 @@ import javax.persistence.*;
 @Table(name = "users")
 public class User {
     public User() {}
-
+    // todo constructor used to create user from within app
+    // todo login creation policy: concatenate first and last name + number
+    // (something like (select count users with the same first and last name) +1)
     @Id
     //@GeneratedValue(generator = "asigned")
     @Column(name = "login")
@@ -19,12 +21,12 @@ public class User {
     private String password;
     @Column(name = "is_admin", nullable = false)
     private boolean isAdmin;
-
+    // todo think about setter methods modifiers - should they be private or package level?
     public String getLogin() {
         return login;
     }
 
-    public void setLogin(String login) {
+    private void setLogin(String login) {
         this.login = login;
     }
 
@@ -32,7 +34,7 @@ public class User {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    private void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
@@ -40,7 +42,7 @@ public class User {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
+    private void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
@@ -48,7 +50,7 @@ public class User {
         return password;
     }
 
-    public void setPassword(String password) {
+    private void setPassword(String password) {
         this.password = password;
     }
 
@@ -56,7 +58,7 @@ public class User {
         return isAdmin;
     }
 
-    public void setAdmin(boolean admin) {
+    private void setAdmin(boolean admin) {
         isAdmin = admin;
     }
 }
