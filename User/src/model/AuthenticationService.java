@@ -1,6 +1,6 @@
 package model;
 
-import java.util.Optional;
+import org.hibernate.Session;
 
 public abstract class AuthenticationService {
     private static User currentUser;
@@ -13,17 +13,28 @@ public abstract class AuthenticationService {
         currentUser = user;
     }
 
-    static boolean AuthenticateUser(String username, String password) {
+    static boolean authenticateUser(String login, String password) {
         boolean success = false;
-        Optional<User> user = Optional.empty(); // todo get user from db
-        if(user.isPresent()) {
-            setCurrentUser(user.get());
-            success = true;
+        if(getCurrentUser() == null) {
+            Session session = HibernateUtils.getSession();
+            User user = session.get(User.class, login);
+            if(user != null) {
+                if(user.getPassword().equals(password)) {
+                    setCurrentUser(user);
+                    success = true;
+                }
+            }
+            session.close();
         }
         return success;
     }
 
-    static void LogOut() {
-        setCurrentUser(null);
+    static boolean logOut() {
+        boolean success = false;
+        if(getCurrentUser() != null) {
+            setCurrentUser(null);
+            success = true;
+        }
+        return success;
     }
 }
