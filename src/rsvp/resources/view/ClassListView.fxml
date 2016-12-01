@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="rsvp.resources.controller.ClassroomListController" alignment="TOP_CENTER"
+      prefHeight="200.0" prefWidth="150.0" BorderPane.alignment="CENTER">
+    <TableView fx:id="classListTableView">
+        <columns>
+            <TableColumn text="Class number" minWidth="100" fx:id="numberColumn" editable="true">
+            </TableColumn>
+            <TableColumn text="Capacity" minWidth="100" fx:id="capacityColumn">
+            </TableColumn>
+        </columns>
+    </TableView>
+</VBox>
