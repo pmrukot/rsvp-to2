@@ -9,9 +9,9 @@
             <!--</content>-->
         </Tab>
         <Tab text="Resources">
-            <!--<content>-->
-                <!--<fx:include fx:id="" source=""/>-->
-            <!--</content>-->
+            <content>
+                <fx:include fx:id="resourcesPage" source="../resources/view/ClassListView.fxml"/>
+            </content>
         </Tab>
         <Tab text="Booking">
             <content>

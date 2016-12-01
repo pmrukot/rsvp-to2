@@ -19,6 +19,9 @@ public class AppController {
     @FXML
     private VBox bookingPage;
 
+    @FXML
+    private VBox resourcesPage;
+
     public AppController() {}
 
     public AppController(Stage primaryStage) {
