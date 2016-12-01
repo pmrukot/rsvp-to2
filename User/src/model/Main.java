@@ -10,17 +10,17 @@ public class Main {
             System.out.println("Error logging in.");
         }
         AuthenticationService.logOut();*/
-        //UserUtils.createUser("imie", "nazwisko", "haslo", false);
-        /*List<User> users = UserUtils.getUsersByName("imie nazwisko");
+        List<User> users;
+        /*
+        UserUtils.createUser("imie", "nazwisko", "haslo", false);
+        users = UserUtils.getUsersByName("imie nazwisko");
         for(User u : users) {
             System.out.println(u.getLogin());
-        }*/
-        /*UserUtils.deleteUser("imienazwisko2");
-        List<User> users = UserUtils.getUsersByName("imie nazwisko");
+        }
+        */
+        //UserUtils.deleteUser("imienazwisko2");
+        users = UserUtils.getUsersByName("imie n");
         for(User u : users) {
-            System.out.println(u.getLogin());
-        }*/
-        for(User u : UserUtils.getUsersByName("imie nazwisko")) {
             System.out.println(u.getLogin());
         }
         HibernateUtils.shutdown();

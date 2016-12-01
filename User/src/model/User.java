@@ -32,15 +32,15 @@ public class User {
         return login;
     }
 
-    private void setLogin(String login) {
-        this.login = login;
+    void setLogin() {
+        this.login = UserUtils.generateLogin(this.firstName, this.lastName);
     }
 
     public String getFirstName() {
         return firstName;
     }
 
-    private void setFirstName(String firstName) {
+    void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
@@ -48,7 +48,7 @@ public class User {
         return lastName;
     }
 
-    private void setLastName(String lastName) {
+    void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
@@ -56,7 +56,7 @@ public class User {
         return password;
     }
 
-    private void setPassword(String password) {
+    void setPassword(String password) {
         this.password = password;
     }
 
@@ -64,7 +64,7 @@ public class User {
         return isAdmin;
     }
 
-    private void setAdmin(boolean admin) {
+    void setAdmin(boolean admin) {
         isAdmin = admin;
     }
 }

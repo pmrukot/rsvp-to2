@@ -16,16 +16,16 @@ public abstract class UserUtils {
         query.setParameter("firstName", firstName);
         query.setParameter("lastName", lastName);
         long count = (long) query.uniqueResult();
-        while(session.get(User.class, login + count) != null) {
+        // todo which is better: load list of users once and iterate over it or select 1 user from db (potentially) multiple times?
+        do {
             count++;
-        }
+        } while(session.get(User.class, login + count) != null);
         login += count;
         session.close();
         return login;
     }
 
     public static boolean createUser(String firstName, String lastName, String password, boolean isAdmin) {
-        boolean success = true;
         try {
             Session session = HibernateUtils.getSession();
             Transaction transaction = session.beginTransaction();
@@ -33,35 +33,44 @@ public abstract class UserUtils {
             session.persist(u);
             transaction.commit();
             session.close();
-        } catch (Exception e) { // todo what kind of exceptions do we expect here?
+            return true;
+        } catch (Exception e) {
             e.printStackTrace();
-            success = false;
-        } finally {
-            return success;
+            return false;
         }
     }
 
-    public static boolean editUser(String login) {
-        // todo implement me remembering that i should generate new login if first/last name is edited
-        boolean success = true;
+    public static boolean updateUser(String login, String firstName, String lastName, String password, boolean isAdmin) {
         try {
+            // todo refactor
             Session session = HibernateUtils.getSession();
             Transaction transaction = session.beginTransaction();
             User user = session.get(User.class, login);
-            // edit user here
+            boolean updateLogin = false;
+            if(!user.getFirstName().equals(firstName)) {
+                user.setFirstName(firstName);
+                updateLogin = true;
+            }
+            if(!user.getLastName().equals(lastName)) {
+                user.setLastName(lastName);
+                updateLogin = true;
+            }
+            if(updateLogin) {
+                user.setLogin();
+            }
+            user.setPassword(password);
+            user.setAdmin(isAdmin);
             session.update(user);
             transaction.commit();
             session.close();
-        } catch (Exception e) { // todo what kind of exceptions do we expect here?
+            return true;
+        } catch (Exception e) {
             e.printStackTrace();
-            success = false;
-        } finally {
-            return success;
+            return false;
         }
     }
 
     public static boolean deleteUser(String login) {
-        boolean success = true;
         try {
             Session session = HibernateUtils.getSession();
             Transaction transaction = session.beginTransaction();
@@ -69,33 +78,38 @@ public abstract class UserUtils {
             session.delete(u);
             transaction.commit();
             session.close();
-        } catch (Exception e) { // todo what kind of exceptions do we expect here?
+            return true;
+        } catch (Exception e) {
             e.printStackTrace();
-            success = false;
-        } finally {
-            return success;
+            return false;
         }
     }
 
-    public static List<User> getUsersByName(String name) {
-        // todo solve corner cases like: someone typed only firstName and hasn't typed lastName yet
-        // (for example "imie" instead of "imie nazwisko" [operator like might be useful)
-        String[] names = name.split(" ");
-        Session session = HibernateUtils.getSession();
+    public static List<User> getUsersByName(String fullName) {
+        String[] names = fullName.split("\\s+");
+        String firstName = names[0];
         String sql = "select u " +
-                "from User u " +
-                "where u.firstName = :firstName and u.lastName = :lastName";
-        Query query = session.createQuery(sql, User.class);
-        query.setParameter("firstName", names[0]);
-        query.setParameter("lastName", names[1]);
+                "from User u ";
+        Session session = HibernateUtils.getSession();
+        Query query;
+        if(names.length == 1) {
+            sql += "where u.firstName like :firstName";
+            query = session.createQuery(sql, User.class);
+            query.setParameter("firstName", firstName + "%");
+        } else {
+            String lastName = names[1];
+            sql += "where u.firstName = :firstName and u.lastName like :lastName";
+            query = session.createQuery(sql, User.class);
+            query.setParameter("firstName", firstName);
+            query.setParameter("lastName", lastName + "%");
+        }
         List<User> users = query.getResultList();
         session.close();
         return users;
     }
 
     public static boolean createUsersFromCsv() {
-        // todo implement me
-        boolean success = false;
-        return success;
+        // todo implement
+        return false;
     }
 }
