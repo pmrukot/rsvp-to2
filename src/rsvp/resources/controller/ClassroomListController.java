@@ -26,6 +26,12 @@ public class ClassroomListController {
     @FXML
     Button saveButton;
 
+    @FXML
+    Button deleteButton;
+
+    @FXML
+    Button calendarButton;
+
     // TODO: make this list being read from database
     ObservableList<UniversityRoom> items = FXCollections.observableArrayList(
             new UniversityRoom("1.38", 300),
@@ -46,5 +52,15 @@ public class ClassroomListController {
     @FXML
     private void handleSaveButtonAction(ActionEvent event) {
         System.out.println("Save button clicked");
+    }
+
+    @FXML
+    private void handleDeleteButtonAction(ActionEvent event) {
+        System.out.println("Delete button clicked");
+    }
+
+    @FXML
+    private void handleCalendarButtonAction(ActionEvent event) {
+        System.out.println("Calendar button clicked");
     }
 }
