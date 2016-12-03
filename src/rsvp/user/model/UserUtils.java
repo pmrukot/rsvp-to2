@@ -1,8 +1,10 @@
-package model;
+package rsvp.user.model;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import rsvp.common.persistence.HibernateUtils;
+
 import java.util.List;
 
 public abstract class UserUtils {

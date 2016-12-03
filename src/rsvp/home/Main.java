@@ -17,7 +17,7 @@ public class Main extends Application{
         this.primaryStage.setTitle("RSVP");
 
         this.appController = new AppController(primaryStage);
-        this.appController.initRootLayout();
+        this.appController.initLoginLayout();
     }
 
     public static void main(String[] args) {

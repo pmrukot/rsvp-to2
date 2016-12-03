@@ -1,4 +1,4 @@
-package model;
+package rsvp.user.model;
 
 import javax.persistence.*;
 
@@ -52,7 +52,7 @@ public class User {
         this.lastName = lastName;
     }
 
-    String getPassword() {
+    public String getPassword() {
         return password;
     }
 

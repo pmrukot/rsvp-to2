@@ -1,6 +1,8 @@
-package model;
+package rsvp.user.controller;
 
 import org.hibernate.Session;
+import rsvp.common.persistence.HibernateUtils;
+import rsvp.user.model.User;
 
 public abstract class AuthenticationService {
     private static User currentUser;
