@@ -14,11 +14,11 @@
         <columns>
             <TableColumn fx:id="numberColumn" text="Class number" minWidth="100"/>
             <TableColumn fx:id="capacityColumn" text="Capacity" minWidth="100"/>
+            <TableColumn fx:id="calendarColumn" minWidth="100"/>
         </columns>
     </TableView>
     <GridPane>
         <Button fx:id="saveButton" text="Save" onAction="#handleSaveButtonAction" GridPane.columnIndex="0"/>
         <Button fx:id="deleteButton" text="Delete" onAction="#handleDeleteButtonAction" GridPane.columnIndex="1"/>
-        <Button fx:id="calendarButton" text="Calendar" onAction="#handleCalendarButtonAction" GridPane.columnIndex="2"/>
     </GridPane>
 </VBox>

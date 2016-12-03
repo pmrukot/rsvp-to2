@@ -1,17 +1,21 @@
 package rsvp.resources.controller;
 
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.Callback;
 import javafx.util.converter.IntegerStringConverter;
 import rsvp.resources.model.UniversityRoom;
+import rsvp.resources.view.CalendarCell;
 
 public class ClassroomListController {
     @FXML
@@ -24,13 +28,13 @@ public class ClassroomListController {
     TableColumn<UniversityRoom, Integer> capacityColumn;
 
     @FXML
+    TableColumn<UniversityRoom, Boolean> calendarColumn;
+
+    @FXML
     Button saveButton;
 
     @FXML
     Button deleteButton;
-
-    @FXML
-    Button calendarButton;
 
     // TODO: make this list being read from database
     ObservableList<UniversityRoom> items = FXCollections.observableArrayList(
@@ -46,6 +50,25 @@ public class ClassroomListController {
         numberColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         capacityColumn.setCellValueFactory(new PropertyValueFactory<>("capacity"));
         capacityColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+
+        calendarColumn.setCellValueFactory(
+                new Callback<TableColumn.CellDataFeatures<UniversityRoom, Boolean>,
+                        ObservableValue<Boolean>>() {
+                    @Override
+                    public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<UniversityRoom, Boolean> p) {
+                        return new SimpleBooleanProperty(p.getValue() != null);
+                    }
+                });
+
+
+        calendarColumn.setCellFactory(
+                new Callback<TableColumn<UniversityRoom, Boolean>, TableCell<UniversityRoom, Boolean>>() {
+                    @Override
+                    public TableCell<UniversityRoom, Boolean> call(TableColumn<UniversityRoom, Boolean> p) {
+                        return new CalendarCell();
+                    }
+                });
+
         classListTableView.setItems(items);
     }
 
@@ -57,10 +80,5 @@ public class ClassroomListController {
     @FXML
     private void handleDeleteButtonAction(ActionEvent event) {
         System.out.println("Delete button clicked");
-    }
-
-    @FXML
-    private void handleCalendarButtonAction(ActionEvent event) {
-        System.out.println("Calendar button clicked");
     }
 }
