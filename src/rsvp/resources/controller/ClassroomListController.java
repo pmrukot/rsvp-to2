@@ -3,10 +3,14 @@ package rsvp.resources.controller;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.converter.IntegerStringConverter;
 import rsvp.resources.model.UniversityRoom;
 
 public class ClassroomListController {
@@ -14,10 +18,13 @@ public class ClassroomListController {
     TableView<UniversityRoom> classListTableView;
 
     @FXML
-    TableColumn<UniversityRoom, StringProperty> numberColumn;
+    TableColumn<UniversityRoom, String> numberColumn;
 
     @FXML
-    TableColumn<UniversityRoom, StringProperty> capacityColumn;
+    TableColumn<UniversityRoom, Integer> capacityColumn;
+
+    @FXML
+    Button saveButton;
 
     // TODO: make this list being read from database
     ObservableList<UniversityRoom> items = FXCollections.observableArrayList(
@@ -30,8 +37,14 @@ public class ClassroomListController {
     @FXML
     private void initialize() {
         numberColumn.setCellValueFactory(new PropertyValueFactory<>("number"));
+        numberColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         capacityColumn.setCellValueFactory(new PropertyValueFactory<>("capacity"));
+        capacityColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         classListTableView.setItems(items);
     }
 
+    @FXML
+    private void handleSaveButtonAction(ActionEvent event) {
+        System.out.println("Save button clicked");
+    }
 }

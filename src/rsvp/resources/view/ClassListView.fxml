@@ -2,18 +2,20 @@
 
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.Button?>
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="rsvp.resources.controller.ClassroomListController" alignment="TOP_CENTER"
       prefHeight="200.0" prefWidth="150.0" BorderPane.alignment="CENTER">
-    <TableView fx:id="classListTableView">
+    <TableView fx:id="classListTableView" editable="true">
         <columns>
-            <TableColumn text="Class number" minWidth="100" fx:id="numberColumn" editable="true">
+            <TableColumn fx:id="numberColumn" text="Class number" minWidth="100">
             </TableColumn>
-            <TableColumn text="Capacity" minWidth="100" fx:id="capacityColumn">
+            <TableColumn fx:id="capacityColumn" text="Capacity" minWidth="100">
             </TableColumn>
         </columns>
     </TableView>
+    <Button fx:id="saveButton" text="Save" onAction="#handleSaveButtonAction"/>
 </VBox>
