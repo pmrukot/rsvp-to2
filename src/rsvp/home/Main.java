@@ -3,6 +3,12 @@ package rsvp.home;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import rsvp.common.persistence.HibernateUtils;
+import rsvp.user.model.User;
+
+import static rsvp.user.model.UserUtils.createUser;
 
 
 public class Main extends Application{
@@ -13,6 +19,7 @@ public class Main extends Application{
 
     @Override
     public void start(Stage primaryStage) {
+
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("RSVP");
 

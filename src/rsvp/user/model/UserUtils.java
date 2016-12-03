@@ -5,6 +5,7 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import rsvp.common.persistence.HibernateUtils;
 
+import java.io.File;
 import java.util.List;
 
 public abstract class UserUtils {
@@ -110,7 +111,7 @@ public abstract class UserUtils {
         return users;
     }
 
-    public static boolean createUsersFromCsv() {
+    public static boolean createUsersFromCsv(File file) {
         // todo implement
         return false;
     }

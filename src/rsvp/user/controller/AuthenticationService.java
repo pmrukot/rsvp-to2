@@ -15,7 +15,7 @@ public abstract class AuthenticationService {
         currentUser = user;
     }
 
-    static boolean authenticateUser(String login, String password) {
+    public static boolean authenticateUser(String login, String password) {
         boolean success = false;
         if(getCurrentUser() == null) {
             Session session = HibernateUtils.getSession();

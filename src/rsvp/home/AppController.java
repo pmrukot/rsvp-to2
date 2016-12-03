@@ -7,18 +7,21 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import rsvp.booking.controller.BookingController;
+import rsvp.user.controller.AuthenticationService;
 
 import java.io.IOException;
 
 public class AppController {
     private Stage primaryStage;
 
+    private AuthenticationService authenticationService;
 
     @FXML
     private BookingController bookingController;
@@ -48,7 +51,7 @@ public class AppController {
     void initLoginLayout() {
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(rsvp.home.Main.class.getResource("LoginView.fxml"));
+            loader.setLocation(rsvp.home.Main.class.getResource("view/LoginView.fxml"));
             GridPane rootLayout = (GridPane) loader.load();
 
             Scene scene = new Scene(rootLayout, 300, 275);
@@ -62,9 +65,9 @@ public class AppController {
 
 
     public void login(ActionEvent actionEvent) {
-        if(login.getText().equals(password.getText())) {
+        if(authenticationService.authenticateUser(login.getText(), password.getText())) {
             ((Node)(actionEvent.getSource())).getScene().getWindow().hide();
-            initRootLayout();
+            initRootLayout(authenticationService.getCurrentUser().isAdmin());
         }
         else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -77,10 +80,14 @@ public class AppController {
     }
 
 
-    private void initRootLayout() {
+    private void initRootLayout(boolean isAdmin) {
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(rsvp.home.Main.class.getResource("Main.fxml"));
+            if(isAdmin) {
+                loader.setLocation(rsvp.home.Main.class.getResource("view/AdminHome.fxml"));
+            } else {
+                loader.setLocation(rsvp.home.Main.class.getResource("view/Home.fxml"));
+            }
             Parent rootLayout = (Parent) loader.load();
 
             Scene scene = new Scene(rootLayout);
