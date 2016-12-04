@@ -27,6 +27,11 @@ public class Main extends Application{
         this.appController.initLoginLayout();
     }
 
+    @Override
+    public void stop() {
+        HibernateUtils.shutdown();
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
