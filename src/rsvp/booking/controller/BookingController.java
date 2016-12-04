@@ -6,6 +6,8 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import rsvp.booking.Main;
 import rsvp.booking.model.Booking;
 import rsvp.common.persistence.HibernateUtils;
@@ -42,6 +44,9 @@ public class BookingController {
 
     @FXML
     private Button deleteButton;
+
+    @FXML
+    private Button editButton;
 
     @FXML
     private TableView<Booking> bookingsTable;
@@ -109,6 +114,31 @@ public class BookingController {
 
         transaction.commit();
         session.close();
+    }
+
+    @FXML
+    public void editBooking() {
+        Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
+
+        try {
+            final Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.initOwner(primaryStage);
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("view/BookingEditionPane.fxml"));
+            VBox bookingEditionLayout = (VBox) loader.load();
+            Scene scene = new Scene(bookingEditionLayout, 300, 200);
+
+            BookingEditionController bookingEditionController = loader.getController();
+            bookingEditionController.setDialogStage(dialogStage);
+            bookingEditionController.setData(selectedBooking);
+
+            dialogStage.setScene(scene);
+            dialogStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private List<Booking> listBooking() {
