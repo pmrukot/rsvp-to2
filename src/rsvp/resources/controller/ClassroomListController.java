@@ -31,7 +31,10 @@ public class ClassroomListController {
     TableColumn<UniversityRoom, Boolean> calendarColumn;
 
     @FXML
-    Button saveButton;
+    Button createButton;
+
+    @FXML
+    Button updateButton;
 
     @FXML
     Button deleteButton;
@@ -73,8 +76,13 @@ public class ClassroomListController {
     }
 
     @FXML
-    private void handleSaveButtonAction(ActionEvent event) {
-        System.out.println("Save button clicked");
+    private void handleCreateButtonAction(ActionEvent enet) {
+        System.out.println("Create button clicked");
+    }
+
+    @FXML
+    private void handleUpdateButtonAction(ActionEvent event) {
+        System.out.println("Update button clicked");
     }
 
     @FXML

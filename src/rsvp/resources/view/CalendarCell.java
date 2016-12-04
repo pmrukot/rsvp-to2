@@ -7,13 +7,13 @@ import javafx.scene.control.TableCell;
 import rsvp.resources.model.UniversityRoom;
 
 public class CalendarCell extends TableCell<UniversityRoom, Boolean> {
-    final Button cellButton = new Button("Action");
+    final Button cellButton = new Button("Show");
 
     public CalendarCell(){
         cellButton.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent t) {
-                System.out.println("Calendar button clicked");
+                System.out.println("Show button clicked");
             }
         });
     }
