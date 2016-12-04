@@ -41,6 +41,9 @@ public class BookingController {
     private Button createButton;
 
     @FXML
+    private Button deleteButton;
+
+    @FXML
     private TableView<Booking> bookingsTable;
 
     @FXML
@@ -89,6 +92,23 @@ public class BookingController {
         transaction.commit();
         session.close();
         bookings.add(booking);
+    }
+
+    @FXML
+    public void deleteBooking() {
+        Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
+        deleteBookingFromDatabase(selectedBooking);
+        bookingsTable.getItems().remove(selectedBooking);
+    }
+
+    private void deleteBookingFromDatabase(Booking booking) {
+        Session session = HibernateUtils.getSession();
+        Transaction transaction = session.beginTransaction();
+
+        session.delete(booking);
+
+        transaction.commit();
+        session.close();
     }
 
     private List<Booking> listBooking() {
