@@ -3,17 +3,17 @@
 <?import javafx.scene.control.Tab?>
 <TabPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="rsvp.home.AppController">
     <tabs>
-        <Tab text="User">
+        <Tab text="User" closable="false">
             <content>
                 <fx:include fx:id="userPage" source="../../user/view/MyCalendarView.fxml"/>
             </content>
         </Tab>
-        <Tab text="Resources">
+        <Tab text="Resources" closable="false">
             <content>
                 <fx:include fx:id="resourcesPage" source="../../resources/view/ClassListView.fxml"/>
             </content>
         </Tab>
-        <Tab text="Booking">
+        <Tab text="Booking" closable="false">
             <content>
                 <fx:include fx:id="bookingPage" source="../../booking/view/BookingOverviewPane.fxml"/>
             </content>
