@@ -6,7 +6,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import rsvp.booking.Main;
 import rsvp.booking.model.Booking;
@@ -139,6 +138,8 @@ public class BookingController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        bookingsTable.refresh();
     }
 
     private List<Booking> listBooking() {

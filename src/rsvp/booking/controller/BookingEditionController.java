@@ -5,7 +5,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.stage.Stage;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import rsvp.booking.model.Booking;
+import rsvp.common.persistence.HibernateUtils;
+
+import java.sql.Date;
 
 
 public class BookingEditionController {
@@ -18,9 +23,6 @@ public class BookingEditionController {
     @FXML
     private Button updateButton;
 
-    @FXML
-    private Button closeButton;
-
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
     }
@@ -32,11 +34,19 @@ public class BookingEditionController {
 
     @FXML
     private void updateBooking() {
-
+        Date date = Date.valueOf(reservationDatePicker.getValue());
+        booking.setReservationDate(date);
+        updateBookingToDatabase(booking);
+        dialogStage.close();
     }
 
-    @FXML
-    private void closeDialog() {
+    private void updateBookingToDatabase(Booking booking) {
+        Session session = HibernateUtils.getSession();
+        Transaction transaction = session.beginTransaction();
 
+        session.update(booking);
+
+        transaction.commit();
+        session.close();
     }
 }
