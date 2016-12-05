@@ -5,6 +5,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -40,15 +41,6 @@ public class ClassroomListController {
     Button createButton;
 
     @FXML
-    private TextField numberFieldUpdate;
-
-    @FXML
-    private TextField capacityFieldUpdate;
-
-    @FXML
-    Button updateButton;
-
-    @FXML
     Button deleteButton;
 
     // TODO: make this list being read from database
@@ -63,8 +55,29 @@ public class ClassroomListController {
     private void initialize() {
         numberColumn.setCellValueFactory(new PropertyValueFactory<>("number"));
         numberColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        numberColumn.setOnEditCommit(
+                new EventHandler<TableColumn.CellEditEvent<UniversityRoom, String>>() {
+                    @Override
+                    public void handle(TableColumn.CellEditEvent<UniversityRoom, String> t) {
+                        UniversityRoom chosenUniversityRoom = classListTableView.getSelectionModel().getSelectedItem();
+                        chosenUniversityRoom.setNumber(t.getNewValue());
+                        ((UniversityRoom) t.getTableView().getItems().get(t.getTablePosition().getRow())).setNumber(t.getNewValue());
+                    }
+                }
+        );
+
         capacityColumn.setCellValueFactory(new PropertyValueFactory<>("capacity"));
         capacityColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        capacityColumn.setOnEditCommit(
+                new EventHandler<TableColumn.CellEditEvent<UniversityRoom, Integer>>() {
+                    @Override
+                    public void handle(TableColumn.CellEditEvent<UniversityRoom, Integer> t) {
+                        UniversityRoom chosenUniversityRoom = classListTableView.getSelectionModel().getSelectedItem();
+                        chosenUniversityRoom.setCapacity(t.getNewValue());
+                        ((UniversityRoom) t.getTableView().getItems().get(t.getTablePosition().getRow())).setCapacity(t.getNewValue());
+                    }
+                }
+        );
 
         calendarColumn.setCellValueFactory(
                 new Callback<TableColumn.CellDataFeatures<UniversityRoom, Boolean>,
@@ -95,23 +108,10 @@ public class ClassroomListController {
 
         if (capacity > 0) {
             items.add(new UniversityRoom(number, capacity));
+            numberFieldCreate.clear();
+            capacityFieldCreate.clear();
             System.out.println("Created " + number + " " + capacity);
         }
-    }
-
-    @FXML
-    private void handleUpdateButtonAction(ActionEvent event) {
-        System.out.println("Update button clicked");
-
-        UniversityRoom chosenUniversityRoom = classListTableView.getSelectionModel().getSelectedItem();
-
-        String previousNumber = chosenUniversityRoom.getNumber();
-        Integer previousCapacity = chosenUniversityRoom.getCapacity();
-
-        String newNumber = numberFieldUpdate.getText();
-        Integer newCapacity = Integer.parseInt(capacityFieldUpdate.getText());
-
-//        System.out.println("Updated from " + previousNumber + " " + previousCapacity + " to " + newNumber + " " + newCapacity);
     }
 
     @FXML
