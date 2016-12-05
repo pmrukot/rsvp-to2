@@ -28,6 +28,9 @@ public class ClassroomListController {
     TableColumn<UniversityRoom, Boolean> calendarColumn;
 
     @FXML
+    TableColumn<UniversityRoom, Boolean> deleteColumn;
+
+    @FXML
     private TextField numberField;
 
     @FXML
@@ -44,12 +47,11 @@ public class ClassroomListController {
 
     // TODO: make this list being read from database
     ObservableList<UniversityRoom> items = FXCollections.observableArrayList(
-//            new UniversityRoom("1.38", 300),
-//            new UniversityRoom("2.41", 150),
-//            new UniversityRoom("1.31", 50),
-//            new UniversityRoom("3.23", 40),
-//            new UniversityRoom("4.21", 35));
-    );
+            new UniversityRoom("1.38", 300),
+            new UniversityRoom("2.41", 150),
+            new UniversityRoom("1.31", 50),
+            new UniversityRoom("3.23", 40),
+            new UniversityRoom("4.21", 35));
 
     @FXML
     private void initialize() {
@@ -66,7 +68,6 @@ public class ClassroomListController {
                         return new SimpleBooleanProperty(p.getValue() != null);
                     }
                 });
-
 
         calendarColumn.setCellFactory(
                 new Callback<TableColumn<UniversityRoom, Boolean>, TableCell<UniversityRoom, Boolean>>() {
@@ -97,6 +98,7 @@ public class ClassroomListController {
 
     @FXML
     private void handleDeleteButtonAction(ActionEvent event) {
-        System.out.println("Delete button clicked");
+        UniversityRoom currentUniversityRoom = classListTableView.getSelectionModel().getSelectedItem();
+        items.remove(currentUniversityRoom);
     }
 }
