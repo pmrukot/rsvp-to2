@@ -31,13 +31,19 @@ public class ClassroomListController {
     TableColumn<UniversityRoom, Boolean> deleteColumn;
 
     @FXML
-    private TextField numberField;
+    private TextField numberFieldCreate;
 
     @FXML
-    private TextField capacityField;
+    private TextField capacityFieldCreate;
 
     @FXML
     Button createButton;
+
+    @FXML
+    private TextField numberFieldUpdate;
+
+    @FXML
+    private TextField capacityFieldUpdate;
 
     @FXML
     Button updateButton;
@@ -84,21 +90,37 @@ public class ClassroomListController {
     private void handleCreateButtonAction(ActionEvent enet) {
         System.out.println("Create button clicked");
 
-        String number = numberField.getText();
-        Integer capacity = Integer.parseInt(capacityField.getText());
+        String number = numberFieldCreate.getText();
+        Integer capacity = Integer.parseInt(capacityFieldCreate.getText());
 
-        if (capacity > 0)
+        if (capacity > 0) {
             items.add(new UniversityRoom(number, capacity));
+            System.out.println("Created " + number + " " + capacity);
+        }
     }
 
     @FXML
     private void handleUpdateButtonAction(ActionEvent event) {
         System.out.println("Update button clicked");
+
+        UniversityRoom chosenUniversityRoom = classListTableView.getSelectionModel().getSelectedItem();
+
+        String previousNumber = chosenUniversityRoom.getNumber();
+        Integer previousCapacity = chosenUniversityRoom.getCapacity();
+
+        String newNumber = numberFieldUpdate.getText();
+        Integer newCapacity = Integer.parseInt(capacityFieldUpdate.getText());
+
+//        System.out.println("Updated from " + previousNumber + " " + previousCapacity + " to " + newNumber + " " + newCapacity);
     }
 
     @FXML
     private void handleDeleteButtonAction(ActionEvent event) {
-        UniversityRoom currentUniversityRoom = classListTableView.getSelectionModel().getSelectedItem();
-        items.remove(currentUniversityRoom);
+        System.out.println("Delete button clicked");
+        UniversityRoom chosenUniversityRoom = classListTableView.getSelectionModel().getSelectedItem();
+        String previousNumber = chosenUniversityRoom.getNumber();
+        Integer previousCapacity = chosenUniversityRoom.getCapacity();
+        items.remove(chosenUniversityRoom);
+        System.out.println("Deleted " + previousNumber + " " + previousCapacity);
     }
 }

@@ -11,19 +11,22 @@
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="rsvp.resources.controller.ClassroomListController" alignment="TOP_CENTER"
       prefHeight="200.0" prefWidth="150.0" BorderPane.alignment="CENTER">
-    <TableView fx:id="classListTableView" editable="true">
+    <TableView fx:id="classListTableView">
         <columns>
             <TableColumn fx:id="numberColumn" text="Number" minWidth="100"/>
             <TableColumn fx:id="capacityColumn" text="Capacity" minWidth="100"/>
             <TableColumn fx:id="calendarColumn" text="Calendar" minWidth="100"/>
-            <TableColumn fx:id="deleteColumn" minWidth="100"/>
         </columns>
     </TableView>
     <GridPane>
-        <TextField fx:id="numberField" promptText="Number" prefWidth="100" GridPane.columnIndex="0"/>
-        <TextField fx:id="capacityField" promptText="Capacity" prefWidth="100" GridPane.columnIndex="1"/>
+        <TextField fx:id="numberFieldCreate" promptText="Number" prefWidth="100" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="capacityFieldCreate" promptText="Capacity" prefWidth="100" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
         <Button fx:id="createButton" text="Create" onAction="#handleCreateButtonAction" prefWidth="100" GridPane.columnIndex="2"/>
-        <Button fx:id="updateButton" text="Update" onAction="#handleUpdateButtonAction" prefWidth="100" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-        <Button fx:id="deleteButton" text="Delete" onAction="#handleDeleteButtonAction" prefWidth="100" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <TextField fx:id="numberFieldUpdate" promptText="New number" prefWidth="100" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="capacityFieldUpdate" promptText="New capacity" prefWidth="100" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Button fx:id="updateButton" text="Update" onAction="#handleUpdateButtonAction" prefWidth="100" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+
+        <Button fx:id="deleteButton" text="Delete" onAction="#handleDeleteButtonAction" prefWidth="100" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
     </GridPane>
 </VBox>
