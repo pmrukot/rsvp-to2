@@ -25,5 +25,8 @@ public class CalendarCell extends TableCell<UniversityRoom, Boolean> {
         if(!empty){
             setGraphic(cellButton);
         }
+        else{
+            setGraphic(null);
+        }
     }
 }

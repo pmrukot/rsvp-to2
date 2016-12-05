@@ -6,10 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.Callback;
@@ -31,6 +28,12 @@ public class ClassroomListController {
     TableColumn<UniversityRoom, Boolean> calendarColumn;
 
     @FXML
+    private TextField numberField;
+
+    @FXML
+    private TextField capacityField;
+
+    @FXML
     Button createButton;
 
     @FXML
@@ -41,11 +44,12 @@ public class ClassroomListController {
 
     // TODO: make this list being read from database
     ObservableList<UniversityRoom> items = FXCollections.observableArrayList(
-            new UniversityRoom("1.38", 300),
-            new UniversityRoom("2.41", 150),
-            new UniversityRoom("1.31", 50),
-            new UniversityRoom("3.23", 40),
-            new UniversityRoom("4.21", 35));
+//            new UniversityRoom("1.38", 300),
+//            new UniversityRoom("2.41", 150),
+//            new UniversityRoom("1.31", 50),
+//            new UniversityRoom("3.23", 40),
+//            new UniversityRoom("4.21", 35));
+    );
 
     @FXML
     private void initialize() {
@@ -78,6 +82,12 @@ public class ClassroomListController {
     @FXML
     private void handleCreateButtonAction(ActionEvent enet) {
         System.out.println("Create button clicked");
+
+        String number = numberField.getText();
+        Integer capacity = Integer.parseInt(capacityField.getText());
+
+        if (capacity > 0)
+            items.add(new UniversityRoom(number, capacity));
     }
 
     @FXML
