@@ -105,8 +105,9 @@ public class BookingController {
     @FXML
     public void handleCreateAction() {
         Booking booking = new Booking();
-        booking.markAsNewRecord();
+        booking.markAsNewRecord(true);
         editBooking(booking);
+        booking.markAsNewRecord(false);
     }
 
     @FXML

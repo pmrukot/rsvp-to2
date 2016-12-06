@@ -20,6 +20,7 @@ public class Booking {
     @Column(name = "roomId")
     private Long roomId;
 
+    @Transient
     private boolean newRecord;
 
     public Booking() {}
@@ -44,11 +45,12 @@ public class Booking {
 
     public Long getUserId() { return this.userId; }
 
+
     public void setRoomId(Long roomId) { this.roomId = roomId; }
 
     public Long getRoomId() { return this.roomId; }
 
     public boolean isNewRecord() { return this.newRecord; }
 
-    public void markAsNewRecord() { this.newRecord = true; }
+    public void markAsNewRecord(boolean newRecord) { this.newRecord = newRecord; }
 }
