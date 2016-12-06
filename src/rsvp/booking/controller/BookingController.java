@@ -20,6 +20,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Date;
 import java.util.List;
 
@@ -77,14 +78,16 @@ public class BookingController {
 
     @FXML
     public void createBooking() {
-        Booking booking = new Booking();
-        Date date = Date.valueOf(reservationDatePicker.getValue());
+        try {
+            Date date = Date.valueOf(reservationDatePicker.getValue());
+            Booking booking = new Booking();
 
-        booking.setReservationDate(date);
-        saveBookingToDatabase(booking);
+            booking.setReservationDate(date);
+            saveBookingToDatabase(booking);
 
-        reservationDatePicker.getEditor().setText(null);
-        reservationDatePicker.setValue(null);
+            reservationDatePicker.getEditor().setText(null);
+            reservationDatePicker.setValue(null);
+        } catch (NullPointerException ignored) {}
     }
 
     private void saveBookingToDatabase(Booking booking) {
@@ -100,9 +103,12 @@ public class BookingController {
 
     @FXML
     public void deleteBooking() {
-        Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
-        deleteBookingFromDatabase(selectedBooking);
-        bookingsTable.getItems().remove(selectedBooking);
+        try{
+            Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
+            deleteBookingFromDatabase(selectedBooking);
+            bookingsTable.getItems().remove(selectedBooking);
+        } catch (NullPointerException ignored) {}
+
     }
 
     private void deleteBookingFromDatabase(Booking booking) {
@@ -117,9 +123,9 @@ public class BookingController {
 
     @FXML
     public void editBooking() {
-        Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
-
         try {
+            Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
+
             final Stage dialogStage = new Stage();
             dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.initOwner(primaryStage);
@@ -137,7 +143,7 @@ public class BookingController {
             dialogStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        } catch (NullPointerException ignored) {}
 
         bookingsTable.refresh();
     }

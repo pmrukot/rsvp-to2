@@ -34,10 +34,12 @@ public class BookingEditionController {
 
     @FXML
     private void updateBooking() {
-        Date date = Date.valueOf(reservationDatePicker.getValue());
-        booking.setReservationDate(date);
-        updateBookingToDatabase(booking);
-        dialogStage.close();
+        try {
+            Date date = Date.valueOf(reservationDatePicker.getValue());
+            booking.setReservationDate(date);
+            updateBookingToDatabase(booking);
+            dialogStage.close();
+        } catch (NullPointerException ignored) {}
     }
 
     private void updateBookingToDatabase(Booking booking) {
