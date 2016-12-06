@@ -37,4 +37,15 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
         </columnResizePolicy>
     </TableView>
+
+    <Button fx:id="deleteButton" onAction="#deleteBooking" text="Delete">
+        <VBox.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+        </VBox.margin>
+    </Button>
+    <Button fx:id="editButton" onAction="#editBooking" text="Edit">
+        <VBox.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+        </VBox.margin>
+    </Button>
 </VBox>

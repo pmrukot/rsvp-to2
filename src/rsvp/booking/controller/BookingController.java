@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import rsvp.booking.Main;
 import rsvp.booking.model.Booking;
 import rsvp.common.persistence.HibernateUtils;
@@ -19,6 +20,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Date;
 import java.util.List;
 
@@ -39,6 +41,12 @@ public class BookingController {
 
     @FXML
     private Button createButton;
+
+    @FXML
+    private Button deleteButton;
+
+    @FXML
+    private Button editButton;
 
     @FXML
     private TableView<Booking> bookingsTable;
@@ -70,14 +78,16 @@ public class BookingController {
 
     @FXML
     public void createBooking() {
-        Booking booking = new Booking();
-        Date date = Date.valueOf(reservationDatePicker.getValue());
+        try {
+            Date date = Date.valueOf(reservationDatePicker.getValue());
+            Booking booking = new Booking();
 
-        booking.setReservationDate(date);
-        saveBookingToDatabase(booking);
+            booking.setReservationDate(date);
+            saveBookingToDatabase(booking);
 
-        reservationDatePicker.getEditor().setText(null);
-        reservationDatePicker.setValue(null);
+            reservationDatePicker.getEditor().setText(null);
+            reservationDatePicker.setValue(null);
+        } catch (NullPointerException ignored) {}
     }
 
     private void saveBookingToDatabase(Booking booking) {
@@ -89,6 +99,53 @@ public class BookingController {
         transaction.commit();
         session.close();
         bookings.add(booking);
+    }
+
+    @FXML
+    public void deleteBooking() {
+        try{
+            Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
+            deleteBookingFromDatabase(selectedBooking);
+            bookingsTable.getItems().remove(selectedBooking);
+        } catch (NullPointerException ignored) {}
+
+    }
+
+    private void deleteBookingFromDatabase(Booking booking) {
+        Session session = HibernateUtils.getSession();
+        Transaction transaction = session.beginTransaction();
+
+        session.delete(booking);
+
+        transaction.commit();
+        session.close();
+    }
+
+    @FXML
+    public void editBooking() {
+        try {
+            Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
+
+            final Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.initOwner(primaryStage);
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("view/BookingEditionPane.fxml"));
+            VBox bookingEditionLayout = (VBox) loader.load();
+            Scene scene = new Scene(bookingEditionLayout, 300, 200);
+
+            BookingEditionController bookingEditionController = loader.getController();
+            bookingEditionController.setDialogStage(dialogStage);
+            bookingEditionController.setData(selectedBooking);
+
+            dialogStage.setScene(scene);
+            dialogStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException ignored) {}
+
+        bookingsTable.refresh();
     }
 
     private List<Booking> listBooking() {
