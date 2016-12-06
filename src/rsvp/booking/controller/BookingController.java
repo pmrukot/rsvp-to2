@@ -3,8 +3,7 @@ package rsvp.booking.controller;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import rsvp.booking.Main;
@@ -13,8 +12,6 @@ import rsvp.common.persistence.HibernateUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
 import javafx.stage.Stage;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -54,10 +51,18 @@ public class BookingController {
     @FXML
     private TableColumn<Booking, Date> reservationDate;
 
+    @FXML
+    private TableColumn<Booking, Long> userId;
+
+    @FXML
+    private TableColumn<Booking, Long> roomId;
+
 
     @FXML
     private void initialize() {
         reservationDate.setCellValueFactory(cellData -> new SimpleObjectProperty<Date>(cellData.getValue().getReservationDate()));
+        userId.setCellValueFactory(cellData -> new SimpleObjectProperty<Long>(cellData.getValue().getUserId()));
+        roomId.setCellValueFactory(cellData -> new SimpleObjectProperty<Long>(cellData.getValue().getRoomId()));
         setData();
     }
 
@@ -76,30 +81,6 @@ public class BookingController {
         }
     }
 
-    @FXML
-    public void createBooking() {
-        try {
-            Date date = Date.valueOf(reservationDatePicker.getValue());
-            Booking booking = new Booking();
-
-            booking.setReservationDate(date);
-            saveBookingToDatabase(booking);
-
-            reservationDatePicker.getEditor().setText(null);
-            reservationDatePicker.setValue(null);
-        } catch (NullPointerException ignored) {}
-    }
-
-    private void saveBookingToDatabase(Booking booking) {
-        Session session = HibernateUtils.getSession();
-        Transaction transaction = session.beginTransaction();
-
-        session.save(booking);
-
-        transaction.commit();
-        session.close();
-        bookings.add(booking);
-    }
 
     @FXML
     public void deleteBooking() {
@@ -122,10 +103,21 @@ public class BookingController {
     }
 
     @FXML
-    public void editBooking() {
-        try {
-            Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
+    public void handleCreateAction() {
+        Booking booking = new Booking();
+        booking.markAsNewRecord(true);
+        editBooking(booking);
+        booking.markAsNewRecord(false);
+    }
 
+    @FXML
+    public void handleEditAction() {
+        Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
+        editBooking(selectedBooking);
+    }
+
+    public void editBooking(Booking booking) {
+        try {
             final Stage dialogStage = new Stage();
             dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.initOwner(primaryStage);
@@ -137,7 +129,8 @@ public class BookingController {
 
             BookingEditionController bookingEditionController = loader.getController();
             bookingEditionController.setDialogStage(dialogStage);
-            bookingEditionController.setData(selectedBooking);
+            bookingEditionController.setBookingController(this);
+            bookingEditionController.setData(booking);
 
             dialogStage.setScene(scene);
             dialogStage.showAndWait();
@@ -157,6 +150,10 @@ public class BookingController {
         transaction.commit();
         session.close();
         return result;
+    }
+
+    public void addBooking(Booking booking){
+        bookings.add(booking);
     }
 
     public void setData() {
