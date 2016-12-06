@@ -3,17 +3,15 @@ package rsvp.booking.controller;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import rsvp.booking.Main;
 import rsvp.booking.model.Booking;
 import rsvp.common.persistence.HibernateUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
 import javafx.stage.Stage;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -46,10 +44,18 @@ public class BookingController {
     @FXML
     private TableColumn<Booking, Date> reservationDate;
 
+    @FXML
+    private TableColumn<Booking, Long> userId;
+
+    @FXML
+    private TableColumn<Booking, Long> roomId;
+
 
     @FXML
     private void initialize() {
         reservationDate.setCellValueFactory(cellData -> new SimpleObjectProperty<Date>(cellData.getValue().getReservationDate()));
+        userId.setCellValueFactory(cellData -> new SimpleObjectProperty<Long>(cellData.getValue().getUserId()));
+        roomId.setCellValueFactory(cellData -> new SimpleObjectProperty<Long>(cellData.getValue().getRoomId()));
         setData();
     }
 
@@ -69,27 +75,31 @@ public class BookingController {
     }
 
     @FXML
-    public void createBooking() {
-        Booking booking = new Booking();
-        Date date = Date.valueOf(reservationDatePicker.getValue());
+    public void openEditWindow() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("view/EditBookingPane.fxml"));
+            VBox editPage = (VBox) loader.load();
 
-        booking.setReservationDate(date);
-        saveBookingToDatabase(booking);
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Edit Booking");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(editPage);
+            dialogStage.setScene(scene);
 
-        reservationDatePicker.getEditor().setText(null);
-        reservationDatePicker.setValue(null);
+            // Set the person into the controller.
+            EditController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setBookingController(this);
+
+            // Show the dialog and wait until the user closes it
+            dialogStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void saveBookingToDatabase(Booking booking) {
-        Session session = HibernateUtils.getSession();
-        Transaction transaction = session.beginTransaction();
-
-        session.save(booking);
-
-        transaction.commit();
-        session.close();
-        bookings.add(booking);
-    }
 
     private List<Booking> listBooking() {
         Session session = HibernateUtils.getSession();
@@ -100,6 +110,10 @@ public class BookingController {
         transaction.commit();
         session.close();
         return result;
+    }
+
+    public void addBooking(Booking booking){
+        bookings.add(booking);
     }
 
     public void setData() {
