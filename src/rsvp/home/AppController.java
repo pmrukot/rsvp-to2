@@ -20,7 +20,7 @@ public class AppController {
     private VBox bookingPage;
 
     @FXML
-    private VBox resourcesPage;
+    private TabPane resourcesPage;
 
     public AppController() {}
 

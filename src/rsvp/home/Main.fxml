@@ -10,7 +10,7 @@
         </Tab>
         <Tab text="Resources">
             <content>
-                <fx:include fx:id="resourcesPage" source="../resources/view/TimeSlotListView.fxml"/>
+                <fx:include fx:id="resourcesPage" source="../resources/view/ResourcesView.fxml"/>
             </content>
         </Tab>
         <Tab text="Booking">
