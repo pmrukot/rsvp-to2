@@ -20,6 +20,8 @@ public class Booking {
     @Column(name = "roomId")
     private Long roomId;
 
+    private boolean newRecord;
+
     public Booking() {}
 
     public Booking(Date reservationDate) {
@@ -46,4 +48,7 @@ public class Booking {
 
     public Long getRoomId() { return this.roomId; }
 
+    public boolean isNewRecord() { return this.newRecord; }
+
+    public void markAsNewRecord() { this.newRecord = true; }
 }

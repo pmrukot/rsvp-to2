@@ -17,6 +17,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Date;
 import java.util.List;
 
@@ -37,6 +38,12 @@ public class BookingController {
 
     @FXML
     private Button createButton;
+
+    @FXML
+    private Button deleteButton;
+
+    @FXML
+    private Button editButton;
 
     @FXML
     private TableView<Booking> bookingsTable;
@@ -74,32 +81,64 @@ public class BookingController {
         }
     }
 
+
     @FXML
-    public void openEditWindow() {
+    public void deleteBooking() {
+        try{
+            Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
+            deleteBookingFromDatabase(selectedBooking);
+            bookingsTable.getItems().remove(selectedBooking);
+        } catch (NullPointerException ignored) {}
+
+    }
+
+    private void deleteBookingFromDatabase(Booking booking) {
+        Session session = HibernateUtils.getSession();
+        Transaction transaction = session.beginTransaction();
+
+        session.delete(booking);
+
+        transaction.commit();
+        session.close();
+    }
+
+    @FXML
+    public void handleCreateAction() {
+        Booking booking = new Booking();
+        booking.markAsNewRecord();
+        editBooking(booking);
+    }
+
+    @FXML
+    public void handleEditAction() {
+        Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
+        editBooking(selectedBooking);
+    }
+
+    public void editBooking(Booking booking) {
         try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Main.class.getResource("view/EditBookingPane.fxml"));
-            VBox editPage = (VBox) loader.load();
-
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Edit Booking");
-            dialogStage.initModality(Modality.WINDOW_MODAL);
+            final Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.initOwner(primaryStage);
-            Scene scene = new Scene(editPage);
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("view/BookingEditionPane.fxml"));
+            VBox bookingEditionLayout = (VBox) loader.load();
+            Scene scene = new Scene(bookingEditionLayout, 300, 200);
+
+            BookingEditionController bookingEditionController = loader.getController();
+            bookingEditionController.setDialogStage(dialogStage);
+            bookingEditionController.setBookingController(this);
+            bookingEditionController.setData(booking);
+
             dialogStage.setScene(scene);
-
-            // Set the person into the controller.
-            EditController controller = loader.getController();
-            controller.setDialogStage(dialogStage);
-            controller.setBookingController(this);
-
-            // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
+        } catch (NullPointerException ignored) {}
 
+        bookingsTable.refresh();
+    }
 
     private List<Booking> listBooking() {
         Session session = HibernateUtils.getSession();

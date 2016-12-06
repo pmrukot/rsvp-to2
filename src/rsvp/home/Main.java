@@ -1,9 +1,8 @@
 package rsvp.home;
 
-
 import javafx.application.Application;
 import javafx.stage.Stage;
-
+import rsvp.common.persistence.HibernateUtils;
 
 public class Main extends Application{
     private Stage primaryStage;
@@ -13,11 +12,17 @@ public class Main extends Application{
 
     @Override
     public void start(Stage primaryStage) {
+
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("RSVP");
 
         this.appController = new AppController(primaryStage);
-        this.appController.initRootLayout();
+        this.appController.initLoginLayout();
+    }
+
+    @Override
+    public void stop() {
+        HibernateUtils.shutdown();
     }
 
     public static void main(String[] args) {
