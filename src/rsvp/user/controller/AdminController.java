@@ -10,6 +10,7 @@ import rsvp.user.model.User;
 import rsvp.user.model.UserDAO;
 import rsvp.user.model.UserUtils;
 import java.io.File;
+import java.io.IOException;
 
 public class AdminController {
     @FXML
@@ -21,7 +22,11 @@ public class AdminController {
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv");
         chooser.getExtensionFilters().add(extFilter);
         File file = chooser.showOpenDialog(new Stage());
-        UserUtils.createUsersFromCsv(file);
+        try {
+            System.out.println(UserUtils.createUsersFromCsv(file) + " users were added.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void createSingleUSer(ActionEvent actionEvent) {

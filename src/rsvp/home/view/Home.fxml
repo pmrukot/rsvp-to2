@@ -3,7 +3,7 @@
 <?import javafx.scene.control.Tab?>
 <TabPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="rsvp.home.AppController">
     <tabs>
-        <Tab text="User" closable="false">
+        <Tab text="My Calendar" closable="false">
             <content>
                 <fx:include fx:id="userPage" source="../../user/view/MyCalendarView.fxml"/>
             </content>

@@ -3,9 +3,17 @@ package rsvp.user.model;
 import rsvp.common.persistence.HibernateUtils;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
-import java.io.File;
+
+import java.io.*;
+import java.util.Arrays;
+
+import java.io.*;
+import java.util.Arrays;
 
 public abstract class UserUtils {
+
+    private static UserDAO userDAO = new DBUserDAO();
+
     static String generateLogin(String firstName, String lastName) {
         String login = firstName + lastName;
         Session session = HibernateUtils.getSession();
@@ -25,8 +33,21 @@ public abstract class UserUtils {
         return login;
     }
 
-    public static boolean createUsersFromCsv(File file) {
-        // todo implement me
-        return false;
+    public static int createUsersFromCsv(File file) throws IOException {
+        String splitBy = ",";
+        BufferedReader reader = new BufferedReader(new FileReader(file.getAbsolutePath()));
+        String line;
+        int addedUsers = 0;
+        while ((line = reader.readLine()) != null) {
+            String[] userData = line.split(splitBy);
+            if(userData.length != 4) {
+                continue;
+            }
+            if(userDAO.createUser(userData[0], userData[1], userData[2], Boolean.valueOf(userData[3]))){
+                addedUsers++;
+            }
+        }
+        reader.close();
+        return addedUsers;
     }
 }
