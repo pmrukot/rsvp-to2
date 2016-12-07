@@ -44,7 +44,7 @@ public class AppController {
 
     public AppController() {}
 
-    AppController(Stage primaryStage) {
+    public AppController(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
 

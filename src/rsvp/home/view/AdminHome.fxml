@@ -24,5 +24,10 @@
                 <fx:include fx:id="adminPage" source="../../user/view/AdminView.fxml"/>
             </content>
         </Tab>
+        <Tab text="Settings" closable="false">
+            <content>
+                <fx:include fx:id="settingsPage" source="../../user/view/SettingsView.fxml"/>
+            </content>
+        </Tab>
     </tabs>
 </TabPane>

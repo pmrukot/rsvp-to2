@@ -80,6 +80,23 @@ public class DBUserDAO implements UserDAO {
     }
 
     @Override
+    public boolean updatePassword(String login, String password) {
+        try {
+            Session session = HibernateUtils.getSession();
+            Transaction transaction = session.beginTransaction();
+            User user = session.get(User.class, login);
+            user.setPassword(password);
+            session.update(user);
+            transaction.commit();
+            session.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
     public boolean deleteUser(String login) {
         try {
             Session session = HibernateUtils.getSession();

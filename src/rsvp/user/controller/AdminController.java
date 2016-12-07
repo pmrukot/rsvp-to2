@@ -23,7 +23,9 @@ public class AdminController {
         chooser.getExtensionFilters().add(extFilter);
         File file = chooser.showOpenDialog(new Stage());
         try {
-            System.out.println(UserUtils.createUsersFromCsv(file) + " users were added.");
+            if(file != null){
+                System.out.println(UserUtils.createUsersFromCsv(file) + " users were added.");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

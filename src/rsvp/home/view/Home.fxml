@@ -18,5 +18,10 @@
                 <fx:include fx:id="bookingPage" source="../../booking/view/BookingOverviewPane.fxml"/>
             </content>
         </Tab>
+        <Tab text="Settings" closable="false">
+            <content>
+                <fx:include fx:id="settingsPage" source="../../user/view/SettingsView.fxml"/>
+            </content>
+        </Tab>
     </tabs>
 </TabPane>

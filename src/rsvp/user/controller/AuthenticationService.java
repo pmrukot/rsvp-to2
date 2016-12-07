@@ -11,7 +11,7 @@ public abstract class AuthenticationService {
         return currentUser;
     }
 
-    private static void setCurrentUser(User user) {
+    static void setCurrentUser(User user) {
         currentUser = user;
     }
 

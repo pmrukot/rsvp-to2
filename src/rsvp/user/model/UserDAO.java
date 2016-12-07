@@ -7,4 +7,5 @@ public interface UserDAO {
     List<User> findUsersByName(String fullName);
     boolean updateUser(String login, String firstName, String lastName, String password, boolean isAdmin);
     boolean deleteUser(String login);
+    boolean updatePassword(String login, String password);
 }
