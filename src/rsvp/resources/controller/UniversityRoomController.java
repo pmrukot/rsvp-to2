@@ -38,6 +38,7 @@ public class UniversityRoomController {
     @FXML
     private void initialize() {
         items = FXCollections.observableArrayList();
+
         numberColumn.setCellValueFactory(new PropertyValueFactory<>("number"));
         numberColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 
@@ -55,6 +56,7 @@ public class UniversityRoomController {
     private void handleCreateButtonAction(ActionEvent event) {
         String number = numberFieldCreate.getText();
         Integer capacity = Integer.parseInt(capacityFieldCreate.getText());
+
         if (capacity > 0) {
             UniversityRoom createdUniversityRoom = new UniversityRoom(number, capacity);
             items.add(createdUniversityRoom);
@@ -72,14 +74,13 @@ public class UniversityRoomController {
     }
 
     @FXML
-    private void handleUpdateButtonAction(ActionEvent e) {
+    private void handleUpdateButtonAction(ActionEvent event) {
         String newNumber = numberFieldUpdate.getText();
         Integer newCapacity = Integer.parseInt(capacityFieldUpdate.getText());
         UniversityRoom chosenUniversityRoom = universityRoomListTableView.getSelectionModel().getSelectedItem();
 
         if(!chosenUniversityRoom.getNumber().equals(newNumber) || !chosenUniversityRoom.getCapacity().equals(newCapacity)) {
             UniversityRoomDAO.update(chosenUniversityRoom, newNumber, newCapacity);
-            universityRoomListTableView.refresh();
             numberFieldUpdate.clear();
             capacityFieldUpdate.clear();
             //TODO refresh universityRoomListTableView

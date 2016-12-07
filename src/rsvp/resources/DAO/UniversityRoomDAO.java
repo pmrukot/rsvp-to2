@@ -4,7 +4,6 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import rsvp.common.persistence.HibernateUtils;
 import rsvp.resources.model.UniversityRoom;
-
 import java.util.List;
 
 public class UniversityRoomDAO {
@@ -35,11 +34,10 @@ public class UniversityRoomDAO {
         session.close();
     }
 
-    public static List<UniversityRoom> getAll(){
+    public static List<UniversityRoom> getAll() {
             Session session = HibernateUtils.getSession();
             Transaction transaction = session.beginTransaction();
-            List<UniversityRoom> result =
-                    session.createQuery("from UniversityRoom u", UniversityRoom.class).getResultList();
+            List<UniversityRoom> result = session.createQuery("from UniversityRoom u", UniversityRoom.class).getResultList();
             transaction.commit();
             session.close();
             return result;

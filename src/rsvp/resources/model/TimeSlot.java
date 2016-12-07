@@ -1,41 +1,47 @@
 package rsvp.resources.model;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-
+import javax.persistence.*;
 import java.time.LocalTime;
 
+@Entity
+@Table(name = "TimeSlot")
 public class TimeSlot {
 
-    private final ObjectProperty<LocalTime> startTime;
-    private final ObjectProperty<LocalTime> endTime;
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private long id;
+
+    @Column(name = "startTime")
+    private LocalTime startTime;
+
+    @Column(name = "endTime")
+    private  LocalTime endTime;
+
+    public TimeSlot() {};
 
     public TimeSlot(LocalTime startTime, LocalTime endTime) {
-        this.startTime = new SimpleObjectProperty<LocalTime>(startTime);
-        this.endTime = new SimpleObjectProperty<LocalTime>(endTime);
+        setStartTime(startTime);
+        setEndTime(endTime);
     }
 
-    public final LocalTime getStartTime() {
-        return startTime.get();
+    public long getId() {
+        return id;
     }
 
-    public final void setStartTime(LocalTime startTime) {
-        this.startTime.set(startTime);
-    }
-
-    public final ObjectProperty<LocalTime> startTimeProperty() {
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public final LocalTime getEndTime() {
-        return endTime.get();
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
     }
 
-    public final void setEndTime(LocalTime endTime) {
-        this.endTime.set(endTime);
-    }
-
-    public final ObjectProperty<LocalTime> endTimeProperty() {
+    public LocalTime getEndTime() {
         return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
     }
 }
