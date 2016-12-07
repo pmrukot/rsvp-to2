@@ -28,6 +28,11 @@ public class UniversityRoomController {
     @FXML
     private TextField capacityFieldCreate;
 
+    @FXML
+    private TextField numberFieldUpdate;
+    @FXML
+    private TextField capacityFieldUpdate;
+
     ObservableList<UniversityRoom> items;
 
     @FXML
@@ -64,5 +69,20 @@ public class UniversityRoomController {
         UniversityRoom chosenUniversityRoom = universityRoomListTableView.getSelectionModel().getSelectedItem();
         UniversityRoomDAO.delete(chosenUniversityRoom);
         items.remove(chosenUniversityRoom);
+    }
+
+    @FXML
+    private void handleUpdateButtonAction(ActionEvent e) {
+        String newNumber = numberFieldUpdate.getText();
+        Integer newCapacity = Integer.parseInt(capacityFieldUpdate.getText());
+        UniversityRoom chosenUniversityRoom = universityRoomListTableView.getSelectionModel().getSelectedItem();
+
+        if(!chosenUniversityRoom.getNumber().equals(newNumber) || !chosenUniversityRoom.getCapacity().equals(newCapacity)) {
+            UniversityRoomDAO.update(chosenUniversityRoom, newNumber, newCapacity);
+            universityRoomListTableView.refresh();
+            numberFieldUpdate.clear();
+            capacityFieldUpdate.clear();
+            //TODO refresh universityRoomListTableView
+        }
     }
 }

@@ -25,6 +25,16 @@ public class UniversityRoomDAO {
         session.close();
     }
 
+    public static void update(UniversityRoom universityRoom, String newNumber, Integer newCapacity) {
+        Session session = HibernateUtils.getSession();
+        Transaction transaction = session.beginTransaction();
+        UniversityRoom updatedUniversityRoom = session.get(UniversityRoom.class, universityRoom.getId());
+        updatedUniversityRoom.setNumber(newNumber);
+        updatedUniversityRoom.setCapacity(newCapacity);
+        transaction.commit();
+        session.close();
+    }
+
     public static List<UniversityRoom> getAll(){
             Session session = HibernateUtils.getSession();
             Transaction transaction = session.beginTransaction();
