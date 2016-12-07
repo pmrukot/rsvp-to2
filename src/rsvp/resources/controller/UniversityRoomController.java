@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.IntegerStringConverter;
+import rsvp.resources.DAO.UniversityRoomDAO;
 import rsvp.resources.model.UniversityRoom;
 import rsvp.resources.view.CalendarCell;
 
@@ -41,7 +42,7 @@ public class UniversityRoomController {
         calendarColumn.setCellValueFactory(p -> new SimpleBooleanProperty(p.getValue() != null));
         calendarColumn.setCellFactory(p -> new CalendarCell());
 
-        items.addAll(UniversityRoomDatabaseUtils.getAll());
+        items.addAll(UniversityRoomDAO.getAll());
         universityRoomListTableView.setItems(items);
     }
 
@@ -52,7 +53,7 @@ public class UniversityRoomController {
         if (capacity > 0) {
             UniversityRoom createdUniversityRoom = new UniversityRoom(number, capacity);
             items.add(createdUniversityRoom);
-            UniversityRoomDatabaseUtils.create(createdUniversityRoom);
+            UniversityRoomDAO.create(createdUniversityRoom);
             numberFieldCreate.clear();
             capacityFieldCreate.clear();
         }
@@ -61,7 +62,7 @@ public class UniversityRoomController {
     @FXML
     private void handleDeleteButtonAction(ActionEvent event) {
         UniversityRoom chosenUniversityRoom = universityRoomListTableView.getSelectionModel().getSelectedItem();
-        UniversityRoomDatabaseUtils.delete(chosenUniversityRoom);
+        UniversityRoomDAO.delete(chosenUniversityRoom);
         items.remove(chosenUniversityRoom);
     }
 }

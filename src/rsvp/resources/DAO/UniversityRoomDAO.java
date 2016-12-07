@@ -1,4 +1,4 @@
-package rsvp.resources.controller;
+package rsvp.resources.DAO;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -7,9 +7,9 @@ import rsvp.resources.model.UniversityRoom;
 
 import java.util.List;
 
-public class UniversityRoomDatabaseUtils {
+public class UniversityRoomDAO {
 
-    protected static void create(UniversityRoom universityRoom) {
+    public static void create(UniversityRoom universityRoom) {
         Session session = HibernateUtils.getSession();
         Transaction transaction = session.beginTransaction();
         session.save(universityRoom);
@@ -17,7 +17,7 @@ public class UniversityRoomDatabaseUtils {
         session.close();
     }
 
-    protected static void delete(UniversityRoom universityRoom) {
+    public static void delete(UniversityRoom universityRoom) {
         Session session = HibernateUtils.getSession();
         Transaction transaction = session.beginTransaction();
         session.delete(universityRoom);
@@ -25,7 +25,7 @@ public class UniversityRoomDatabaseUtils {
         session.close();
     }
 
-    protected static List<UniversityRoom> getAll(){
+    public static List<UniversityRoom> getAll(){
             Session session = HibernateUtils.getSession();
             Transaction transaction = session.beginTransaction();
             List<UniversityRoom> result =
