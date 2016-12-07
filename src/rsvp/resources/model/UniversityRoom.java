@@ -1,41 +1,46 @@
 package rsvp.resources.model;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "UniversityRoom")
 public class UniversityRoom {
 
-    private final StringProperty number;
-    private final IntegerProperty capacity;
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private long id;
+
+    @Column(name = "number")
+    private String number;
+
+    @Column(name = "capacity")
+    private Integer capacity;
+
+    public UniversityRoom() {}
 
     public UniversityRoom(String number, Integer capacity) {
-        this.number = new SimpleStringProperty(number);
-        this.capacity = new SimpleIntegerProperty(capacity);
+        setNumber(number);
+        setCapacity(capacity);
     }
 
-    public final String getNumber() {
-        return number.get();
+    public long getId() {
+        return id;
     }
 
-    public final void setNumber(String number) {
-        this.number.set(number);
-    }
-
-    public final StringProperty getNumberProperty() {
+    public String getNumber() {
         return number;
     }
 
-    public final Integer getCapacity () {
-        return capacity.get();
+    public void setNumber(String number) {
+        this.number = number;
     }
 
-    public final void setCapacity (Integer capacity) {
-        this.capacity.set(capacity);
-    }
-
-    public final IntegerProperty getCapacityProperty() {
+    public Integer getCapacity(){
         return capacity;
+    }
+
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
     }
 }
