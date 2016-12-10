@@ -3,8 +3,8 @@ package rsvp.booking;
 import rsvp.booking.controller.BookingController;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import rsvp.user.model.DBUserDAO;
-import rsvp.user.model.UserDAO;
+import rsvp.user.DAO.DBUserDAO;
+import rsvp.user.DAO.UserDAO;
 
 public class Main extends Application{
 

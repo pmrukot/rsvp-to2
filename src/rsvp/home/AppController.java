@@ -7,14 +7,13 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import rsvp.booking.controller.BookingController;
-import rsvp.user.controller.AuthenticationService;
+import rsvp.user.API.AuthenticationService;
 
 import java.io.IOException;
 
@@ -63,11 +62,10 @@ public class AppController {
         }
     }
 
-
     public void login(ActionEvent actionEvent) {
-        if(authenticationService.authenticateUser(login.getText(), password.getText())) {
+        if(AuthenticationService.authenticateUser(login.getText(), password.getText())) {
             ((Node)(actionEvent.getSource())).getScene().getWindow().hide();
-            initRootLayout(authenticationService.getCurrentUser().isAdmin());
+            initRootLayout(AuthenticationService.getCurrentUser().isAdmin());
         }
         else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -79,6 +77,17 @@ public class AppController {
         }
     }
 
+    /*public void logout(ActionEvent actionEvent) {
+        if(AuthenticationService.logout()) {
+            ((Node)(actionEvent.getSource())).getScene().getWindow().hide();
+            initLoginLayout();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("Log out failed."); // this should never happen though
+            alert.showAndWait();
+        }
+    }*/
 
     private void initRootLayout(boolean isAdmin) {
         try {
@@ -99,6 +108,4 @@ public class AppController {
             e.printStackTrace();
         }
     }
-
-
 }

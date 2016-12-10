@@ -1,4 +1,4 @@
-package rsvp.user.controller;
+package rsvp.user.API;
 
 import org.hibernate.Session;
 import rsvp.common.persistence.HibernateUtils;
@@ -11,7 +11,7 @@ public abstract class AuthenticationService {
         return currentUser;
     }
 
-    static void setCurrentUser(User user) {
+    private static void setCurrentUser(User user) {
         currentUser = user;
     }
 
@@ -31,7 +31,7 @@ public abstract class AuthenticationService {
         return success;
     }
 
-    static boolean logOut() {
+    public static boolean logout() {
         boolean success = false;
         if(getCurrentUser() != null) {
             setCurrentUser(null);

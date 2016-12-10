@@ -1,5 +1,6 @@
-package rsvp.user.model;
+package rsvp.user.DAO;
 
+import rsvp.user.model.User;
 import java.util.List;
 
 public interface UserDAO {

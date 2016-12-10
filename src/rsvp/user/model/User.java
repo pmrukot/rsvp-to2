@@ -17,7 +17,7 @@ public class User {
 
     @Id
     //@GeneratedValue(generator = "asigned")
-    @Column(name = "login")
+    @Column(name = "login", unique = true, nullable = false)
     private String login;
     @Column(name = "first_name", nullable = false)
     private String firstName;
@@ -32,7 +32,7 @@ public class User {
         return login;
     }
 
-    void setLogin() {
+    public void setLogin() {
         this.login = UserUtils.generateLogin(this.firstName, this.lastName);
     }
 
@@ -40,7 +40,7 @@ public class User {
         return firstName;
     }
 
-    void setFirstName(String firstName) {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
@@ -48,7 +48,7 @@ public class User {
         return lastName;
     }
 
-    void setLastName(String lastName) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
@@ -56,7 +56,7 @@ public class User {
         return password;
     }
 
-    void setPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -64,7 +64,7 @@ public class User {
         return isAdmin;
     }
 
-    void setAdmin(boolean admin) {
+    public void setAdmin(boolean admin) {
         isAdmin = admin;
     }
 }

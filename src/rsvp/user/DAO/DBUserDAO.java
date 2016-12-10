@@ -1,9 +1,10 @@
-package rsvp.user.model;
+package rsvp.user.DAO;
 
 import rsvp.common.persistence.HibernateUtils;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import rsvp.user.model.User;
 import java.util.List;
 
 public class DBUserDAO implements UserDAO {

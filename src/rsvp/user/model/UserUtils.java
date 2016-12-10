@@ -3,12 +3,9 @@ package rsvp.user.model;
 import rsvp.common.persistence.HibernateUtils;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
-
+import rsvp.user.DAO.DBUserDAO;
+import rsvp.user.DAO.UserDAO;
 import java.io.*;
-import java.util.Arrays;
-
-import java.io.*;
-import java.util.Arrays;
 
 public abstract class UserUtils {
 

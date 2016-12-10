@@ -3,10 +3,10 @@ package rsvp.user.controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
-import rsvp.user.model.DBUserDAO;
+import rsvp.user.API.AuthenticationService;
+import rsvp.user.DAO.DBUserDAO;
 import rsvp.user.model.User;
-import rsvp.user.model.UserDAO;
+import rsvp.user.DAO.UserDAO;
 
 public class SettingsController {
 
@@ -22,7 +22,7 @@ public class SettingsController {
     private TextField newPassword2;
 
     public void changePassword(ActionEvent actionEvent) {
-        User currentUser = authenticationService.getCurrentUser();
+        User currentUser = AuthenticationService.getCurrentUser();
         if(oldPassword.getText().equals(currentUser.getPassword())) {
             if(newPassword.getText().equals(newPassword2.getText())) {
                 UserDAO userDAO = new DBUserDAO();

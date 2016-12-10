@@ -1,6 +1,6 @@
 <?import javafx.scene.control.TabPane?>
-
 <?import javafx.scene.control.Tab?>
+
 <TabPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="rsvp.home.AppController">
     <tabs>
         <Tab text="My Calendar" closable="false">
@@ -18,7 +18,6 @@
                 <fx:include fx:id="bookingPage" source="../../booking/view/BookingOverviewPane.fxml"/>
             </content>
         </Tab>
-
         <Tab text="Admin Tools" closable="false">
             <content>
                 <fx:include fx:id="adminPage" source="../../user/view/AdminView.fxml"/>
