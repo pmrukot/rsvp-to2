@@ -83,7 +83,9 @@ public class UniversityRoomController {
             UniversityRoomDAO.update(chosenUniversityRoom, newNumber, newCapacity);
             numberFieldUpdate.clear();
             capacityFieldUpdate.clear();
-            //TODO refresh universityRoomListTableView
+            items.clear();
+            items.addAll(UniversityRoomDAO.getAll());
+            universityRoomListTableView.setItems(items);
         }
     }
 }

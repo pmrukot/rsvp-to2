@@ -82,7 +82,9 @@ public class TimeSlotController {
             TimeSlotDAO.update(chosenTimeSlot, newStartTime, newEndTime);
             startTimeFieldUpdate.clear();
             endTimeFieldUpdate.clear();
-            //TODO refresh timeSlotListTableView
+            items.clear();
+            items.addAll(TimeSlotDAO.getAll());
+            timeSlotListTableView.setItems(items);
         }
     }
 }
