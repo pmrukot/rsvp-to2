@@ -35,7 +35,6 @@ public class UserController {
     @FXML
     private TableColumn<Reservation, String> monday;
 
-
     @FXML
     private void initialize() {
         monday.setCellValueFactory(cellData -> new SimpleObjectProperty<String>(cellData.getValue().getRoom().getNumber()));

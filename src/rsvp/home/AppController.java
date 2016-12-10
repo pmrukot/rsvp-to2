@@ -77,17 +77,17 @@ public class AppController {
         }
     }
 
-    /*public void logout(ActionEvent actionEvent) {
+    public void logout(ActionEvent actionEvent) {
         if(AuthenticationService.logout()) {
             ((Node)(actionEvent.getSource())).getScene().getWindow().hide();
-            initLoginLayout();
+            // todo create login window
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error Dialog");
             alert.setHeaderText("Log out failed."); // this should never happen though
             alert.showAndWait();
         }
-    }*/
+    }
 
     private void initRootLayout(boolean isAdmin) {
         try {

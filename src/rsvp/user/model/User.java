@@ -27,7 +27,7 @@ public class User {
     private String password;
     @Column(name = "is_admin", nullable = false)
     private boolean isAdmin;
-    // todo think about setter methods modifiers - should they be private or package level?
+
     public String getLogin() {
         return login;
     }
