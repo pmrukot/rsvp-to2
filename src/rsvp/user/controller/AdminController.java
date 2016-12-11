@@ -8,7 +8,8 @@ import javafx.stage.Stage;
 import rsvp.user.DAO.DBUserDAO;
 import rsvp.user.model.User;
 import rsvp.user.DAO.UserDAO;
-import rsvp.user.model.UserUtils;
+import rsvp.user.upload.Upload;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -24,7 +25,7 @@ public class AdminController {
         File file = chooser.showOpenDialog(new Stage());
         try {
             if(file != null){
-                System.out.println(UserUtils.createUsersFromCsv(file) + " users were added.");
+                System.out.println(Upload.createUsersFromCsv(file) + " users were added.");
             }
         } catch (IOException e) {
             e.printStackTrace();

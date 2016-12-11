@@ -43,7 +43,7 @@ public class AppController {
 
     public AppController() {}
 
-    public AppController(Stage primaryStage) {
+    AppController(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
 
@@ -51,7 +51,7 @@ public class AppController {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(rsvp.home.Main.class.getResource("view/LoginView.fxml"));
-            GridPane rootLayout = (GridPane) loader.load();
+            GridPane rootLayout = loader.load();
 
             Scene scene = new Scene(rootLayout, 300, 275);
             primaryStage.setScene(scene);
@@ -80,7 +80,9 @@ public class AppController {
     public void logout(ActionEvent actionEvent) {
         if(AuthenticationService.logout()) {
             ((Node)(actionEvent.getSource())).getScene().getWindow().hide();
-            // todo create login window
+            this.primaryStage = new Stage();
+            this.primaryStage.setTitle("RSVP");
+            initLoginLayout();
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error Dialog");
@@ -97,7 +99,7 @@ public class AppController {
             } else {
                 loader.setLocation(rsvp.home.Main.class.getResource("view/Home.fxml"));
             }
-            Parent rootLayout = (Parent) loader.load();
+            Parent rootLayout = loader.load();
 
             Scene scene = new Scene(rootLayout);
             Stage secondaryStage = new Stage();

@@ -1,5 +1,7 @@
 package rsvp.user.model;
 
+import rsvp.user.generator.Generator;
+
 import javax.persistence.*;
 
 @Entity
@@ -8,7 +10,7 @@ public class User {
     public User() {}
 
     public User(String firstName, String lastName, String password, boolean isAdmin) {
-        this.login = UserUtils.generateLogin(firstName, lastName);
+        this.login = Generator.generateLogin(firstName, lastName);
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
@@ -33,7 +35,7 @@ public class User {
     }
 
     public void setLogin() {
-        this.login = UserUtils.generateLogin(this.firstName, this.lastName);
+        this.login = Generator.generateLogin(this.firstName, this.lastName);
     }
 
     public String getFirstName() {
