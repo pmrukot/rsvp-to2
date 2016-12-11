@@ -34,10 +34,12 @@ public class UniversityRoomController {
     private TextField capacityFieldUpdate;
 
     ObservableList<UniversityRoom> items;
+    UniversityRoomDAO universityRoomDAO;
 
     @FXML
     private void initialize() {
         items = FXCollections.observableArrayList();
+        universityRoomDAO = new UniversityRoomDAO();
 
         numberColumn.setCellValueFactory(new PropertyValueFactory<>("number"));
         numberColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -48,7 +50,7 @@ public class UniversityRoomController {
         calendarColumn.setCellValueFactory(p -> new SimpleBooleanProperty(p.getValue() != null));
         calendarColumn.setCellFactory(p -> new CalendarCell());
 
-        items.addAll(UniversityRoomDAO.getAll());
+        items.addAll(universityRoomDAO.getAll());
         universityRoomListTableView.setItems(items);
     }
 
@@ -60,7 +62,7 @@ public class UniversityRoomController {
         if (capacity > 0) {
             UniversityRoom createdUniversityRoom = new UniversityRoom(number, capacity);
             items.add(createdUniversityRoom);
-            UniversityRoomDAO.create(createdUniversityRoom);
+            universityRoomDAO.create(createdUniversityRoom);
             numberFieldCreate.clear();
             capacityFieldCreate.clear();
         }
@@ -69,7 +71,7 @@ public class UniversityRoomController {
     @FXML
     private void handleDeleteButtonAction(ActionEvent event) {
         UniversityRoom chosenUniversityRoom = universityRoomListTableView.getSelectionModel().getSelectedItem();
-        UniversityRoomDAO.delete(chosenUniversityRoom);
+        universityRoomDAO.delete(chosenUniversityRoom);
         items.remove(chosenUniversityRoom);
     }
 
@@ -80,11 +82,11 @@ public class UniversityRoomController {
         UniversityRoom chosenUniversityRoom = universityRoomListTableView.getSelectionModel().getSelectedItem();
 
         if(!chosenUniversityRoom.getNumber().equals(newNumber) || !chosenUniversityRoom.getCapacity().equals(newCapacity)) {
-            UniversityRoomDAO.update(chosenUniversityRoom, newNumber, newCapacity);
+            universityRoomDAO.update(chosenUniversityRoom, newNumber, newCapacity);
             numberFieldUpdate.clear();
             capacityFieldUpdate.clear();
             items.clear();
-            items.addAll(UniversityRoomDAO.getAll());
+            items.addAll(universityRoomDAO.getAll());
             universityRoomListTableView.setItems(items);
         }
     }

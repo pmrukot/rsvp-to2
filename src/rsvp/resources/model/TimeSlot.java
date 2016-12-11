@@ -5,7 +5,7 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name = "TimeSlot")
-public class TimeSlot {
+public class TimeSlot implements Comparable<TimeSlot>{
 
     @Id
     @GeneratedValue
@@ -43,5 +43,10 @@ public class TimeSlot {
 
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
+    }
+
+    @Override
+    public int compareTo(TimeSlot anotherTimeSlot) {
+        return anotherTimeSlot.getStartTime().compareTo(this.startTime);
     }
 }

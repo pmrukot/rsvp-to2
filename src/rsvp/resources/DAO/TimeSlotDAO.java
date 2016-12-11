@@ -9,7 +9,7 @@ import java.util.List;
 
 public class TimeSlotDAO {
 
-    public static void create(TimeSlot timeSlot) {
+    public void create(TimeSlot timeSlot) {
         Session session = HibernateUtils.getSession();
         Transaction transaction = session.beginTransaction();
         session.save(timeSlot);
@@ -17,7 +17,7 @@ public class TimeSlotDAO {
         session.close();
     }
 
-    public static  void delete(TimeSlot timeSlot) {
+    public void delete(TimeSlot timeSlot) {
         Session session = HibernateUtils.getSession();
         Transaction transaction = session.beginTransaction();
         session.delete(timeSlot);
@@ -25,7 +25,7 @@ public class TimeSlotDAO {
         session.close();
     }
 
-    public static void update(TimeSlot timeSlot, LocalTime newStartTime, LocalTime newEndTime) {
+    public void update(TimeSlot timeSlot, LocalTime newStartTime, LocalTime newEndTime) {
         Session session = HibernateUtils.getSession();
         Transaction transaction = session.beginTransaction();
         TimeSlot updatedTimeSlot = session.get(TimeSlot.class, timeSlot.getId());
@@ -35,7 +35,7 @@ public class TimeSlotDAO {
         session.close();
     }
 
-    public static List<TimeSlot> getAll() {
+    public List<TimeSlot> getAll() {
         Session session = HibernateUtils.getSession();
         Transaction transaction = session.beginTransaction();
         List<TimeSlot> result = session.createQuery("from TimeSlot t", TimeSlot.class).getResultList();

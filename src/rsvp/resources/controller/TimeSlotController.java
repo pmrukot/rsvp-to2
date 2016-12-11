@@ -38,10 +38,12 @@ public class TimeSlotController {
     private  TextField endTimeFieldUpdate;
 
     ObservableList<TimeSlot> items;
+    TimeSlotDAO timeSlotDAO;
 
     @FXML
     private void initialize() {
         items = FXCollections.observableArrayList();
+        timeSlotDAO = new TimeSlotDAO();
 
         startTimeColumn.setCellValueFactory(new PropertyValueFactory<>("startTime"));
         startTimeColumn.setCellFactory(TextFieldTableCell.forTableColumn(new LocalTimeStringConverter()));
@@ -49,7 +51,7 @@ public class TimeSlotController {
         endTimeColumn.setCellValueFactory(new PropertyValueFactory<>("endTime"));
         endTimeColumn.setCellFactory(TextFieldTableCell.forTableColumn(new LocalTimeStringConverter()));
 
-        items.addAll(TimeSlotDAO.getAll());
+        items.addAll(timeSlotDAO.getAll());
         timeSlotListTableView.setItems(items);
     }
 
@@ -60,7 +62,7 @@ public class TimeSlotController {
 
         TimeSlot createdTimeSlot = new TimeSlot(startTime, endTime);
         items.add(createdTimeSlot);
-        TimeSlotDAO.create(createdTimeSlot);
+        timeSlotDAO.create(createdTimeSlot);
         startTimeFieldCreate.clear();
         endTimeFieldCreate.clear();
     }
@@ -68,7 +70,7 @@ public class TimeSlotController {
     @FXML
     private void handleDeleteButtonAction(ActionEvent event) {
         TimeSlot chosenTimeSlot = timeSlotListTableView.getSelectionModel().getSelectedItem();
-        TimeSlotDAO.delete(chosenTimeSlot);
+        timeSlotDAO.delete(chosenTimeSlot);
         items.remove(chosenTimeSlot);
     }
     
@@ -79,11 +81,11 @@ public class TimeSlotController {
         TimeSlot chosenTimeSlot = timeSlotListTableView.getSelectionModel().getSelectedItem();
 
         if(!chosenTimeSlot.getStartTime().equals(newStartTime) || !chosenTimeSlot.getEndTime().equals(newEndTime)) {
-            TimeSlotDAO.update(chosenTimeSlot, newStartTime, newEndTime);
+            timeSlotDAO.update(chosenTimeSlot, newStartTime, newEndTime);
             startTimeFieldUpdate.clear();
             endTimeFieldUpdate.clear();
             items.clear();
-            items.addAll(TimeSlotDAO.getAll());
+            items.addAll(timeSlotDAO.getAll());
             timeSlotListTableView.setItems(items);
         }
     }
