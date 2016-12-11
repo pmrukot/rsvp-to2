@@ -6,6 +6,9 @@ import org.hibernate.query.Query;
 import rsvp.common.persistence.HibernateUtils;
 import rsvp.user.model.User;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
+
 public class Generator {
 
     public static String generateLogin(String firstName, String lastName) {
@@ -33,7 +36,7 @@ public class Generator {
         session.close();
         return login;
     }
-    static void generatePassword() {
-
+    public static String generatePassword() {
+        return new BigInteger(130, new SecureRandom()).toString(32).substring(0, 10);
     }
 }

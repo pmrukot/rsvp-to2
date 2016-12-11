@@ -7,13 +7,24 @@
 
 <GridPane fx:controller="rsvp.user.controller.SettingsController"
           xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
-    <Label GridPane.rowIndex="0"  GridPane.columnIndex="0" text="Change password" style="-fx-font-size: 16px; -fx-font-weight: bold; "/>
 
-    <Label GridPane.rowIndex="1"  GridPane.columnIndex="0" text="Old password:" maxWidth="200"/>
-    <TextField GridPane.rowIndex="1" GridPane.columnIndex="1" fx:id="oldPassword"/>
-    <Label GridPane.rowIndex="2"  GridPane.columnIndex="0" text="New password:" maxWidth="200"/>
-    <TextField GridPane.rowIndex="2" GridPane.columnIndex="1" fx:id="newPassword"/>
-    <Label GridPane.rowIndex="3"  GridPane.columnIndex="0" text="Repeat new password:" maxWidth="200"/>
-    <TextField GridPane.rowIndex="3" GridPane.columnIndex="1" fx:id="newPassword2"/>
-    <Button GridPane.rowIndex="4" GridPane.columnIndex="1" GridPane.halignment="RIGHT" text="Change" onAction="#changePassword"/>
+    <Label GridPane.rowIndex="0"  GridPane.columnIndex="0" text="User data" style="-fx-font-size: 16px; -fx-font-weight: bold; "/>
+
+    <Label GridPane.rowIndex="1"  GridPane.columnIndex="0" text="Login:" maxWidth="200"/>
+    <TextField GridPane.rowIndex="1" GridPane.columnIndex="1" fx:id="login"/>
+    <Label GridPane.rowIndex="2"  GridPane.columnIndex="0" text="First Name:" maxWidth="200"/>
+    <TextField GridPane.rowIndex="2" GridPane.columnIndex="1" fx:id="firstName"/>
+    <Label GridPane.rowIndex="3"  GridPane.columnIndex="0" text="Last Name:" maxWidth="200"/>
+    <TextField GridPane.rowIndex="3" GridPane.columnIndex="1" fx:id="lastName"/>
+    <Button GridPane.rowIndex="4" GridPane.columnIndex="1" GridPane.halignment="RIGHT" fx:id="changeUserDataButton" text="Save" onAction="#changeLoginAndName"/>
+
+    <Label GridPane.rowIndex="5"  GridPane.columnIndex="0" text="Change password" style="-fx-font-size: 16x; -fx-font-weight: bold; "/>
+
+    <Label GridPane.rowIndex="6"  GridPane.columnIndex="0" text="Old password:" maxWidth="200"/>
+    <TextField GridPane.rowIndex="6" GridPane.columnIndex="1" fx:id="oldPassword"/>
+    <Label GridPane.rowIndex="7"  GridPane.columnIndex="0" text="New password:" maxWidth="200"/>
+    <TextField GridPane.rowIndex="7" GridPane.columnIndex="1" fx:id="newPassword"/>
+    <Label GridPane.rowIndex="8"  GridPane.columnIndex="0" text="Repeat new password:" maxWidth="200"/>
+    <TextField GridPane.rowIndex="8" GridPane.columnIndex="1" fx:id="newPassword2"/>
+    <Button GridPane.rowIndex="9" GridPane.columnIndex="1" GridPane.halignment="RIGHT" fx:id="changePasswordButton" text="Change" onAction="#changePassword"/>
 </GridPane>

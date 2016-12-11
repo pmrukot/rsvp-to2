@@ -1,6 +1,7 @@
 package rsvp.user.model;
 
 
+import rsvp.resources.model.TimeSlot;
 import rsvp.resources.model.UniversityRoom;
 
 public class Reservation {

@@ -31,6 +31,14 @@ public class User {
         this.isAdmin = isAdmin;
     }
 
+    public User(String firstName, String lastName, boolean isAdmin) {
+        this.login = Generator.generateLogin(firstName, lastName);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = Generator.generatePassword();
+        this.isAdmin = isAdmin;
+    }
+
     public User(String login, String firstName, String lastName, String password, boolean isAdmin) {
         this.login = login;
         this.firstName = firstName;
@@ -53,6 +61,9 @@ public class User {
 
     public void setLogin() {
         this.login = Generator.generateLogin(this.firstName, this.lastName);
+    }
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public String getFirstName() {

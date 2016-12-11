@@ -1,15 +1,26 @@
 package rsvp.user.controller;
 
+import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import rsvp.user.API.AuthenticationService;
 import rsvp.user.DAO.DBUserDAO;
 import rsvp.user.model.User;
 import rsvp.user.DAO.UserDAO;
 
-public class SettingsController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class SettingsController implements Initializable{
+
+    public TextField login;
+    public TextField firstName;
+    public TextField lastName;
+
 
     @FXML
     private TextField oldPassword;
@@ -20,8 +31,31 @@ public class SettingsController {
     @FXML
     private TextField newPassword2;
 
+    @FXML
+    private Button changePasswordButton;
+
+    @FXML
+    private Button changeUserDataButton;
+
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        User currentUser = AuthenticationService.getCurrentUser();
+        login.setText(currentUser.getLogin());
+        firstName.setText(currentUser.getFirstName());
+        lastName.setText(currentUser.getLastName());
+        BooleanBinding changePasswordBinding = oldPassword.textProperty().isEmpty().or(newPassword.textProperty().isEmpty())
+                .or(newPassword2.textProperty().isEmpty());
+        changePasswordButton.disableProperty().bind(changePasswordBinding);
+        BooleanBinding changeUserDataBinding = login.textProperty().isEqualTo(currentUser.getLogin())
+                .and(firstName.textProperty().isEqualTo(currentUser.getFirstName()))
+                .and(lastName.textProperty().isEqualTo(currentUser.getLastName()));
+        changeUserDataButton.disableProperty().bind(changeUserDataBinding);
+    }
+
     public void changePassword(ActionEvent actionEvent) {
         User currentUser = AuthenticationService.getCurrentUser();
+
         if(oldPassword.getText().equals(currentUser.getPassword())) {
             if(newPassword.getText().equals(newPassword2.getText())) {
                 UserDAO userDAO = new DBUserDAO();
@@ -48,6 +82,30 @@ public class SettingsController {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error Dialog");
             alert.setHeaderText("Current password is incorrect!");
+            alert.showAndWait();
+        }
+    }
+
+    public void changeLoginAndName(ActionEvent actionEvent) {
+        UserDAO userDAO = new DBUserDAO();
+        User currentUser = AuthenticationService.getCurrentUser();
+        User backUp = currentUser;
+        currentUser.setLogin(login.getText());
+        currentUser.setFirstName(firstName.getText());
+        currentUser.setLastName(lastName.getText());
+
+        if(userDAO.updateUser(currentUser)) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setHeaderText("User data changed successfully!");
+            alert.showAndWait();
+        } else {
+            currentUser.setLogin(backUp.getLogin());
+            currentUser.setFirstName(backUp.getFirstName());
+            currentUser.setLastName(backUp.getLastName());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("Failed to change user data!");
             alert.showAndWait();
         }
     }

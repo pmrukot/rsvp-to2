@@ -23,10 +23,10 @@ public class Upload {
         String line;
         while ((line = reader.readLine()) != null) {
             String[] userData = line.split(splitBy);
-            if(userData.length != 4) {
+            if(userData.length != 3) {
                 continue;
             }
-            User u = new User(userData[0], userData[1], userData[2], Boolean.valueOf(userData[3]));
+            User u = new User(userData[0].trim(), userData[1].trim(), Boolean.valueOf(userData[2].trim()));
             if(userDAO.createUser(u)){
                 createdUsers.add(u);
             }
