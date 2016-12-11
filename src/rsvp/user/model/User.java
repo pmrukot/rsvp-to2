@@ -1,24 +1,15 @@
 package rsvp.user.model;
 
 import rsvp.user.generator.Generator;
-
 import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
 public class User {
-    public User() {}
-
-    public User(String firstName, String lastName, String password, boolean isAdmin) {
-        this.login = Generator.generateLogin(firstName, lastName);
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.password = password;
-        this.isAdmin = isAdmin;
-    }
-
     @Id
-    //@GeneratedValue(generator = "asigned")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id", updatable = false)
+    private long id;
     @Column(name = "login", unique = true, nullable = false)
     private String login;
     @Column(name = "first_name", nullable = false)
@@ -29,6 +20,32 @@ public class User {
     private String password;
     @Column(name = "is_admin", nullable = false)
     private boolean isAdmin;
+
+    public User() {}
+
+    public User(String firstName, String lastName, String password, boolean isAdmin) {
+        this.login = Generator.generateLogin(firstName, lastName);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.isAdmin = isAdmin;
+    }
+
+    public User(String login, String firstName, String lastName, String password, boolean isAdmin) {
+        this.login = login;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.isAdmin = isAdmin;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    private void setId(long id) {
+        this.id = id;
+    }
 
     public String getLogin() {
         return login;

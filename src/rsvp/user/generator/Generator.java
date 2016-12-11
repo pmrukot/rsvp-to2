@@ -11,17 +11,24 @@ public class Generator {
     public static String generateLogin(String firstName, String lastName) {
         String login = firstName + lastName;
         Session session = HibernateUtils.getSession();
-        String sql = "select count(*) " +
+        String countSql = "select count(*) " +
                 "from User u " +
                 "where u.firstName = :firstName and u.lastName = :lastName";
-        Query query = session.createQuery(sql);
-        query.setParameter("firstName", firstName);
-        query.setParameter("lastName", lastName);
-        long count = (long) query.uniqueResult();
+        Query countQuery = session.createQuery(countSql);
+        countQuery.setParameter("firstName", firstName);
+        countQuery.setParameter("lastName", lastName);
+        long count = (long) countQuery.uniqueResult();
         // todo which is better: load list of users once and iterate over it or select 1 user from db (potentially) multiple times?
+        User u;
         do {
             count++;
-        } while(session.get(User.class, login + count) != null);
+            String userSql = "select u " +
+                    "from User u " +
+                    "where login = :login";
+            Query userQuery = session.createQuery(userSql);
+            userQuery.setParameter("login", login + count);
+            u = (User) userQuery.uniqueResult();
+        } while(u != null);
         login += count;
         session.close();
         return login;

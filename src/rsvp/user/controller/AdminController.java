@@ -66,11 +66,9 @@ public class AdminController {
         });
         //editButton.disableProperty().bind(Bindings.isNotNull());
         //deleteButton.disableProperty().bind(Bindings.isNotNull();
-        BooleanBinding addBinding = loginField.textProperty().isEmpty()
-                .or(firstNameField.textProperty().isEmpty())
+        BooleanBinding addBinding = firstNameField.textProperty().isEmpty()
                 .or(lastNameField.textProperty().isEmpty())
                 .or(passwordField.textProperty().isEmpty()
-                .or(loginField.textProperty().isEmpty())
                 .or(isAdminField.textProperty().isEmpty()));
         addButton.disableProperty().bind(addBinding);
     }
@@ -97,7 +95,12 @@ public class AdminController {
 
     public void createSingleUser(ActionEvent actionEvent) {
         // todo error checking
-        User u = new User(firstNameField.getText(), lastNameField.getText(), passwordField.getText(), Boolean.valueOf(isAdminField.getText()));
+        User u;
+        if(loginField.getText().equals("")) {
+            u = new User(firstNameField.getText(), lastNameField.getText(), passwordField.getText(), Boolean.valueOf(isAdminField.getText()));
+        } else {
+            u = new User(loginField.getText(), firstNameField.getText(), lastNameField.getText(), passwordField.getText(), Boolean.valueOf(isAdminField.getText()));
+        }
         if(udao.createUser(u)) {
             users.add(u);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
