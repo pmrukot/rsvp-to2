@@ -9,6 +9,13 @@ import java.util.List;
 
 public class TimeSlotDAO {
 
+    public TimeSlot getTimeSlotByID(long id){
+        Session session = HibernateUtils.getSession();
+        TimeSlot timeSlot =  session.get(TimeSlot.class, id);
+        session.close();
+        return timeSlot;
+    }
+
     public void create(TimeSlot timeSlot) {
         Session session = HibernateUtils.getSession();
         Transaction transaction = session.beginTransaction();

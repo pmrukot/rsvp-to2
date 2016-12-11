@@ -18,7 +18,7 @@ public class TimeSlot implements Comparable<TimeSlot>{
     @Column(name = "endTime")
     private  LocalTime endTime;
 
-    public TimeSlot() {};
+    public TimeSlot() {}
 
     public TimeSlot(LocalTime startTime, LocalTime endTime) {
         setStartTime(startTime);
@@ -47,6 +47,6 @@ public class TimeSlot implements Comparable<TimeSlot>{
 
     @Override
     public int compareTo(TimeSlot anotherTimeSlot) {
-        return anotherTimeSlot.getStartTime().compareTo(this.startTime);
+        return this.startTime.compareTo(anotherTimeSlot.getStartTime());
     }
 }
