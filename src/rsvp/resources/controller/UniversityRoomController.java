@@ -14,6 +14,9 @@ import rsvp.resources.model.UniversityRoom;
 import rsvp.resources.view.CalendarCell;
 
 public class UniversityRoomController {
+    private static final String CAPACITY_ALERT = "Capacity of the room should be greater than 0 and less than 200";
+    private static final String NO_ROOM_SELECTED_ALERT = "You have to select some room in order to do modification";
+
     @FXML
     TableView<UniversityRoom> universityRoomListTableView;
     @FXML
@@ -36,8 +39,14 @@ public class UniversityRoomController {
     ObservableList<UniversityRoom> items;
     UniversityRoomDAO universityRoomDAO;
 
+    Alert errorAlert;
+
     @FXML
     private void initialize() {
+        errorAlert = new Alert(Alert.AlertType.ERROR);
+        errorAlert.setTitle("Error!");
+        errorAlert.setHeaderText("Error while modyfying data");
+
         items = FXCollections.observableArrayList();
         universityRoomDAO = new UniversityRoomDAO();
 
@@ -59,18 +68,27 @@ public class UniversityRoomController {
         String number = numberFieldCreate.getText();
         Integer capacity = Integer.parseInt(capacityFieldCreate.getText());
 
-        if (capacity > 0) {
-            UniversityRoom createdUniversityRoom = new UniversityRoom(number, capacity);
-            items.add(createdUniversityRoom);
-            universityRoomDAO.create(createdUniversityRoom);
-            numberFieldCreate.clear();
-            capacityFieldCreate.clear();
+        if(capacity < 1 || capacity > 200){
+            errorAlert.setContentText(CAPACITY_ALERT);
+            errorAlert.showAndWait();
+            return;
         }
+
+        UniversityRoom createdUniversityRoom = new UniversityRoom(number, capacity);
+        items.add(createdUniversityRoom);
+        universityRoomDAO.create(createdUniversityRoom);
+        numberFieldCreate.clear();
+        capacityFieldCreate.clear();
     }
 
     @FXML
     private void handleDeleteButtonAction(ActionEvent event) {
         UniversityRoom chosenUniversityRoom = universityRoomListTableView.getSelectionModel().getSelectedItem();
+        if (chosenUniversityRoom == null){
+            errorAlert.setContentText(NO_ROOM_SELECTED_ALERT);
+            errorAlert.showAndWait();
+            return;
+        }
         universityRoomDAO.delete(chosenUniversityRoom);
         items.remove(chosenUniversityRoom);
     }
@@ -80,6 +98,12 @@ public class UniversityRoomController {
         String newNumber = numberFieldUpdate.getText();
         Integer newCapacity = Integer.parseInt(capacityFieldUpdate.getText());
         UniversityRoom chosenUniversityRoom = universityRoomListTableView.getSelectionModel().getSelectedItem();
+
+        if (chosenUniversityRoom == null){
+            errorAlert.setContentText(NO_ROOM_SELECTED_ALERT);
+            errorAlert.showAndWait();
+            return;
+        }
 
         if(!chosenUniversityRoom.getNumber().equals(newNumber) || !chosenUniversityRoom.getCapacity().equals(newCapacity)) {
             universityRoomDAO.update(chosenUniversityRoom, newNumber, newCapacity);
