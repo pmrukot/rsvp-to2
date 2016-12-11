@@ -16,6 +16,7 @@ import rsvp.resources.view.CalendarCell;
 public class UniversityRoomController {
     private static final String CAPACITY_ALERT = "Capacity of the room should be greater than 0 and less than 200";
     private static final String NO_ROOM_SELECTED_ALERT = "You have to select some room in order to do modification";
+    private static final String IMPROPER_NUMBER_FORMAT = "You have to provide valid number format";
 
     @FXML
     TableView<UniversityRoom> universityRoomListTableView;
@@ -66,7 +67,15 @@ public class UniversityRoomController {
     @FXML
     private void handleCreateButtonAction(ActionEvent event) {
         String number = numberFieldCreate.getText();
-        Integer capacity = Integer.parseInt(capacityFieldCreate.getText());
+
+        Integer capacity;
+        try {
+            capacity = Integer.parseInt(capacityFieldUpdate.getText());
+        } catch (NumberFormatException e){
+            errorAlert.setContentText(IMPROPER_NUMBER_FORMAT);
+            errorAlert.showAndWait();
+            return;
+        }
 
         if(capacity < 1 || capacity > 200){
             errorAlert.setContentText(CAPACITY_ALERT);
@@ -96,7 +105,14 @@ public class UniversityRoomController {
     @FXML
     private void handleUpdateButtonAction(ActionEvent event) {
         String newNumber = numberFieldUpdate.getText();
-        Integer newCapacity = Integer.parseInt(capacityFieldUpdate.getText());
+        Integer newCapacity;
+        try {
+             newCapacity = Integer.parseInt(capacityFieldUpdate.getText());
+        } catch (NumberFormatException e){
+            errorAlert.setContentText(IMPROPER_NUMBER_FORMAT);
+            errorAlert.showAndWait();
+            return;
+        }
         UniversityRoom chosenUniversityRoom = universityRoomListTableView.getSelectionModel().getSelectedItem();
 
         if (chosenUniversityRoom == null){
