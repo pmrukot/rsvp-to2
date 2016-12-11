@@ -40,7 +40,7 @@ public abstract class UserUtils {
             if(userData.length != 4) {
                 continue;
             }
-            if(userDAO.createUser(userData[0], userData[1], userData[2], Boolean.valueOf(userData[3]))){
+            if(userDAO.createUser(new User(userData[0], userData[1], userData[2], Boolean.valueOf(userData[3])))){
                 addedUsers++;
             }
         }

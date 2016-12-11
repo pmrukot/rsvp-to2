@@ -25,16 +25,14 @@ public class SettingsController {
         if(oldPassword.getText().equals(currentUser.getPassword())) {
             if(newPassword.getText().equals(newPassword2.getText())) {
                 UserDAO userDAO = new DBUserDAO();
-                // todo atm DB instance of current user gets updated but not the applications instance
-                // to fix this we should change DAO methods to use User instance and update
-                // app's instance User password and then use DAO to update DB.
-                // if DAO fails revert password change
-                if(userDAO.updatePassword(currentUser.getLogin(), newPassword.getText())) {
+                currentUser.setPassword(newPassword.getText());
+                if(userDAO.updateUser(currentUser)) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Information Dialog");
                     alert.setHeaderText("Password changed successfully!");
                     alert.showAndWait();
                 } else {
+                    currentUser.setPassword(oldPassword.getText());
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error Dialog");
                     alert.setHeaderText("Failed to change password!");

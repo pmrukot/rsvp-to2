@@ -5,6 +5,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import rsvp.user.DAO.DBUserDAO;
 import rsvp.user.DAO.UserDAO;
+import rsvp.user.model.User;
 
 public class Main extends Application{
 
@@ -27,9 +28,9 @@ public class Main extends Application{
     }
 
     public static void main(String[] args) {
-         UserDAO userDAO = new DBUserDAO();
-        userDAO.createUser("A", "B", "pass", true);
-        userDAO.createUser("C", "D", "pass2", false);
+        UserDAO userDAO = new DBUserDAO();
+        userDAO.createUser(new User("A", "B", "pass", true));
+        userDAO.createUser(new User("C", "D", "pass2", false));
         launch(args);
     }
 }
