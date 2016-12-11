@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -53,6 +54,7 @@ public class AdminController {
     private Button addButton;
 
     @FXML
+    @SuppressWarnings("unchecked")
     public void initialize() {
         isAdmin.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().isAdmin())); // todo how to do it in fxml?
         udao = new DBUserDAO();
@@ -62,6 +64,17 @@ public class AdminController {
             @Override
             public void changed(ObservableValue<? extends User> observable, User oldValue, User newValue) {
                 selectedUser = newValue; // selectedUser = usersTable.getSelectionModel().getSelectedItem();
+            }
+        });
+        usersTable.getColumns().addListener(new ListChangeListener<TableColumn<User, ?>>() {
+            // prevent column reordering
+            @Override
+            public void onChanged(Change<? extends TableColumn<User, ?>> c) {
+                c.next();
+                if(c.wasReplaced()){
+                    usersTable.getColumns().clear();
+                    usersTable.getColumns().addAll(login, firstName, lastName, password, isAdmin);
+                }
             }
         });
         //editButton.disableProperty().bind(Bindings.isNotNull());
@@ -121,7 +134,7 @@ public class AdminController {
     }
 
     public void editUser(ActionEvent actionEvent) {
-        // todo implement me (and maybe change to "save changes"
+        // todo implement me (and maybe change to "save changes" depending on implementation)
         System.out.println("editUser()");
     }
 
