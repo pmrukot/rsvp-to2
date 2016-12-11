@@ -16,6 +16,7 @@ import rsvp.user.model.User;
 import rsvp.user.upload.Upload;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class AdminController {
     private UserDAO udao;
@@ -82,7 +83,12 @@ public class AdminController {
         File file = chooser.showOpenDialog(new Stage());
         try {
             if(file != null){
-                System.out.println(Upload.createUsersFromCsv(file) + " users were added.");
+                List<User> createdUsers = Upload.createUsersFromCsv(file);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Information Dialog");
+                alert.setHeaderText(String.format("%s users were created!", createdUsers.size()));
+                alert.showAndWait();
+                users.addAll(createdUsers);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -91,7 +97,7 @@ public class AdminController {
 
     public void createSingleUser(ActionEvent actionEvent) {
         // todo error checking
-        User u = new User(firstNameField.getText(), lastNameField.getText(), passwordField.getText(), Boolean.parseBoolean(isAdminField.getText()));
+        User u = new User(firstNameField.getText(), lastNameField.getText(), passwordField.getText(), Boolean.valueOf(isAdminField.getText()));
         if(udao.createUser(u)) {
             users.add(u);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
