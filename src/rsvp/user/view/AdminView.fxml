@@ -1,17 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.layout.GridPane?>
-<GridPane fx:controller="rsvp.user.controller.AdminController"
-          xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
-    <Label GridPane.rowIndex="0"  GridPane.columnIndex="0" text="File"/>
-    <Button GridPane.rowIndex="0"  GridPane.columnIndex="1" text="Upload" onAction="#upload"/>
-    <Button GridPane.rowIndex="1"  GridPane.columnIndex="0" text="Create single user" onAction="#createSingleUSer"/>
-    <ComboBox GridPane.rowIndex="2"  GridPane.columnIndex="0" fx:id="userComboBox" promptText="Select user..." onShowing="#loadUsers" visibleRowCount="15"/>
-    <Button GridPane.rowIndex="3"  GridPane.columnIndex="0" text="Edit selected user" onAction="#editUser"/>
-    <Button GridPane.rowIndex="3"  GridPane.columnIndex="1" text="Delete selected user" onAction="#deleteUser"/>
-</GridPane>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.control.TextField?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="rsvp.user.controller.AdminController">
+    <HBox alignment="BASELINE_CENTER" spacing="25">
+        <Button onAction="#upload" text="Upload users file" />
+        <Button onAction="#editUser" text="Edit selected user" fx:id="editButton"/>
+        <Button text="Delete selected user" onAction="#deleteUser" fx:id="deleteButton"/>
+    </HBox>
+    <TableView editable="true" fx:id="usersTable">
+        <columns>
+            <TableColumn text="login" fx:id="login">
+                <cellValueFactory>
+                    <PropertyValueFactory property="login"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="first name" fx:id="firstName">
+                <cellValueFactory>
+                    <PropertyValueFactory property="firstName"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="last name" fx:id="lastName">
+                <cellValueFactory>
+                    <PropertyValueFactory property="lastName"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="password" fx:id="password">
+                <cellValueFactory>
+                    <PropertyValueFactory property="password"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="is admin" fx:id="isAdmin">
+                <cellValueFactory>
+                    <PropertyValueFactory property="isAdmin"/>
+                    <!-- todo above fails to bind property (probably because field has same name as method) -->
+                </cellValueFactory>
+            </TableColumn>
+        </columns>
+        <sortOrder>
+            <fx:reference source="login"/>
+        </sortOrder>
+    </TableView>
+    <HBox>
+        <TextField fx:id="loginField" promptText="Login" prefWidth="90"/>
+        <TextField fx:id="firstNameField" promptText="First Name" prefWidth="90"/>
+        <TextField fx:id="lastNameField" promptText="Last Name" prefWidth="90"/>
+        <TextField fx:id="passwordField" promptText="Password" prefWidth="90"/>
+        <TextField fx:id="isAdminField" promptText="Is admin" prefWidth="90"/> <!-- todo this could be a combobox -->
+        <Button text="Add user" onAction="#createSingleUser" fx:id="addButton"/>
+    </HBox>
+</VBox>
