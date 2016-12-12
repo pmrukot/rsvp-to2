@@ -1,9 +1,8 @@
 package rsvp.user.controller;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -21,7 +20,6 @@ import java.util.List;
 
 public class AdminController {
     private UserDAO udao;
-    private User selectedUser;
     @FXML
     private Button editButton;
     @FXML
@@ -60,12 +58,6 @@ public class AdminController {
         udao = new DBUserDAO();
         users = FXCollections.observableArrayList(udao.findUsersByName(""));
         usersTable.setItems(users);
-        usersTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<User>() {
-            @Override
-            public void changed(ObservableValue<? extends User> observable, User oldValue, User newValue) {
-                selectedUser = newValue; // selectedUser = usersTable.getSelectionModel().getSelectedItem();
-            }
-        });
         usersTable.getColumns().addListener( (ListChangeListener) (c -> {
             // prevent column reordering
             c.next();
@@ -74,8 +66,8 @@ public class AdminController {
                 usersTable.getColumns().addAll(login, firstName, lastName, password, isAdmin);
             }
         }));
-        //editButton.disableProperty().bind(Bindings.isNotNull());
-        //deleteButton.disableProperty().bind(Bindings.isNotNull();
+        editButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
+        deleteButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
         BooleanBinding addBinding = firstNameField.textProperty().isEmpty()
                 .or(lastNameField.textProperty().isEmpty())
                 .or(isAdminField.textProperty().isEmpty());
@@ -139,6 +131,7 @@ public class AdminController {
     }
 
     public void deleteUser(ActionEvent actionEvent) {
+        User selectedUser = usersTable.getSelectionModel().getSelectedItem();
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation Dialog");
         alert.setHeaderText(String.format("Are you sure that you want to delete user %s?", selectedUser.getLogin()));
