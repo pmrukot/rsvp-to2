@@ -66,17 +66,14 @@ public class AdminController {
                 selectedUser = newValue; // selectedUser = usersTable.getSelectionModel().getSelectedItem();
             }
         });
-        usersTable.getColumns().addListener(new ListChangeListener<TableColumn<User, ?>>() {
+        usersTable.getColumns().addListener( (ListChangeListener) (c -> {
             // prevent column reordering
-            @Override
-            public void onChanged(Change<? extends TableColumn<User, ?>> c) {
-                c.next();
-                if(c.wasReplaced()){
-                    usersTable.getColumns().clear();
-                    usersTable.getColumns().addAll(login, firstName, lastName, password, isAdmin);
-                }
+            c.next();
+            if(c.wasReplaced()) {
+                usersTable.getColumns().clear();
+                usersTable.getColumns().addAll(login, firstName, lastName, password, isAdmin);
             }
-        });
+        }));
         //editButton.disableProperty().bind(Bindings.isNotNull());
         //deleteButton.disableProperty().bind(Bindings.isNotNull();
         BooleanBinding addBinding = firstNameField.textProperty().isEmpty()
