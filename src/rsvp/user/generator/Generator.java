@@ -21,7 +21,6 @@ public class Generator {
         countQuery.setParameter("firstName", firstName);
         countQuery.setParameter("lastName", lastName);
         long count = (long) countQuery.uniqueResult();
-        // todo which is better: load list of users once and iterate over it or select 1 user from db (potentially) multiple times?
         User u;
         do {
             count++;

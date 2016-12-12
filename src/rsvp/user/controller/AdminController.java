@@ -74,19 +74,14 @@ public class AdminController {
                 .or(isAdminField.textProperty().isEmpty())
         );
         FilteredList<User> filteredList = new FilteredList<>(users);
-        searchField.textProperty().addListener( (observable, oldValue, newValue) -> {
-            filteredList.setPredicate(user -> {
+        searchField.textProperty().addListener( (observable, oldValue, newValue) -> filteredList.setPredicate(user -> {
                 if(newValue == null || newValue.isEmpty()) {
                     return true;
                 }
                 String lowerCaseFilter = newValue.toLowerCase();
-                if(user.getLastName().toLowerCase().contains(lowerCaseFilter)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            });
-        });
+                return user.getLastName().toLowerCase().contains(lowerCaseFilter);
+            })
+        );
         SortedList<User> sortedList = new SortedList<>(filteredList);
         sortedList.comparatorProperty().bind(usersTable.comparatorProperty());
         usersTable.setItems(sortedList);

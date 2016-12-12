@@ -58,7 +58,7 @@
             <TextField fx:id="firstNameField" prefWidth="125" promptText="First Name" alignment="CENTER"/>
             <TextField fx:id="lastNameField" prefWidth="175" promptText="Last Name" alignment="CENTER"/>
             <TextField fx:id="passwordField" prefWidth="125" promptText="Password" alignment="CENTER"/>
-            <TextField fx:id="isAdminField" prefWidth="75" promptText="Admin?" alignment="CENTER"/> <!-- todo this could be a combobox -->
+            <TextField fx:id="isAdminField" prefWidth="75" promptText="Admin?" alignment="CENTER"/> <!-- todo this could be a checkbox -->
             <Button fx:id="addButton" text="Create user" maxWidth="Infinity" alignment="CENTER" onAction="#createSingleUser"/>
         </HBox>
     </bottom>
