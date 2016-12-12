@@ -23,9 +23,6 @@ public class BookingEditionController {
     private DatePicker reservationDatePicker;
 
     @FXML
-    private TextField userId;
-
-    @FXML
     private TextField roomId;
 
     @FXML
@@ -39,7 +36,6 @@ public class BookingEditionController {
         this.booking = booking;
         try {
             this.reservationDatePicker.setValue(booking.getReservationDate().toLocalDate());
-            this.userId.setText(String.valueOf(booking.getUserId()));
             this.roomId.setText(String.valueOf(booking.getRoomId()));
         } catch (NullPointerException ignored) {}
     }
@@ -48,11 +44,9 @@ public class BookingEditionController {
     private void updateBooking() {
         try {
             Date date = Date.valueOf(reservationDatePicker.getValue());
-            Long user = Long.parseLong(userId.getText());
             Long room = Long.parseLong(roomId.getText());
             booking.setReservationDate(date);
             booking.setRoomId(room);
-            booking.setUserId(user);
             if(booking.isNewRecord()) {
                 createBookingToDatabase(booking);
             } else {

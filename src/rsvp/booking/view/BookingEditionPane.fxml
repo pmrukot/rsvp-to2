@@ -18,18 +18,6 @@
             </VBox.margin>
         </DatePicker>
 
-        <Label text="User" GridPane.rowIndex="3">
-            <GridPane.margin>
-                <Insets bottom="0.0" left="5.0" right="5.0" top="5.0" />
-            </GridPane.margin>
-        </Label>
-
-        <TextField fx:id="userId" GridPane.columnIndex="1" maxWidth="200">
-            <GridPane.margin>
-                <Insets bottom="0.0" left="5.0" right="5.0" top="5.0" />
-            </GridPane.margin>
-        </TextField>
-
         <Label text="Room" GridPane.rowIndex="3">
             <GridPane.margin>
                 <Insets bottom="0.0" left="5.0" right="5.0" top="5.0" />

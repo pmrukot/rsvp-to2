@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import rsvp.user.controller.AuthenticationService;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -52,7 +53,7 @@ public class BookingController {
     private TableColumn<Booking, Date> reservationDate;
 
     @FXML
-    private TableColumn<Booking, Long> userId;
+    private TableColumn<Booking, String> ownerLogin;
 
     @FXML
     private TableColumn<Booking, Long> roomId;
@@ -61,7 +62,7 @@ public class BookingController {
     @FXML
     private void initialize() {
         reservationDate.setCellValueFactory(cellData -> new SimpleObjectProperty<Date>(cellData.getValue().getReservationDate()));
-        userId.setCellValueFactory(cellData -> new SimpleObjectProperty<Long>(cellData.getValue().getUserId()));
+        ownerLogin.setCellValueFactory(cellData -> new SimpleObjectProperty<String>(cellData.getValue().getOwner().getLogin()));
         roomId.setCellValueFactory(cellData -> new SimpleObjectProperty<Long>(cellData.getValue().getRoomId()));
         setData();
     }
@@ -105,6 +106,7 @@ public class BookingController {
     @FXML
     public void handleCreateAction() {
         Booking booking = new Booking();
+        booking.setOwner(AuthenticationService.getCurrentUser());
         booking.markAsNewRecord(true);
         editBooking(booking);
         booking.markAsNewRecord(false);
@@ -145,7 +147,10 @@ public class BookingController {
         Session session = HibernateUtils.getSession();
         Transaction transaction = session.beginTransaction();
 
-        List<Booking> result = session.createQuery("from Booking b", Booking.class).getResultList();
+        String hql = "select b from Booking b where b.owner = :owner";
+        List<Booking> result = session.createQuery(hql, Booking.class)
+                .setParameter("owner", AuthenticationService.getCurrentUser())
+                .getResultList();
 
         transaction.commit();
         session.close();

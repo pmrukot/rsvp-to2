@@ -37,7 +37,7 @@
     <TableView fx:id="bookingsTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
             <TableColumn fx:id="reservationDate" prefWidth="75.0" text="Reservation Date" style="-fx-alignment: center" />
-            <TableColumn fx:id="userId" prefWidth="75.0" text="User" style="-fx-alignment: center" />
+            <TableColumn fx:id="ownerLogin" prefWidth="75.0" text="User" style="-fx-alignment: center" />
             <TableColumn fx:id="roomId" prefWidth="75.0" text="Room" style="-fx-alignment: center" />
         </columns>
         <columnResizePolicy>

@@ -1,5 +1,7 @@
 package rsvp.booking.model;
 
+import rsvp.user.model.User;
+
 import javax.persistence.*;
 import java.sql.Date;
 
@@ -14,8 +16,9 @@ public class Booking {
     @Column(name = "reservationDate")
     private Date reservationDate;
 
-    @Column(name = "userId")
-    private Long userId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "OWNER_ID")
+    private User owner;
 
     @Column(name = "roomId")
     private Long roomId;
@@ -41,9 +44,9 @@ public class Booking {
         return reservationDate;
     }
 
-    public void setUserId(Long userId) { this.userId = userId; }
+    public void setOwner(User owner) { this.owner = owner; }
 
-    public Long getUserId() { return this.userId; }
+    public User getOwner() { return this.owner; }
 
 
     public void setRoomId(Long roomId) { this.roomId = roomId; }
