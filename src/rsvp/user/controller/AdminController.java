@@ -78,8 +78,7 @@ public class AdminController {
         //deleteButton.disableProperty().bind(Bindings.isNotNull();
         BooleanBinding addBinding = firstNameField.textProperty().isEmpty()
                 .or(lastNameField.textProperty().isEmpty())
-                .or(passwordField.textProperty().isEmpty()
-                .or(isAdminField.textProperty().isEmpty()));
+                .or(isAdminField.textProperty().isEmpty());
         addButton.disableProperty().bind(addBinding);
     }
 
@@ -107,7 +106,11 @@ public class AdminController {
         // todo error checking
         User u;
         if(loginField.getText().equals("")) {
-            u = new User(firstNameField.getText(), lastNameField.getText(), passwordField.getText(), Boolean.valueOf(isAdminField.getText()));
+            if(passwordField.getText().equals("")) {
+                u = new User(firstNameField.getText(), lastNameField.getText(), Boolean.valueOf(isAdminField.getText()));
+            } else {
+                u = new User(firstNameField.getText(), lastNameField.getText(), passwordField.getText(), Boolean.valueOf(isAdminField.getText()));
+            }
         } else {
             u = new User(loginField.getText(), firstNameField.getText(), lastNameField.getText(), passwordField.getText(), Boolean.valueOf(isAdminField.getText()));
         }
