@@ -13,7 +13,6 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.LocalTimeStringConverter;
 import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.TimeSlot;
-
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
@@ -22,7 +21,8 @@ public class TimeSlotController {
     private static final String IMPROPER_HOUR_FORMAT_ALERT = "You have to provide valid hour format (hh:mm)";
     private static final String NO_MODYFICATION_ALERT = "You have to provide different values than before";
     private static final String NOT_ENOUGH_ARGUMENTS_ALERT = "You have to provide all arguments";
-    private static final String NON_CHRONOLOGICAL_ORDER_ALERT = "Start time must be before end time";
+    private static final String NON_CHRONOLOGICAL_ORDER_ALERT = "You have to provide start time earlier than end time";
+    private static final String COLLISION_ALERT = "You have to provide time slot not colliding with existing ones";
 
     @FXML
     TableView<TimeSlot> timeSlotListTableView;
@@ -59,6 +59,18 @@ public class TimeSlotController {
             firstTextField.clear();
         if (secondTextField != null)
             secondTextField.clear();
+    }
+
+    private boolean isColliding(LocalTime insertedStartTime, LocalTime insertedEndTime) {
+        for(TimeSlot item : items) {
+            LocalTime currentStartTime = item.getStartTime();
+            LocalTime currentEndTime = item.getEndTime();
+            if(insertedStartTime.isBefore(currentStartTime) && insertedEndTime.isAfter(currentStartTime)) return true;
+            if(insertedStartTime.equals(currentStartTime) || insertedEndTime.equals(currentEndTime)) return true;
+            if(insertedStartTime.isAfter(currentStartTime) && insertedEndTime.isBefore(currentEndTime)) return true;
+            if(insertedStartTime.isBefore(currentEndTime) && insertedEndTime.isAfter(currentEndTime)) return true;
+        }
+        return false;
     }
 
     @FXML
@@ -102,6 +114,11 @@ public class TimeSlotController {
         }
 
         TimeSlot createdTimeSlot = new TimeSlot(startTime, endTime);
+        if (isColliding(createdTimeSlot.getStartTime(), createdTimeSlot.getEndTime())) {
+            handleErrorAlert(startTimeFieldCreate, endTimeFieldCreate, COLLISION_ALERT);
+            return;
+        }
+
         items.add(createdTimeSlot);
         timeSlotDAO.create(createdTimeSlot);
         handleErrorAlert(startTimeFieldCreate, endTimeFieldCreate, null);
@@ -148,6 +165,11 @@ public class TimeSlotController {
 
         if (chosenTimeSlot.getStartTime().equals(newStartTime) && chosenTimeSlot.getEndTime().equals(newEndTime)) {
             handleErrorAlert(startTimeFieldUpdate, endTimeFieldUpdate, NO_MODYFICATION_ALERT);
+            return;
+        }
+
+        if(isColliding(newStartTime, newEndTime)) {
+            handleErrorAlert(startTimeFieldUpdate, endTimeFieldUpdate, COLLISION_ALERT);
             return;
         }
 

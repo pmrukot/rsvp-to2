@@ -14,7 +14,7 @@ import rsvp.resources.model.UniversityRoom;
 import rsvp.resources.view.CalendarCell;
 
 public class UniversityRoomController {
-    private static final String CAPACITY_ALERT = "Capacity of the room should be greater than 0 and less than 200";
+    private static final String CAPACITY_ALERT = "You have to provide capacity greater than 0 and lesser than 200";
     private static final String NO_ITEM_SELECTED_ALERT = "You have to select some room in order to do modification";
     private static final String IMPROPER_NUMBER_FORMAT_ALERT = "You have to provide valid number format";
     private static final String NO_MODYFICATION_ALERT = "You have to provide different values than before";
