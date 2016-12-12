@@ -15,10 +15,10 @@ import rsvp.resources.view.CalendarCell;
 
 public class UniversityRoomController {
     private static final String CAPACITY_ALERT = "Capacity of the room should be greater than 0 and less than 200";
-    private static final String NO_ROOM_SELECTED_ALERT = "You have to select some room in order to do modification";
-    private static final String IMPROPER_NUMBER_FORMAT = "You have to provide valid number format";
-    private static final String NO_MODYFICATION = "You have to provide different values than before";
-    private static final String NOT_ENOUGH_ARGUMENTS = "You have to provide all arguments";
+    private static final String NO_ITEM_SELECTED_ALERT = "You have to select some room in order to do modification";
+    private static final String IMPROPER_NUMBER_FORMAT_ALERT = "You have to provide valid number format";
+    private static final String NO_MODYFICATION_ALERT = "You have to provide different values than before";
+    private static final String NOT_ENOUGH_ARGUMENTS_ALERT = "You have to provide all arguments";
 
     @FXML
     TableView<UniversityRoom> universityRoomListTableView;
@@ -44,6 +44,17 @@ public class UniversityRoomController {
 
     Alert errorAlert;
 
+    private void handleErrorAlert(TextField firstTextField, TextField secondTextField, String alertMessage) {
+        if (alertMessage != null) {
+            errorAlert.setContentText(alertMessage);
+            errorAlert.showAndWait();
+        }
+        if (firstTextField != null)
+            firstTextField.clear();
+        if (secondTextField != null)
+            secondTextField.clear();
+    }
+
     @FXML
     private void initialize() {
         errorAlert = new Alert(Alert.AlertType.ERROR);
@@ -68,106 +79,77 @@ public class UniversityRoomController {
 
     @FXML
     private void handleCreateButtonAction(ActionEvent event) {
-
-        if(numberFieldCreate.getText().isEmpty() || capacityFieldCreate.getText().isEmpty()) {
-            errorAlert.setContentText(NOT_ENOUGH_ARGUMENTS);
-            errorAlert.showAndWait();
-            numberFieldCreate.clear();
-            capacityFieldCreate.clear();
+        if (numberFieldCreate.getText().isEmpty() || capacityFieldCreate.getText().isEmpty()) {
+            handleErrorAlert(numberFieldCreate, capacityFieldCreate, NOT_ENOUGH_ARGUMENTS_ALERT);
             return;
         }
 
         String number = numberFieldCreate.getText();
-
         Integer capacity;
         try {
             capacity = Integer.parseInt(capacityFieldCreate.getText());
-        } catch (NumberFormatException e){
-            errorAlert.setContentText(IMPROPER_NUMBER_FORMAT);
-            errorAlert.showAndWait();
-            numberFieldCreate.clear();
-            capacityFieldCreate.clear();
+        } catch (NumberFormatException e) {
+            handleErrorAlert(numberFieldCreate, capacityFieldCreate, IMPROPER_NUMBER_FORMAT_ALERT);
             return;
         }
 
-        if(capacity < 1 || capacity > 200){
-            errorAlert.setContentText(CAPACITY_ALERT);
-            errorAlert.showAndWait();
-            numberFieldCreate.clear();
-            capacityFieldCreate.clear();
+        if (capacity < 1 || capacity > 200) {
+            handleErrorAlert(numberFieldCreate, capacityFieldCreate, CAPACITY_ALERT);
             return;
         }
 
         UniversityRoom createdUniversityRoom = new UniversityRoom(number, capacity);
         items.add(createdUniversityRoom);
         universityRoomDAO.create(createdUniversityRoom);
-        numberFieldCreate.clear();
-        capacityFieldCreate.clear();
+        handleErrorAlert(numberFieldCreate, capacityFieldCreate, null);
     }
 
     @FXML
     private void handleDeleteButtonAction(ActionEvent event) {
         UniversityRoom chosenUniversityRoom = universityRoomListTableView.getSelectionModel().getSelectedItem();
-        if (chosenUniversityRoom == null){
-            errorAlert.setContentText(NO_ROOM_SELECTED_ALERT);
-            errorAlert.showAndWait();
+        if (chosenUniversityRoom == null) {
+            handleErrorAlert(null, null, NO_ITEM_SELECTED_ALERT);
             return;
         }
+
         universityRoomDAO.delete(chosenUniversityRoom);
         items.remove(chosenUniversityRoom);
     }
 
     @FXML
     private void handleUpdateButtonAction(ActionEvent event) {
-
-        if(numberFieldUpdate.getText().isEmpty() && capacityFieldUpdate.getText().isEmpty()) {
-            errorAlert.setContentText(NOT_ENOUGH_ARGUMENTS);
-            errorAlert.showAndWait();
-            numberFieldUpdate.clear();
-            capacityFieldUpdate.clear();
+        if (numberFieldUpdate.getText().isEmpty() && capacityFieldUpdate.getText().isEmpty()) {
+            handleErrorAlert(numberFieldUpdate, capacityFieldUpdate, NOT_ENOUGH_ARGUMENTS_ALERT);
             return;
         }
 
         String newNumber = numberFieldUpdate.getText();
         Integer newCapacity;
         try {
-             newCapacity = Integer.parseInt(capacityFieldUpdate.getText());
-        } catch (NumberFormatException e){
-            errorAlert.setContentText(IMPROPER_NUMBER_FORMAT);
-            errorAlert.showAndWait();
-            numberFieldUpdate.clear();
-            capacityFieldUpdate.clear();
+            newCapacity = Integer.parseInt(capacityFieldUpdate.getText());
+        } catch (NumberFormatException e) {
+            handleErrorAlert(numberFieldUpdate, capacityFieldUpdate, IMPROPER_NUMBER_FORMAT_ALERT);
             return;
         }
+
         UniversityRoom chosenUniversityRoom = universityRoomListTableView.getSelectionModel().getSelectedItem();
-
-        if (chosenUniversityRoom == null){
-            errorAlert.setContentText(NO_ROOM_SELECTED_ALERT);
-            errorAlert.showAndWait();
-            numberFieldUpdate.clear();
-            capacityFieldUpdate.clear();
+        if (chosenUniversityRoom == null) {
+            handleErrorAlert(numberFieldUpdate, capacityFieldUpdate, NO_ITEM_SELECTED_ALERT);
             return;
         }
 
-        if(chosenUniversityRoom.getNumber().equals(newNumber) && chosenUniversityRoom.getCapacity().equals(newCapacity)) {
-            errorAlert.setContentText(NO_MODYFICATION);
-            errorAlert.showAndWait();
-            numberFieldUpdate.clear();
-            capacityFieldUpdate.clear();
+        if (chosenUniversityRoom.getNumber().equals(newNumber) && chosenUniversityRoom.getCapacity().equals(newCapacity)) {
+            handleErrorAlert(numberFieldUpdate, capacityFieldUpdate, NO_MODYFICATION_ALERT);
             return;
         }
 
-        if(newCapacity < 1 || newCapacity > 200){
-            errorAlert.setContentText(CAPACITY_ALERT);
-            errorAlert.showAndWait();
-            numberFieldUpdate.clear();
-            capacityFieldUpdate.clear();
+        if (newCapacity < 1 || newCapacity > 200) {
+            handleErrorAlert(numberFieldUpdate, capacityFieldUpdate, CAPACITY_ALERT);
             return;
         }
 
         universityRoomDAO.update(chosenUniversityRoom, newNumber, newCapacity);
-        numberFieldUpdate.clear();
-        capacityFieldUpdate.clear();
+        handleErrorAlert(numberFieldUpdate, capacityFieldUpdate, null);
         items.clear();
         items.addAll(universityRoomDAO.getAll());
         universityRoomListTableView.setItems(items);

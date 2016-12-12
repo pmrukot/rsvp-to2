@@ -13,15 +13,16 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.LocalTimeStringConverter;
 import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.TimeSlot;
+
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
 public class TimeSlotController {
-    private static final String NO_TIMESLOT_SELECTED_ALERT = "You have to select some time slot in order to do modification";
-    private static final String IMPROPER_HOUR_FORMAT = "You have to provide valid hour format (hh:mm)";
-    private static final String NO_MODYFICATION = "You have to provide different values than before";
-    private static final String NOT_ENOUGH_ARGUMENTS = "You have to provide all arguments";
-    private static final String NON_CHRONOLOGICAL_ORDER = "Start time must be before end time";
+    private static final String NO_ITEM_SELECTED_ALERT = "You have to select some time slot in order to do modification";
+    private static final String IMPROPER_HOUR_FORMAT_ALERT = "You have to provide valid hour format (hh:mm)";
+    private static final String NO_MODYFICATION_ALERT = "You have to provide different values than before";
+    private static final String NOT_ENOUGH_ARGUMENTS_ALERT = "You have to provide all arguments";
+    private static final String NON_CHRONOLOGICAL_ORDER_ALERT = "Start time must be before end time";
 
     @FXML
     TableView<TimeSlot> timeSlotListTableView;
@@ -39,15 +40,26 @@ public class TimeSlotController {
     private TextField endTimeFieldCreate;
 
     @FXML
-    private  TextField startTimeFieldUpdate;
+    private TextField startTimeFieldUpdate;
 
     @FXML
-    private  TextField endTimeFieldUpdate;
+    private TextField endTimeFieldUpdate;
 
     ObservableList<TimeSlot> items;
     TimeSlotDAO timeSlotDAO;
 
     Alert errorAlert;
+
+    private void handleErrorAlert(TextField firstTextField, TextField secondTextField, String alertMessage) {
+        if (alertMessage != null) {
+            errorAlert.setContentText(alertMessage);
+            errorAlert.showAndWait();
+        }
+        if (firstTextField != null)
+            firstTextField.clear();
+        if (secondTextField != null)
+            secondTextField.clear();
+    }
 
     @FXML
     private void initialize() {
@@ -70,10 +82,8 @@ public class TimeSlotController {
 
     @FXML
     private void handleCreateButtonAction(ActionEvent event) {
-
-        if(startTimeFieldCreate.getText().isEmpty() || endTimeFieldCreate.getText().isEmpty()) {
-            errorAlert.setContentText(NOT_ENOUGH_ARGUMENTS);
-            errorAlert.showAndWait();
+        if (startTimeFieldCreate.getText().isEmpty() || endTimeFieldCreate.getText().isEmpty()) {
+            handleErrorAlert(startTimeFieldCreate, endTimeFieldCreate, NOT_ENOUGH_ARGUMENTS_ALERT);
             return;
         }
 
@@ -81,58 +91,44 @@ public class TimeSlotController {
         try {
             startTime = LocalTime.parse(startTimeFieldCreate.getText());
             endTime = LocalTime.parse(endTimeFieldCreate.getText());
-        } catch(DateTimeParseException e){
-            errorAlert.setContentText(IMPROPER_HOUR_FORMAT);
-            errorAlert.showAndWait();
-            startTimeFieldCreate.clear();
-            endTimeFieldCreate.clear();
+        } catch (DateTimeParseException e) {
+            handleErrorAlert(startTimeFieldCreate, endTimeFieldCreate, IMPROPER_HOUR_FORMAT_ALERT);
             return;
         }
 
-        if(!startTime.isBefore(endTime)){
-            errorAlert.setContentText(NON_CHRONOLOGICAL_ORDER);
-            errorAlert.showAndWait();
-            startTimeFieldCreate.clear();
-            endTimeFieldCreate.clear();
+        if (!startTime.isBefore(endTime)) {
+            handleErrorAlert(startTimeFieldCreate, endTimeFieldCreate, NON_CHRONOLOGICAL_ORDER_ALERT);
             return;
         }
 
         TimeSlot createdTimeSlot = new TimeSlot(startTime, endTime);
         items.add(createdTimeSlot);
         timeSlotDAO.create(createdTimeSlot);
-        startTimeFieldCreate.clear();
-        endTimeFieldCreate.clear();
+        handleErrorAlert(startTimeFieldCreate, endTimeFieldCreate, null);
     }
 
     @FXML
     private void handleDeleteButtonAction(ActionEvent event) {
         TimeSlot chosenTimeSlot = timeSlotListTableView.getSelectionModel().getSelectedItem();
-        if (chosenTimeSlot == null){
-            errorAlert.setContentText(NO_TIMESLOT_SELECTED_ALERT);
-            errorAlert.showAndWait();
-            startTimeFieldCreate.clear();
-            endTimeFieldCreate.clear();
+        if (chosenTimeSlot == null) {
+            handleErrorAlert(null, null, NO_ITEM_SELECTED_ALERT);
             return;
         }
+
         timeSlotDAO.delete(chosenTimeSlot);
         items.remove(chosenTimeSlot);
     }
-    
+
     @FXML
     private void handleUpdateButtonAction(ActionEvent event) {
-
-        if(startTimeFieldUpdate.getText().isEmpty() || endTimeFieldUpdate.getText().isEmpty()) {
-            errorAlert.setContentText(NOT_ENOUGH_ARGUMENTS);
-            errorAlert.showAndWait();
+        if (startTimeFieldUpdate.getText().isEmpty() || endTimeFieldUpdate.getText().isEmpty()) {
+            handleErrorAlert(startTimeFieldUpdate, endTimeFieldUpdate, NOT_ENOUGH_ARGUMENTS_ALERT);
             return;
         }
 
         TimeSlot chosenTimeSlot = timeSlotListTableView.getSelectionModel().getSelectedItem();
-        if (chosenTimeSlot == null){
-            errorAlert.setContentText(NO_TIMESLOT_SELECTED_ALERT);
-            errorAlert.showAndWait();
-            startTimeFieldUpdate.clear();
-            endTimeFieldUpdate.clear();
+        if (chosenTimeSlot == null) {
+            handleErrorAlert(startTimeFieldUpdate, endTimeFieldUpdate, NO_ITEM_SELECTED_ALERT);
             return;
         }
 
@@ -140,33 +136,23 @@ public class TimeSlotController {
         try {
             newStartTime = LocalTime.parse(startTimeFieldUpdate.getText());
             newEndTime = LocalTime.parse(endTimeFieldUpdate.getText());
-        } catch(DateTimeParseException e) {
-            errorAlert.setContentText(IMPROPER_HOUR_FORMAT);
-            errorAlert.showAndWait();
-            startTimeFieldUpdate.clear();
-            endTimeFieldUpdate.clear();
+        } catch (DateTimeParseException e) {
+            handleErrorAlert(startTimeFieldUpdate, endTimeFieldUpdate, IMPROPER_HOUR_FORMAT_ALERT);
             return;
         }
 
-        if(!newStartTime.isBefore(newEndTime)){
-            errorAlert.setContentText(NON_CHRONOLOGICAL_ORDER);
-            errorAlert.showAndWait();
-            startTimeFieldUpdate.clear();
-            endTimeFieldUpdate.clear();
+        if (!newStartTime.isBefore(newEndTime)) {
+            handleErrorAlert(startTimeFieldUpdate, endTimeFieldUpdate, NON_CHRONOLOGICAL_ORDER_ALERT);
             return;
         }
 
-        if(chosenTimeSlot.getStartTime().equals(newStartTime) && chosenTimeSlot.getEndTime().equals(newEndTime)) {
-            errorAlert.setContentText(NO_MODYFICATION);
-            errorAlert.showAndWait();
-            startTimeFieldUpdate.clear();
-            endTimeFieldUpdate.clear();
+        if (chosenTimeSlot.getStartTime().equals(newStartTime) && chosenTimeSlot.getEndTime().equals(newEndTime)) {
+            handleErrorAlert(startTimeFieldUpdate, endTimeFieldUpdate, NO_MODYFICATION_ALERT);
             return;
         }
 
         timeSlotDAO.update(chosenTimeSlot, newStartTime, newEndTime);
-        startTimeFieldUpdate.clear();
-        endTimeFieldUpdate.clear();
+        handleErrorAlert(startTimeFieldUpdate, endTimeFieldUpdate, null);
         items.clear();
         items.addAll(timeSlotDAO.getAll());
         timeSlotListTableView.setItems(items);
