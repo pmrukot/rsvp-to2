@@ -1,11 +1,12 @@
 package rsvp.user.controller;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -21,6 +22,8 @@ import java.util.List;
 public class AdminController {
     private UserDAO udao;
     @FXML
+    private TextField searchField;
+    @FXML
     private Button editButton;
     @FXML
     private Button deleteButton;
@@ -29,15 +32,15 @@ public class AdminController {
     @FXML
     private TableView<User> usersTable;
     @FXML
-    private TableColumn<User, String> login;
+    private TableColumn<User, String> loginColumn;
     @FXML
-    private TableColumn<User, String> firstName;
+    private TableColumn<User, String> firstNameColumn;
     @FXML
-    private TableColumn<User, String> lastName;
+    private TableColumn<User, String> lastNameColumn;
     @FXML
-    private TableColumn<User, String> password;
+    private TableColumn<User, String> passwordColumn;
     @FXML
-    private TableColumn<User, Boolean> isAdmin;
+    private TableColumn<User, Boolean> isAdminColumn;
     @FXML
     private TextField loginField;
     @FXML
@@ -54,24 +57,39 @@ public class AdminController {
     @FXML
     @SuppressWarnings("unchecked")
     public void initialize() {
-        isAdmin.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().isAdmin())); // todo how to do it in fxml?
+        isAdminColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().isAdmin())); // todo how to do it in fxml?
         udao = new DBUserDAO();
         users = FXCollections.observableArrayList(udao.findUsersByName(""));
-        usersTable.setItems(users);
-        usersTable.getColumns().addListener( (ListChangeListener) (c -> {
-            // prevent column reordering
+        usersTable.getColumns().addListener( (ListChangeListener) (c -> { // prevent column reordering
             c.next();
             if(c.wasReplaced()) {
                 usersTable.getColumns().clear();
-                usersTable.getColumns().addAll(login, firstName, lastName, password, isAdmin);
+                usersTable.getColumns().addAll(loginColumn, firstNameColumn, lastNameColumn, passwordColumn, isAdminColumn);
             }
         }));
         editButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
         deleteButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
-        BooleanBinding addBinding = firstNameField.textProperty().isEmpty()
+        addButton.disableProperty().bind(firstNameField.textProperty().isEmpty()
                 .or(lastNameField.textProperty().isEmpty())
-                .or(isAdminField.textProperty().isEmpty());
-        addButton.disableProperty().bind(addBinding);
+                .or(isAdminField.textProperty().isEmpty())
+        );
+        FilteredList<User> filteredList = new FilteredList<>(users);
+        searchField.textProperty().addListener( (observable, oldValue, newValue) -> {
+            filteredList.setPredicate(user -> {
+                if(newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+                if(user.getLastName().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+        });
+        SortedList<User> sortedList = new SortedList<>(filteredList);
+        sortedList.comparatorProperty().bind(usersTable.comparatorProperty());
+        usersTable.setItems(sortedList);
     }
 
     public void upload(ActionEvent actionEvent) {
@@ -95,7 +113,6 @@ public class AdminController {
     }
 
     public void createSingleUser(ActionEvent actionEvent) {
-        // todo error checking
         User u;
         if(loginField.getText().equals("")) {
             if(passwordField.getText().equals("")) {

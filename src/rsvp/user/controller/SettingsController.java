@@ -57,25 +57,35 @@ public class SettingsController implements Initializable{
         User currentUser = AuthenticationService.getCurrentUser();
 
         if(oldPassword.getText().equals(currentUser.getPassword())) {
-            if(newPassword.getText().equals(newPassword2.getText())) {
-                UserDAO userDAO = new DBUserDAO();
-                currentUser.setPassword(newPassword.getText());
-                if(userDAO.updateUser(currentUser)) {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Information Dialog");
-                    alert.setHeaderText("Password changed successfully!");
-                    alert.showAndWait();
+            if(!newPassword.getText().equals(currentUser.getPassword())) {
+                if(newPassword.getText().equals(newPassword2.getText())) {
+                    UserDAO userDAO = new DBUserDAO();
+                    currentUser.setPassword(newPassword.getText());
+                    if(userDAO.updateUser(currentUser)) {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Information Dialog");
+                        alert.setHeaderText("Password changed successfully!");
+                        alert.showAndWait();
+                        oldPassword.setText("");
+                        newPassword.setText("");
+                        newPassword2.setText("");
+                    } else {
+                        currentUser.setPassword(oldPassword.getText());
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error Dialog");
+                        alert.setHeaderText("Failed to change password!");
+                        alert.showAndWait();
+                    }
                 } else {
-                    currentUser.setPassword(oldPassword.getText());
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error Dialog");
-                    alert.setHeaderText("Failed to change password!");
+                    alert.setHeaderText("Passwords do not match!");
                     alert.showAndWait();
                 }
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error Dialog");
-                alert.setHeaderText("Passwords do not match!");
+                alert.setHeaderText("New password must be different from current!");
                 alert.showAndWait();
             }
         } else {
@@ -89,7 +99,9 @@ public class SettingsController implements Initializable{
     public void changeLoginAndName(ActionEvent actionEvent) {
         UserDAO userDAO = new DBUserDAO();
         User currentUser = AuthenticationService.getCurrentUser();
-        User backUp = currentUser;
+        String backupLogin = currentUser.getLogin();
+        String backupFirstName = currentUser.getFirstName();
+        String backupLastName = currentUser.getLastName();
         currentUser.setLogin(login.getText());
         currentUser.setFirstName(firstName.getText());
         currentUser.setLastName(lastName.getText());
@@ -100,9 +112,9 @@ public class SettingsController implements Initializable{
             alert.setHeaderText("User data changed successfully!");
             alert.showAndWait();
         } else {
-            currentUser.setLogin(backUp.getLogin());
-            currentUser.setFirstName(backUp.getFirstName());
-            currentUser.setLastName(backUp.getLastName());
+            currentUser.setLogin(backupLogin);
+            currentUser.setFirstName(backupFirstName);
+            currentUser.setLastName(backupLastName);
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error Dialog");
             alert.setHeaderText("Failed to change user data!");

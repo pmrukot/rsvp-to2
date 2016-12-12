@@ -11,6 +11,7 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="rsvp.user.controller.AdminController">
     <top>
         <HBox alignment="BASELINE_CENTER" spacing="25">
+            <TextField fx:id="searchField" promptText="Search users by lastname"/>
             <Button text="Create users from file" onAction="#upload"/>
             <Button fx:id="editButton" text="Edit selected user" onAction="#editUser"/>
             <Button fx:id="deleteButton" text="Delete selected user" onAction="#deleteUser"/>
@@ -19,27 +20,27 @@
     <center>
         <TableView fx:id="usersTable" maxWidth="Infinity">
             <columns>
-                <TableColumn fx:id="login" prefWidth="200" text="Login" resizable="false">
+                <TableColumn fx:id="loginColumn" prefWidth="200" text="Login" resizable="false">
                     <cellValueFactory>
                         <PropertyValueFactory property="login" />
                     </cellValueFactory>
                 </TableColumn>
-                <TableColumn fx:id="firstName" prefWidth="125" text="First name" resizable="false">
+                <TableColumn fx:id="firstNameColumn" prefWidth="125" text="First name" resizable="false">
                     <cellValueFactory>
                         <PropertyValueFactory property="firstName" />
                     </cellValueFactory>
                 </TableColumn>
-                <TableColumn fx:id="lastName" prefWidth="175" text="Last name" resizable="false">
+                <TableColumn fx:id="lastNameColumn" prefWidth="175" text="Last name" resizable="false">
                     <cellValueFactory>
                         <PropertyValueFactory property="lastName" />
                     </cellValueFactory>
                 </TableColumn>
-                <TableColumn fx:id="password" prefWidth="125" text="Password" resizable="false">
+                <TableColumn fx:id="passwordColumn" prefWidth="125" text="Password" resizable="false">
                     <cellValueFactory>
                         <PropertyValueFactory property="password" />
                     </cellValueFactory>
                 </TableColumn>
-                <TableColumn fx:id="isAdmin" prefWidth="75" text="Admin" resizable="false">
+                <TableColumn fx:id="isAdminColumn" prefWidth="75" text="Admin" resizable="false">
                     <cellValueFactory>
                         <PropertyValueFactory property="isAdmin" />
                         <!-- todo above fails to bind property (probably because field has same name as method) -->
@@ -47,7 +48,7 @@
                 </TableColumn>
             </columns>
             <sortOrder>
-                <fx:reference source="login" />
+                <fx:reference source="loginColumn" />
             </sortOrder>
         </TableView>
     </center>
