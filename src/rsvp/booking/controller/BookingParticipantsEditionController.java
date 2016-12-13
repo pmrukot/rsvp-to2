@@ -45,8 +45,6 @@ public class BookingParticipantsEditionController {
 
         this.userList.getItems().addAll(allUsers);
         this.userList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        System.out.println(allUsers);
-        System.out.println(checkedUsers);
 
         List<String> allUsersToString = allUsers.stream()
                 .map(object -> Objects.toString(object, null))
