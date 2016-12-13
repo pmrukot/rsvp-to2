@@ -24,7 +24,8 @@ public class Booking {
     @Column(name = "roomId")
     private Long roomId;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "login")
+    @ManyToMany(cascade=CascadeType.ALL)
+    @JoinTable(name="user_participants", joinColumns=@JoinColumn(name="booking_id"), inverseJoinColumns=@JoinColumn(name="login"))
     private Set<User> participants = new HashSet<User>(0);
 
     @Transient
