@@ -18,6 +18,8 @@
 
         <mapping class="rsvp.booking.model.Booking"/>
         <mapping class="rsvp.user.model.User"/>
+        <mapping class="rsvp.resources.model.UniversityRoom"/>
+        <mapping class="rsvp.resources.model.TimeSlot"/>
     </session-factory>
 
 </hibernate-configuration>

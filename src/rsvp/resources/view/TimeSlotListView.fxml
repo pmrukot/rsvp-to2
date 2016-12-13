@@ -10,7 +10,7 @@
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="rsvp.resources.controller.TimeSlotController" alignment="TOP_CENTER"
       prefHeight="200.0" prefWidth="150.0" BorderPane.alignment="CENTER">
-    <TableView fx:id="timeSlotListTableView" editable="true">
+    <TableView fx:id="timeSlotListTableView">
         <columns>
             <TableColumn fx:id="startTimeColumn" text="Start time" minWidth="100"/>
             <TableColumn fx:id="endTimeColumn" text="End time" minWidth="100"/>
@@ -19,8 +19,12 @@
     <GridPane>
         <TextField fx:id="startTimeFieldCreate" promptText="Start time" prefWidth="100" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
         <TextField fx:id="endTimeFieldCreate" promptText="End time" prefWidth="100" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-        <Button fx:id="createButton" text="Create" onAction="#handleCreateButtonAction" prefWidth="100" GridPane.columnIndex="2"/>
+        <Button text="Create" onAction="#handleCreateButtonAction" prefWidth="100" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
 
-        <Button fx:id="deleteButton" text="Delete" onAction="#handleDeleteButtonAction" prefWidth="100" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="startTimeFieldUpdate" promptText="New start time" prefWidth="100" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="endTimeFieldUpdate" promptText="New end time" prefWidth="100" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Button text="Update" onAction="#handleUpdateButtonAction" prefWidth="100" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+
+        <Button text="Delete" onAction="#handleDeleteButtonAction" prefWidth="100" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
     </GridPane>
 </VBox>
