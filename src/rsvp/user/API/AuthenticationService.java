@@ -1,5 +1,6 @@
 package rsvp.user.API;
 
+import javafx.scene.control.Alert;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import rsvp.common.persistence.HibernateUtils;
@@ -25,7 +26,7 @@ public abstract class AuthenticationService {
             Session session = HibernateUtils.getSession();
             Query query = session.createQuery(sql, User.class);
             query.setParameter("login", login);
-            User user = (User) query.getSingleResult();
+            User user = (User) query.uniqueResult();
             if(user != null) {
                 if(user.getPassword().equals(password)) {
                     setCurrentUser(user);
