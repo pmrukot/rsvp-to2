@@ -1,20 +1,21 @@
 package rsvp.user.API;
 
+import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
 import rsvp.user.DAO.DBUserDAO;
 import rsvp.user.DAO.UserDAO;
 import rsvp.user.model.User;
 import java.util.List;
-import java.util.Observable;
 import java.util.stream.Collectors;
 
-public class UserProviderSingleton extends Observable {
+public class UserProviderSingleton {
     private static UserProviderSingleton instance;
     private static UserDAO userDAO;
-    private static List<User> users;
+    private static ObservableList<User> users;
 
     private UserProviderSingleton() {
         userDAO = new DBUserDAO();
-        users = userDAO.findUsersByName("");
+        users = FXCollections.observableList(userDAO.findUsersByName(""));
     }
 
     public static UserProviderSingleton getInstance() {
@@ -28,13 +29,12 @@ public class UserProviderSingleton extends Observable {
         return instance;
     }
 
-    public void update() {
-        users = userDAO.findUsersByName("");
-        setChanged();
-        notifyObservers();
+    public void refreshUsers() {
+        users.clear();
+        users.addAll(userDAO.findUsersByName(""));
     }
 
-    public List<User> getUsers() {
+    public ObservableList<User> getUsers() {
         return users;
     }
 

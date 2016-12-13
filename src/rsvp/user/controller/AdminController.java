@@ -2,12 +2,9 @@ package rsvp.user.controller;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
@@ -19,19 +16,17 @@ import rsvp.user.upload.Upload;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
-public class AdminController implements Observer {
-    private UserDAO udao;
+public class AdminController implements ListChangeListener {
+    private UserDAO userDAO;
+    private UserProviderSingleton instance;
+    private FilteredList<User> filteredList;
     @FXML
     private TextField searchField;
     @FXML
     private Button editButton;
     @FXML
     private Button deleteButton;
-    @FXML
-    private ObservableList<User> users;
     @FXML
     private TableView<User> usersTable;
     @FXML
@@ -60,10 +55,9 @@ public class AdminController implements Observer {
     @FXML
     @SuppressWarnings("unchecked")
     public void initialize() {
-        UserProviderSingleton.getInstance().addObserver(this);
+        userDAO = new DBUserDAO();
+        instance = UserProviderSingleton.getInstance();
         isAdminColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().isAdmin())); // todo how to do it in fxml?
-        udao = new DBUserDAO();
-        users = FXCollections.observableArrayList(UserProviderSingleton.getInstance().getUsers());
         usersTable.getColumns().addListener( (ListChangeListener) (c -> { // prevent column reordering
             c.next();
             if(c.wasReplaced()) {
@@ -77,7 +71,7 @@ public class AdminController implements Observer {
                 .or(lastNameField.textProperty().isEmpty())
                 .or(isAdminField.textProperty().isEmpty())
         );
-        FilteredList<User> filteredList = new FilteredList<>(users);
+        filteredList = new FilteredList<>(instance.getUsers());
         searchField.textProperty().addListener( (observable, oldValue, newValue) -> filteredList.setPredicate(user -> {
                 if(newValue == null || newValue.isEmpty()) {
                     return true;
@@ -91,7 +85,15 @@ public class AdminController implements Observer {
         usersTable.setItems(sortedList);
     }
 
-    public void upload(ActionEvent actionEvent) {
+    @Override
+    public void onChanged(Change c) {
+        filteredList.filtered(user -> {
+            String lowerCaseFilter = searchField.getText().toLowerCase();
+            return user.getLastName().toLowerCase().contains(lowerCaseFilter);
+        });
+    }
+
+    public void upload() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Open File");
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv");
@@ -104,15 +106,14 @@ public class AdminController implements Observer {
                 alert.setTitle("Information Dialog");
                 alert.setHeaderText(String.format("%s users were created!", createdUsers.size()));
                 alert.showAndWait();
-                UserProviderSingleton.getInstance().update();
-                //users.addAll(createdUsers);
+                instance.getUsers().addAll(createdUsers);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void createSingleUser(ActionEvent actionEvent) {
+    public void createSingleUser() {
         User u;
         if(loginField.getText().equals("")) {
             if(passwordField.getText().equals("")) {
@@ -123,8 +124,7 @@ public class AdminController implements Observer {
         } else {
             u = new User(loginField.getText(), firstNameField.getText(), lastNameField.getText(), passwordField.getText(), Boolean.valueOf(isAdminField.getText()));
         }
-        if(udao.createUser(u)) {
-            //users.add(u);
+        if(userDAO.createUser(u)) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Information Dialog");
             alert.setHeaderText("Created new user successfully!\nUser login: " + u.getLogin());
@@ -134,7 +134,7 @@ public class AdminController implements Observer {
             lastNameField.setText("");
             passwordField.setText("");
             isAdminField.setText("");
-            UserProviderSingleton.getInstance().update();
+            instance.getUsers().add(u);
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error Dialog");
@@ -143,13 +143,15 @@ public class AdminController implements Observer {
         }
     }
 
-    public void editUser(ActionEvent actionEvent) {
+    public void editUser() {
         // todo implement me (and maybe change to "save changes" depending on implementation)
-        System.out.println("editUser()");
-        //UserProviderSingleton.getInstance().update();
+        User selectedUser = usersTable.getSelectionModel().getSelectedItem();
+        int index = instance.getUsers().indexOf(selectedUser);
+        System.out.println("editUser(). User index: " + index);
+        //instance.getUsers().set(index, selectedUser);
     }
 
-    public void deleteUser(ActionEvent actionEvent) {
+    public void deleteUser() {
         User selectedUser = usersTable.getSelectionModel().getSelectedItem();
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation Dialog");
@@ -157,14 +159,13 @@ public class AdminController implements Observer {
         alert.showAndWait()
                 .filter(response -> response == ButtonType.OK)
                 .ifPresent(response ->  {
-                    if(udao.deleteUser(selectedUser)) {
+                    if(userDAO.deleteUser(selectedUser)) {
                         String login = selectedUser.getLogin();
-                        //users.remove(selectedUser);
                         Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
                         alert2.setTitle("Information Dialog");
                         alert2.setHeaderText(String.format("Deleting user %s succeeded!", login));
                         alert2.showAndWait();
-                        UserProviderSingleton.getInstance().update();
+                        instance.getUsers().remove(selectedUser);
                     } else {
                         Alert alert2 = new Alert(Alert.AlertType.ERROR);
                         alert2.setTitle("Error Dialog");
@@ -172,27 +173,5 @@ public class AdminController implements Observer {
                         alert2.showAndWait();
                     }
                 });
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        users = FXCollections.observableArrayList(UserProviderSingleton.getInstance().getUsers());
-        FilteredList<User> filteredList = new FilteredList<>(users);
-        // todo this duplicated code is required so that we can filter new list using same textfield.
-        // what happens to old listener?
-        searchField.textProperty().addListener( (observable, oldValue, newValue) -> filteredList.setPredicate(user -> {
-                    if(newValue == null || newValue.isEmpty()) {
-                        return true;
-                    }
-                    String lowerCaseFilter = newValue.toLowerCase();
-                    return user.getLastName().toLowerCase().contains(lowerCaseFilter);
-                })
-        );
-        SortedList<User> sortedList = new SortedList<>(filteredList);
-        sortedList.comparatorProperty().bind(usersTable.comparatorProperty());
-        usersTable.setItems(sortedList);
-        String text = searchField.getText();
-        searchField.setText("");
-        searchField.setText(text);
     }
 }

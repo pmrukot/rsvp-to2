@@ -1,7 +1,6 @@
 package rsvp.user.controller;
 
 import javafx.beans.binding.BooleanBinding;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -17,7 +16,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class SettingsController implements Initializable{
-
+    private UserProviderSingleton instance;
     public TextField login;
     public TextField firstName;
     public TextField lastName;
@@ -40,6 +39,7 @@ public class SettingsController implements Initializable{
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        instance = UserProviderSingleton.getInstance();
         User currentUser = AuthenticationService.getCurrentUser();
         login.setText(currentUser.getLogin());
         firstName.setText(currentUser.getFirstName());
@@ -53,9 +53,8 @@ public class SettingsController implements Initializable{
         changeUserDataButton.disableProperty().bind(changeUserDataBinding);
     }
 
-    public void changePassword(ActionEvent actionEvent) {
+    public void changePassword() {
         User currentUser = AuthenticationService.getCurrentUser();
-
         if(oldPassword.getText().equals(currentUser.getPassword())) {
             if(!newPassword.getText().equals(currentUser.getPassword())) {
                 if(newPassword.getText().equals(newPassword2.getText())) {
@@ -69,7 +68,7 @@ public class SettingsController implements Initializable{
                         oldPassword.setText("");
                         newPassword.setText("");
                         newPassword2.setText("");
-                        UserProviderSingleton.getInstance().update();
+                        instance.refreshUsers();
                     } else {
                         currentUser.setPassword(oldPassword.getText());
                         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -97,7 +96,7 @@ public class SettingsController implements Initializable{
         }
     }
 
-    public void changeLoginAndName(ActionEvent actionEvent) {
+    public void changeLoginAndName() {
         UserDAO userDAO = new DBUserDAO();
         User currentUser = AuthenticationService.getCurrentUser();
         String backupLogin = currentUser.getLogin();
@@ -112,7 +111,7 @@ public class SettingsController implements Initializable{
             alert.setTitle("Information Dialog");
             alert.setHeaderText("User data changed successfully!");
             alert.showAndWait();
-            UserProviderSingleton.getInstance().update();
+            instance.refreshUsers();
         } else {
             currentUser.setLogin(backupLogin);
             currentUser.setFirstName(backupFirstName);
