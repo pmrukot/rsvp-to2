@@ -12,14 +12,17 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import rsvp.user.API.UserProviderSingleton;
 import rsvp.user.DAO.*;
 import rsvp.user.model.User;
 import rsvp.user.upload.Upload;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
-public class AdminController {
+public class AdminController implements Observer {
     private UserDAO udao;
     @FXML
     private TextField searchField;
@@ -57,9 +60,10 @@ public class AdminController {
     @FXML
     @SuppressWarnings("unchecked")
     public void initialize() {
+        UserProviderSingleton.getInstance().addObserver(this);
         isAdminColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().isAdmin())); // todo how to do it in fxml?
         udao = new DBUserDAO();
-        users = FXCollections.observableArrayList(udao.findUsersByName(""));
+        users = FXCollections.observableArrayList(UserProviderSingleton.getInstance().getUsers());
         usersTable.getColumns().addListener( (ListChangeListener) (c -> { // prevent column reordering
             c.next();
             if(c.wasReplaced()) {
@@ -100,7 +104,8 @@ public class AdminController {
                 alert.setTitle("Information Dialog");
                 alert.setHeaderText(String.format("%s users were created!", createdUsers.size()));
                 alert.showAndWait();
-                users.addAll(createdUsers);
+                UserProviderSingleton.getInstance().update();
+                //users.addAll(createdUsers);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -119,7 +124,7 @@ public class AdminController {
             u = new User(loginField.getText(), firstNameField.getText(), lastNameField.getText(), passwordField.getText(), Boolean.valueOf(isAdminField.getText()));
         }
         if(udao.createUser(u)) {
-            users.add(u);
+            //users.add(u);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Information Dialog");
             alert.setHeaderText("Created new user successfully!\nUser login: " + u.getLogin());
@@ -129,6 +134,7 @@ public class AdminController {
             lastNameField.setText("");
             passwordField.setText("");
             isAdminField.setText("");
+            UserProviderSingleton.getInstance().update();
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error Dialog");
@@ -140,6 +146,7 @@ public class AdminController {
     public void editUser(ActionEvent actionEvent) {
         // todo implement me (and maybe change to "save changes" depending on implementation)
         System.out.println("editUser()");
+        //UserProviderSingleton.getInstance().update();
     }
 
     public void deleteUser(ActionEvent actionEvent) {
@@ -152,11 +159,12 @@ public class AdminController {
                 .ifPresent(response ->  {
                     if(udao.deleteUser(selectedUser)) {
                         String login = selectedUser.getLogin();
-                        users.remove(selectedUser);
+                        //users.remove(selectedUser);
                         Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
                         alert2.setTitle("Information Dialog");
                         alert2.setHeaderText(String.format("Deleting user %s succeeded!", login));
                         alert2.showAndWait();
+                        UserProviderSingleton.getInstance().update();
                     } else {
                         Alert alert2 = new Alert(Alert.AlertType.ERROR);
                         alert2.setTitle("Error Dialog");
@@ -164,5 +172,27 @@ public class AdminController {
                         alert2.showAndWait();
                     }
                 });
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        users = FXCollections.observableArrayList(UserProviderSingleton.getInstance().getUsers());
+        FilteredList<User> filteredList = new FilteredList<>(users);
+        // todo this duplicated code is required so that we can filter new list using same textfield.
+        // what happens to old listener?
+        searchField.textProperty().addListener( (observable, oldValue, newValue) -> filteredList.setPredicate(user -> {
+                    if(newValue == null || newValue.isEmpty()) {
+                        return true;
+                    }
+                    String lowerCaseFilter = newValue.toLowerCase();
+                    return user.getLastName().toLowerCase().contains(lowerCaseFilter);
+                })
+        );
+        SortedList<User> sortedList = new SortedList<>(filteredList);
+        sortedList.comparatorProperty().bind(usersTable.comparatorProperty());
+        usersTable.setItems(sortedList);
+        String text = searchField.getText();
+        searchField.setText("");
+        searchField.setText(text);
     }
 }

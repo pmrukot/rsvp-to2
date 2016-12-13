@@ -8,6 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import rsvp.user.API.AuthenticationService;
+import rsvp.user.API.UserProviderSingleton;
 import rsvp.user.DAO.DBUserDAO;
 import rsvp.user.model.User;
 import rsvp.user.DAO.UserDAO;
@@ -20,7 +21,6 @@ public class SettingsController implements Initializable{
     public TextField login;
     public TextField firstName;
     public TextField lastName;
-
 
     @FXML
     private TextField oldPassword;
@@ -69,6 +69,7 @@ public class SettingsController implements Initializable{
                         oldPassword.setText("");
                         newPassword.setText("");
                         newPassword2.setText("");
+                        UserProviderSingleton.getInstance().update();
                     } else {
                         currentUser.setPassword(oldPassword.getText());
                         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -111,6 +112,7 @@ public class SettingsController implements Initializable{
             alert.setTitle("Information Dialog");
             alert.setHeaderText("User data changed successfully!");
             alert.showAndWait();
+            UserProviderSingleton.getInstance().update();
         } else {
             currentUser.setLogin(backupLogin);
             currentUser.setFirstName(backupFirstName);
