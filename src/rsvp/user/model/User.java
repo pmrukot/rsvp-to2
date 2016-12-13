@@ -97,4 +97,9 @@ public class User {
     public void setAdmin(boolean admin) {
         isAdmin = admin;
     }
+
+    @Override
+    public String toString(){
+        return login;
+    }
 }

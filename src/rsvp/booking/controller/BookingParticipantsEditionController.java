@@ -16,6 +16,8 @@ import rsvp.user.model.User;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class BookingParticipantsEditionController {
@@ -39,8 +41,24 @@ public class BookingParticipantsEditionController {
         this.booking = booking;
 
         List<User> allUsers = this.dbUserDao.findUsersByName("");
+        List<User> checkedUsers = new ArrayList<>(booking.getParticipants());
+
         this.userList.getItems().addAll(allUsers);
         this.userList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        System.out.println(allUsers);
+        System.out.println(checkedUsers);
+
+        List<String> allUsersToString = allUsers.stream()
+                .map(object -> Objects.toString(object, null))
+                .collect(Collectors.toList());
+
+        List<String> checkedUsersToString = checkedUsers.stream()
+                .map(object -> Objects.toString(object, null))
+                .collect(Collectors.toList());
+
+        for (String user: checkedUsersToString) {
+            this.userList.getSelectionModel().select(allUsersToString.indexOf(user));
+        }
     }
 
     @FXML
@@ -56,6 +74,8 @@ public class BookingParticipantsEditionController {
 
         transaction.commit();
         session.close();
+
+        dialogStage.close();
     }
 
     public void setBookingController(BookingController bookingController) {
