@@ -1,5 +1,8 @@
 package rsvp.booking.model;
 
+import rsvp.resources.model.TimeSlot;
+import rsvp.user.model.User;
+
 import javax.persistence.*;
 import java.sql.Date;
 
@@ -14,8 +17,17 @@ public class Booking {
     @Column(name = "reservationDate")
     private Date reservationDate;
 
-    @Column(name = "userId")
-    private Long userId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "OWNER_ID")
+    private User owner;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "FIRST_SLOT_ID")
+    private TimeSlot firstSlot;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "LAST_SLOT_ID")
+    private TimeSlot lastSlot;
 
     @Column(name = "roomId")
     private Long roomId;
@@ -41,10 +53,29 @@ public class Booking {
         return reservationDate;
     }
 
-    public void setUserId(Long userId) { this.userId = userId; }
+    public void setFirstSlot(TimeSlot firstSlot) {
+        this.firstSlot = firstSlot;
+    }
 
-    public Long getUserId() { return this.userId; }
+    public TimeSlot getFirstSlot() {
+        return this.firstSlot;
+    }
 
+    public void setLastSlot(TimeSlot lastSlot) {
+        this.lastSlot = lastSlot;
+    }
+
+    public TimeSlot getLastSlot() {
+        return this.lastSlot;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    public User getOwner() {
+        return this.owner;
+    }
 
     public void setRoomId(Long roomId) { this.roomId = roomId; }
 
