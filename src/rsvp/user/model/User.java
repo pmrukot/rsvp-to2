@@ -1,23 +1,16 @@
 package rsvp.user.model;
 
+import rsvp.user.generator.Generator;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
 public class User {
-    public User() {}
-
-    public User(String firstName, String lastName, String password, boolean isAdmin) {
-        this.login = UserUtils.generateLogin(firstName, lastName);
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.password = password;
-        this.isAdmin = isAdmin;
-    }
-
     @Id
-    //@GeneratedValue(generator = "asigned")
-    @Column(name = "login")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id", updatable = false)
+    private long id;
+    @Column(name = "login", unique = true, nullable = false)
     private String login;
     @Column(name = "first_name", nullable = false)
     private String firstName;
@@ -27,20 +20,57 @@ public class User {
     private String password;
     @Column(name = "is_admin", nullable = false)
     private boolean isAdmin;
-    // todo think about setter methods modifiers - should they be private or package level?
+
+    public User() {}
+
+    public User(String firstName, String lastName, String password, boolean isAdmin) {
+        this.login = Generator.generateLogin(firstName, lastName);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.isAdmin = isAdmin;
+    }
+
+    public User(String firstName, String lastName, boolean isAdmin) {
+        this.login = Generator.generateLogin(firstName, lastName);
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = Generator.generatePassword();
+        this.isAdmin = isAdmin;
+    }
+
+    public User(String login, String firstName, String lastName, String password, boolean isAdmin) {
+        this.login = login;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.isAdmin = isAdmin;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    private void setId(long id) {
+        this.id = id;
+    }
+
     public String getLogin() {
         return login;
     }
 
-    void setLogin() {
-        this.login = UserUtils.generateLogin(this.firstName, this.lastName);
+    public void setLogin() {
+        this.login = Generator.generateLogin(this.firstName, this.lastName);
+    }
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public String getFirstName() {
         return firstName;
     }
 
-    void setFirstName(String firstName) {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
@@ -48,7 +78,7 @@ public class User {
         return lastName;
     }
 
-    void setLastName(String lastName) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
@@ -56,7 +86,7 @@ public class User {
         return password;
     }
 
-    void setPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -64,7 +94,7 @@ public class User {
         return isAdmin;
     }
 
-    void setAdmin(boolean admin) {
+    public void setAdmin(boolean admin) {
         isAdmin = admin;
     }
 }

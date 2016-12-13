@@ -1,18 +1,18 @@
-package rsvp.user.model;
+package rsvp.user.DAO;
 
 import rsvp.common.persistence.HibernateUtils;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import rsvp.user.model.User;
 import java.util.List;
 
 public class DBUserDAO implements UserDAO {
     @Override
-    public boolean createUser(String firstName, String lastName, String password, boolean isAdmin) {
+    public boolean createUser(User u) {
         try {
             Session session = HibernateUtils.getSession();
             Transaction transaction = session.beginTransaction();
-            User u = new User(firstName, lastName, password, isAdmin);
             session.persist(u);
             transaction.commit();
             session.close();
@@ -26,6 +26,7 @@ public class DBUserDAO implements UserDAO {
     @Override
     @SuppressWarnings("unchecked")
     public List<User> findUsersByName(String fullName) {
+        // todo with new UserProviderSingleton this could be changed to no argument all users fetcher
         String[] names = fullName.split("\\s+");
         String firstName = names[0];
         String sql = "select u " +
@@ -49,27 +50,11 @@ public class DBUserDAO implements UserDAO {
     }
 
     @Override
-    public boolean updateUser(String login, String firstName, String lastName, String password, boolean isAdmin) {
+    public boolean updateUser(User u) {
         try {
-            // todo refactor
             Session session = HibernateUtils.getSession();
             Transaction transaction = session.beginTransaction();
-            User user = session.get(User.class, login);
-            boolean updateLogin = false;
-            if(!user.getFirstName().equals(firstName)) {
-                user.setFirstName(firstName);
-                updateLogin = true;
-            }
-            if(!user.getLastName().equals(lastName)) {
-                user.setLastName(lastName);
-                updateLogin = true;
-            }
-            if(updateLogin) {
-                user.setLogin();
-            }
-            user.setPassword(password);
-            user.setAdmin(isAdmin);
-            session.update(user);
+            session.update(u);
             transaction.commit();
             session.close();
             return true;
@@ -80,11 +65,10 @@ public class DBUserDAO implements UserDAO {
     }
 
     @Override
-    public boolean deleteUser(String login) {
+    public boolean deleteUser(User u) {
         try {
             Session session = HibernateUtils.getSession();
             Transaction transaction = session.beginTransaction();
-            User u = session.get(User.class, login);
             session.delete(u);
             transaction.commit();
             session.close();
