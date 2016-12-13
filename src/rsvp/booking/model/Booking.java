@@ -1,7 +1,11 @@
 package rsvp.booking.model;
 
+import rsvp.user.model.User;
+
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "Booking")
@@ -19,6 +23,9 @@ public class Booking {
 
     @Column(name = "roomId")
     private Long roomId;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "login")
+    private Set<User> participants = new HashSet<User>(0);
 
     @Transient
     private boolean newRecord;
@@ -45,10 +52,17 @@ public class Booking {
 
     public Long getUserId() { return this.userId; }
 
-
     public void setRoomId(Long roomId) { this.roomId = roomId; }
 
     public Long getRoomId() { return this.roomId; }
+
+    public Set<User> getParticipants() {
+        return this.participants;
+    }
+
+    public void setParticipants(Set<User> participants) {
+        this.participants = participants;
+    }
 
     public boolean isNewRecord() { return this.newRecord; }
 

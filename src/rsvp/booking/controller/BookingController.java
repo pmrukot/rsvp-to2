@@ -17,7 +17,6 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Date;
 import java.util.List;
 
@@ -46,6 +45,9 @@ public class BookingController {
     private Button editButton;
 
     @FXML
+    private Button participantsButton;
+
+    @FXML
     private TableView<Booking> bookingsTable;
 
     @FXML
@@ -56,7 +58,6 @@ public class BookingController {
 
     @FXML
     private TableColumn<Booking, Long> roomId;
-
 
     @FXML
     private void initialize() {
@@ -116,7 +117,7 @@ public class BookingController {
         editBooking(selectedBooking);
     }
 
-    public void editBooking(Booking booking) {
+    private void editBooking(Booking booking) {
         try {
             final Stage dialogStage = new Stage();
             dialogStage.initModality(Modality.APPLICATION_MODAL);
@@ -131,6 +132,37 @@ public class BookingController {
             bookingEditionController.setDialogStage(dialogStage);
             bookingEditionController.setBookingController(this);
             bookingEditionController.setData(booking);
+
+            dialogStage.setScene(scene);
+            dialogStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException ignored) {}
+
+        bookingsTable.refresh();
+    }
+
+    @FXML
+    public void handleEditParticipantsAction() {
+        Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
+        editParticipants(selectedBooking);
+    }
+
+    private void editParticipants(Booking booking) {
+        try {
+            final Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.initOwner(primaryStage);
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("view/BookingParticipantsEditionPane.fxml"));
+            VBox bookingParticipantsEditionLayout = (VBox) loader.load();
+            Scene scene = new Scene(bookingParticipantsEditionLayout, 300, 200);
+
+            BookingParticipantsEditionController bookingParticipantsEditionController = loader.getController();
+            bookingParticipantsEditionController.setDialogStage(dialogStage);
+            bookingParticipantsEditionController.setBookingController(this);
+            bookingParticipantsEditionController.setData(booking);
 
             dialogStage.setScene(scene);
             dialogStage.showAndWait();
