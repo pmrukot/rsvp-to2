@@ -1,6 +1,8 @@
-package rsvp.user.controller;
+package rsvp.user.API;
 
+import javafx.scene.control.Alert;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import rsvp.common.persistence.HibernateUtils;
 import rsvp.user.model.User;
 
@@ -18,8 +20,13 @@ public abstract class AuthenticationService {
     public static boolean authenticateUser(String login, String password) {
         boolean success = false;
         if(getCurrentUser() == null) {
+            String sql = "select u " +
+                    "from User u " +
+                    "where u.login = :login";
             Session session = HibernateUtils.getSession();
-            User user = session.get(User.class, login);
+            Query query = session.createQuery(sql, User.class);
+            query.setParameter("login", login);
+            User user = (User) query.uniqueResult();
             if(user != null) {
                 if(user.getPassword().equals(password)) {
                     setCurrentUser(user);
@@ -31,7 +38,7 @@ public abstract class AuthenticationService {
         return success;
     }
 
-    static boolean logOut() {
+    public static boolean logout() {
         boolean success = false;
         if(getCurrentUser() != null) {
             setCurrentUser(null);

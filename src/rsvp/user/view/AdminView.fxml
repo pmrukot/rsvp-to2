@@ -1,10 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Button?>
-<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="rsvp.user.controller.AdminController" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="400.0" BorderPane.alignment="CENTER">
-    <Label text="File"/>
-    <Button text="Upload" onAction="#upload"/>
-</VBox>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.control.TextField?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="rsvp.user.controller.AdminController">
+    <top>
+        <HBox alignment="BASELINE_CENTER" spacing="25">
+            <TextField fx:id="searchField" promptText="Search users by lastname"/>
+            <Button text="Create users from file" onAction="#upload"/>
+            <Button fx:id="editButton" text="Edit selected user" onAction="#editUser"/>
+            <Button fx:id="deleteButton" text="Delete selected user" onAction="#deleteUser"/>
+        </HBox>
+    </top>
+    <center>
+        <TableView fx:id="usersTable" maxWidth="Infinity">
+            <columns>
+                <TableColumn fx:id="loginColumn" prefWidth="200" text="Login" resizable="false">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="login" />
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="firstNameColumn" prefWidth="125" text="First name" resizable="false">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="firstName" />
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="lastNameColumn" prefWidth="175" text="Last name" resizable="false">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="lastName" />
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="passwordColumn" prefWidth="125" text="Password" resizable="false">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="password" />
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="isAdminColumn" prefWidth="75" text="Admin" resizable="false">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="isAdmin" />
+                        <!-- todo above fails to bind property (probably because field has same name as method) -->
+                    </cellValueFactory>
+                </TableColumn>
+            </columns>
+            <sortOrder>
+                <fx:reference source="loginColumn" />
+            </sortOrder>
+        </TableView>
+    </center>
+    <bottom>
+        <HBox>
+            <TextField fx:id="loginField" prefWidth="200" promptText="Login" alignment="CENTER"/>
+            <TextField fx:id="firstNameField" prefWidth="125" promptText="First Name" alignment="CENTER"/>
+            <TextField fx:id="lastNameField" prefWidth="175" promptText="Last Name" alignment="CENTER"/>
+            <TextField fx:id="passwordField" prefWidth="125" promptText="Password" alignment="CENTER"/>
+            <TextField fx:id="isAdminField" prefWidth="75" promptText="Admin?" alignment="CENTER"/> <!-- todo this could be a checkbox -->
+            <Button fx:id="addButton" text="Create user" maxWidth="Infinity" alignment="CENTER" onAction="#createSingleUser"/>
+        </HBox>
+    </bottom>
+</BorderPane>
