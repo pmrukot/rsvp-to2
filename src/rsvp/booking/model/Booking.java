@@ -25,7 +25,7 @@ public class Booking {
     private Long roomId;
 
     @ManyToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(name="user_participants", joinColumns=@JoinColumn(name="booking_id"), inverseJoinColumns=@JoinColumn(name="login"))
+    @JoinTable(name="user_participants", joinColumns=@JoinColumn(name="booking_id"), inverseJoinColumns=@JoinColumn(name="user_id"))
     private Set<User> participants = new HashSet<User>(0);
 
     @Transient
