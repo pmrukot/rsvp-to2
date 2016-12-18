@@ -5,6 +5,8 @@ import org.hibernate.Transaction;
 import rsvp.booking.model.Booking;
 import rsvp.common.persistence.HibernateUtils;
 import rsvp.resources.model.UniversityRoom;
+import rsvp.user.API.AuthenticationService;
+import rsvp.user.model.User;
 
 import java.util.List;
 
@@ -41,9 +43,7 @@ public class DBBookingDAO implements BookingDAO {
     public List<Booking> getAllBookings() {
         Session session = HibernateUtils.getSession();
         Transaction transaction = session.beginTransaction();
-
         List<Booking> result = session.createQuery("from Booking b", Booking.class).getResultList();
-
         transaction.commit();
         session.close();
         return result;
@@ -51,11 +51,26 @@ public class DBBookingDAO implements BookingDAO {
 
     @Override
     public List<Booking> getAllBookingsForCurrentUser() {
-        return null;
+        User currentUser = AuthenticationService.getCurrentUser();
+        Session session = HibernateUtils.getSession();
+        Transaction transaction = session.beginTransaction();
+        List<Booking> result = session.createQuery("from Booking b where b.owner = :user", Booking.class)
+                                      .setParameter("user", currentUser)
+                                      .getResultList();
+        transaction.commit();
+        session.close();
+        return result;
     }
 
     @Override
     public List<Booking> getAllBookingsForUniversityRoom(UniversityRoom universityRoom) {
-        return null;
+        Session session = HibernateUtils.getSession();
+        Transaction transaction = session.beginTransaction();
+        List<Booking> result = session.createQuery("from Booking b where b.roomId = :room", Booking.class)
+                .setParameter("room", universityRoom)
+                .getResultList();
+        transaction.commit();
+        session.close();
+        return result;
     }
 }

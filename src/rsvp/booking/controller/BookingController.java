@@ -26,7 +26,7 @@ public class BookingController {
 
     private TimeSlotDAO timeSlotDAO = new TimeSlotDAO();
 
-    private BookingDAO DBbookingDAO = new DBBookingDAO();
+    private BookingDAO dbBookingDao = new DBBookingDAO();
 
     private Stage primaryStage;
 
@@ -75,6 +75,7 @@ public class BookingController {
 
     @FXML
     private void initialize() {
+        dbBookingDao.getAllBookingsForCurrentUser();
         reservationDate.setCellValueFactory(cellData -> new SimpleObjectProperty<Date>(cellData.getValue().getReservationDate()));
         ownerLogin.setCellValueFactory(cellData -> new SimpleObjectProperty<String>(cellData.getValue().getOwner().getLogin()));
             startTime.setCellValueFactory(cellData -> {
@@ -115,7 +116,7 @@ public class BookingController {
     public void deleteBooking() {
         try{
             Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
-            DBbookingDAO.deleteBooking(selectedBooking);
+            dbBookingDao.deleteBooking(selectedBooking);
             bookingsTable.getItems().remove(selectedBooking);
         } catch (NullPointerException ignored) {}
 
@@ -201,7 +202,7 @@ public class BookingController {
     }
 
     public void setData() {
-        bookings.addAll(DBbookingDAO.getAllBookings());
+        bookings.addAll(dbBookingDao.getAllBookings());
         timeSlots.addAll(timeSlotDAO.getAll());
         bookingsTable.setItems(bookings);
     }
