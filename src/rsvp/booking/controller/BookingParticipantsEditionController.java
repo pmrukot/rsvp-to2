@@ -8,6 +8,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.stage.Stage;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import rsvp.booking.DAO.DBBookingDAO;
 import rsvp.booking.model.Booking;
 import rsvp.common.persistence.HibernateUtils;
 import rsvp.user.DAO.DBUserDAO;
@@ -26,6 +27,7 @@ public class BookingParticipantsEditionController {
     private Booking booking;
 
     private DBUserDAO dbUserDao = new DBUserDAO();
+    private DBBookingDAO dbBookingDao = new DBBookingDAO();
 
     @FXML
     private ListView<User> userList;
@@ -62,17 +64,8 @@ public class BookingParticipantsEditionController {
     @FXML
     private void updateBooking() {
         Set<User> users = new HashSet<User>(this.userList.getSelectionModel().getSelectedItems());
-
-        Session session = HibernateUtils.getSession();
-        Transaction transaction = session.beginTransaction();
-
         booking.setParticipants(users);
-
-        session.update(booking);
-
-        transaction.commit();
-        session.close();
-
+        dbBookingDao.updateBooking(booking);
         dialogStage.close();
     }
 

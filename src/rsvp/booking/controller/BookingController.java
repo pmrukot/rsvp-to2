@@ -6,15 +6,14 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
+import rsvp.booking.DAO.BookingDAO;
+import rsvp.booking.DAO.DBBookingDAO;
 import rsvp.booking.Main;
 import rsvp.booking.model.Booking;
-import rsvp.common.persistence.HibernateUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.TimeSlot;
 import rsvp.user.API.AuthenticationService;
@@ -22,11 +21,12 @@ import rsvp.user.API.AuthenticationService;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalTime;
-import java.util.List;
 
 public class BookingController {
 
     private TimeSlotDAO timeSlotDAO = new TimeSlotDAO();
+
+    private BookingDAO DBbookingDAO = new DBBookingDAO();
 
     private Stage primaryStage;
 
@@ -111,25 +111,14 @@ public class BookingController {
         }
     }
 
-
     @FXML
     public void deleteBooking() {
         try{
             Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
-            deleteBookingFromDatabase(selectedBooking);
+            DBbookingDAO.deleteBooking(selectedBooking);
             bookingsTable.getItems().remove(selectedBooking);
         } catch (NullPointerException ignored) {}
 
-    }
-
-    private void deleteBookingFromDatabase(Booking booking) {
-        Session session = HibernateUtils.getSession();
-        Transaction transaction = session.beginTransaction();
-
-        session.delete(booking);
-
-        transaction.commit();
-        session.close();
     }
 
     @FXML
@@ -203,17 +192,6 @@ public class BookingController {
         bookingsTable.refresh();
     }
 
-    private List<Booking> listBooking() {
-        Session session = HibernateUtils.getSession();
-        Transaction transaction = session.beginTransaction();
-
-        List<Booking> result = session.createQuery("from Booking b", Booking.class).getResultList();
-
-        transaction.commit();
-        session.close();
-        return result;
-    }
-
     public void addBooking(Booking booking){
         bookings.add(booking);
     }
@@ -223,7 +201,7 @@ public class BookingController {
     }
 
     public void setData() {
-        bookings.addAll(listBooking());
+        bookings.addAll(DBbookingDAO.getAllBookings());
         timeSlots.addAll(timeSlotDAO.getAll());
         bookingsTable.setItems(bookings);
     }

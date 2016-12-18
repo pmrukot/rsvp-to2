@@ -9,6 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import rsvp.booking.DAO.DBBookingDAO;
 import rsvp.booking.model.Booking;
 import rsvp.common.persistence.HibernateUtils;
 import rsvp.resources.DAO.TimeSlotDAO;
@@ -18,6 +19,8 @@ import java.sql.Date;
 
 
 public class BookingEditionController {
+    private DBBookingDAO dbBookingDao = new DBBookingDAO();
+
     private BookingController bookingController;
     private Stage dialogStage;
     private Booking booking;
@@ -64,36 +67,15 @@ public class BookingEditionController {
             booking.setReservationDate(date);
             booking.setRoomId(room);
             if(booking.isNewRecord()) {
-                createBookingToDatabase(booking);
+                dbBookingDao.createBooking(booking);
+                bookingController.addBooking(booking);
             } else {
-                updateBookingToDatabase(booking);
+                dbBookingDao.updateBooking(booking);
             }
             dialogStage.close();
         } catch (NullPointerException ignored) {}
     }
 
-
-    private void createBookingToDatabase(Booking booking) {
-        Session session = HibernateUtils.getSession();
-        Transaction transaction = session.beginTransaction();
-
-        session.save(booking);
-
-        transaction.commit();
-        session.close();
-
-        bookingController.addBooking(booking);
-    }
-
-    private void updateBookingToDatabase(Booking booking) {
-        Session session = HibernateUtils.getSession();
-        Transaction transaction = session.beginTransaction();
-
-        session.update(booking);
-
-        transaction.commit();
-        session.close();
-    }
 
     public void setBookingController(BookingController bookingController) {
         this.bookingController = bookingController;
