@@ -15,12 +15,18 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import rsvp.resources.DAO.TimeSlotDAO;
+import rsvp.resources.model.TimeSlot;
+import rsvp.user.API.AuthenticationService;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.time.LocalTime;
 import java.util.List;
 
 public class BookingController {
+
+    private TimeSlotDAO timeSlotDAO = new TimeSlotDAO();
 
     private Stage primaryStage;
 
@@ -31,6 +37,8 @@ public class BookingController {
     }
 
     private ObservableList<Booking> bookings = FXCollections.observableArrayList();
+
+    private ObservableList<TimeSlot> timeSlots = FXCollections.observableArrayList();
 
     @FXML
     private DatePicker reservationDatePicker;
@@ -54,7 +62,13 @@ public class BookingController {
     private TableColumn<Booking, Date> reservationDate;
 
     @FXML
-    private TableColumn<Booking, Long> userId;
+    private TableColumn<Booking, LocalTime> startTime;
+
+    @FXML
+    private TableColumn<Booking, LocalTime> endTime;
+
+    @FXML
+    private TableColumn<Booking, String> ownerLogin;
 
     @FXML
     private TableColumn<Booking, Long> roomId;
@@ -62,13 +76,28 @@ public class BookingController {
     @FXML
     private void initialize() {
         reservationDate.setCellValueFactory(cellData -> new SimpleObjectProperty<Date>(cellData.getValue().getReservationDate()));
-        userId.setCellValueFactory(cellData -> new SimpleObjectProperty<Long>(cellData.getValue().getUserId()));
+        ownerLogin.setCellValueFactory(cellData -> new SimpleObjectProperty<String>(cellData.getValue().getOwner().getLogin()));
+            startTime.setCellValueFactory(cellData -> {
+                TimeSlot firstSlot = cellData.getValue().getFirstSlot();
+                if (firstSlot == null) {
+                    return new SimpleObjectProperty<LocalTime>(LocalTime.MIN);
+                }
+                    return new SimpleObjectProperty<LocalTime>(firstSlot.getStartTime());
+                });
+                endTime.setCellValueFactory(cellData -> {
+                    TimeSlot lastSlot = cellData.getValue().getLastSlot();
+                    if (lastSlot == null) {
+                        return new SimpleObjectProperty<LocalTime>(LocalTime.MAX);
+                    }
+                    return new SimpleObjectProperty<LocalTime>(lastSlot.getEndTime());
+                });
         roomId.setCellValueFactory(cellData -> new SimpleObjectProperty<Long>(cellData.getValue().getRoomId()));
         setData();
     }
 
     public void initRootLayout() {
         try {
+            LocalTime local = LocalTime.MIN;
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("view/BookingOverviewPane.fxml"));
             VBox rootLayout = (VBox) loader.load();
@@ -107,6 +136,7 @@ public class BookingController {
     public void handleCreateAction() {
         Booking booking = new Booking();
         booking.markAsNewRecord(true);
+        booking.setOwner(AuthenticationService.getCurrentUser());
         editBooking(booking);
         booking.markAsNewRecord(false);
     }
@@ -188,8 +218,13 @@ public class BookingController {
         bookings.add(booking);
     }
 
+    public ObservableList<TimeSlot> getTimeSlots() {
+        return this.timeSlots;
+    }
+
     public void setData() {
         bookings.addAll(listBooking());
+        timeSlots.addAll(timeSlotDAO.getAll());
         bookingsTable.setItems(bookings);
     }
 }

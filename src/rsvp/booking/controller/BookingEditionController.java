@@ -3,6 +3,7 @@ package rsvp.booking.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -10,6 +11,8 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import rsvp.booking.model.Booking;
 import rsvp.common.persistence.HibernateUtils;
+import rsvp.resources.DAO.TimeSlotDAO;
+import rsvp.resources.model.TimeSlot;
 
 import java.sql.Date;
 
@@ -23,10 +26,13 @@ public class BookingEditionController {
     private DatePicker reservationDatePicker;
 
     @FXML
-    private TextField userId;
+    private TextField roomId;
 
     @FXML
-    private TextField roomId;
+    private ComboBox<TimeSlot> firstTimeSlot;
+
+    @FXML
+    private ComboBox<TimeSlot> lastTimeSlot;
 
     @FXML
     private Button updateButton;
@@ -36,23 +42,27 @@ public class BookingEditionController {
     }
 
     public void setData(Booking booking) {
+        TimeSlotDAO timeSlotDAO = new TimeSlotDAO();
         this.booking = booking;
         try {
             this.reservationDatePicker.setValue(booking.getReservationDate().toLocalDate());
-            this.userId.setText(String.valueOf(booking.getUserId()));
             this.roomId.setText(String.valueOf(booking.getRoomId()));
         } catch (NullPointerException ignored) {}
+        this.firstTimeSlot.getItems().addAll(bookingController.getTimeSlots());
+        this.lastTimeSlot.getItems().addAll(bookingController.getTimeSlots());
     }
 
     @FXML
     private void updateBooking() {
         try {
             Date date = Date.valueOf(reservationDatePicker.getValue());
-            Long user = Long.parseLong(userId.getText());
             Long room = Long.parseLong(roomId.getText());
+            TimeSlot firstSlot = firstTimeSlot.getValue();
+            TimeSlot lastSlot = lastTimeSlot.getValue();
+            booking.setFirstSlot(firstSlot);
+            booking.setLastSlot(lastSlot);
             booking.setReservationDate(date);
             booking.setRoomId(room);
-            booking.setUserId(user);
             if(booking.isNewRecord()) {
                 createBookingToDatabase(booking);
             } else {

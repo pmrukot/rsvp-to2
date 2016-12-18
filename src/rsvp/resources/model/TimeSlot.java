@@ -49,4 +49,8 @@ public class TimeSlot implements Comparable<TimeSlot>{
     public int compareTo(TimeSlot anotherTimeSlot) {
         return this.startTime.compareTo(anotherTimeSlot.getStartTime());
     }
+
+    public String toString(){
+        return startTime.toString() + " - " + endTime.toString();
+    }
 }
