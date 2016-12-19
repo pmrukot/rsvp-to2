@@ -46,6 +46,12 @@ public class TimeSlot implements Comparable<TimeSlot>{
     }
 
     @Override
+    public boolean equals(Object object) {
+        return object instanceof TimeSlot && ((TimeSlot) object).getStartTime().equals(this.startTime) &&
+                ((TimeSlot) object).getEndTime().equals(this.endTime);
+    }
+
+    @Override
     public int compareTo(TimeSlot anotherTimeSlot) {
         return this.startTime.compareTo(anotherTimeSlot.getStartTime());
     }

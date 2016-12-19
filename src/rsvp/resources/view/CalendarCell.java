@@ -4,7 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import rsvp.resources.model.UniversityRoom;
 
@@ -18,7 +18,7 @@ public class CalendarCell extends TableCell<UniversityRoom, Boolean> {
             try {
                 FXMLLoader loader = new FXMLLoader();
                 loader.setLocation(getClass().getResource("../view/CalendarView.fxml"));
-                VBox root = loader.load();
+                HBox root = loader.load();
                 Stage stage = new Stage();
                 stage.setScene(new Scene(root));
                 stage.show();
