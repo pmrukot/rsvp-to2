@@ -14,7 +14,6 @@ import javafx.scene.image.ImageView;
 import rsvp.booking.DAO.DBBookingDAO;
 import rsvp.booking.model.Booking;
 import rsvp.resources.DAO.TimeSlotDAO;
-import rsvp.resources.DAO.UniversityRoomDAO;
 import rsvp.resources.model.CalendarTableItem;
 import rsvp.resources.model.TimeSlot;
 import rsvp.resources.model.UniversityRoom;
@@ -57,17 +56,10 @@ public class CalendarController {
     private Date currentStartDate;
     private Date currentEndDate;
 
-    //TODO: pass UniversityRoom to the controller
-    UniversityRoomDAO dao = new UniversityRoomDAO();
-    private UniversityRoom universityRoom= dao.getAll().get(0);
-
     @FXML
     private void initialize() {
-        DBBookingDAO bookingDAO = new DBBookingDAO();
-        bookings = bookingDAO.getAllBookingsForUniversityRoom(universityRoom);
 
         slotsColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getTimeSlotRepresentation()));
-
         mondayColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getBookingDescriptionPerDay(1)));
         tuesdayColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getBookingDescriptionPerDay(2)));
         wednesdayColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getBookingDescriptionPerDay(3)));
@@ -75,15 +67,6 @@ public class CalendarController {
         fridayColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getBookingDescriptionPerDay(5)));
         saturdayColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getBookingDescriptionPerDay(6)));
         sundayColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getBookingDescriptionPerDay(7)));
-
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, 6);
-        currentStartDate = new Date();
-        currentEndDate = cal.getTime();
-
-        initializeCalendarTableContentForDates(currentStartDate, currentEndDate);
-        setIcons();
-        setDateRangeLabel();
     }
 
     private void initializeCalendarTableContentForDates(Date start, Date end){
@@ -159,6 +142,20 @@ public class CalendarController {
         cal.add(Calendar.DATE, -6);
         currentStartDate = cal.getTime();
         initializeCalendarTableContentForDates(currentStartDate, currentEndDate);
+        setDateRangeLabel();
+    }
+
+    public void setContentForUniversityRoom(UniversityRoom universityRoom){
+        DBBookingDAO bookingDAO = new DBBookingDAO();
+        bookings = bookingDAO.getAllBookingsForUniversityRoom(universityRoom);
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, 6);
+        currentStartDate = new Date();
+        currentEndDate = cal.getTime();
+
+        initializeCalendarTableContentForDates(currentStartDate, currentEndDate);
+        setIcons();
         setDateRangeLabel();
     }
 
