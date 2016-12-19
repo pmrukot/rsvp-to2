@@ -57,7 +57,7 @@ public class AdminController implements ListChangeListener {
     public void initialize() {
         userDAO = new DBUserDAO();
         instance = UserProviderSingleton.getInstance();
-        isAdminColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().isAdmin())); // todo how to do it in fxml?
+        isAdminColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().isAdmin()));
         usersTable.getColumns().addListener( (ListChangeListener) (c -> { // prevent column reordering
             c.next();
             if(c.wasReplaced()) {

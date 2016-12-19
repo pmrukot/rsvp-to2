@@ -40,12 +40,7 @@
                         <PropertyValueFactory property="password" />
                     </cellValueFactory>
                 </TableColumn>
-                <TableColumn fx:id="isAdminColumn" prefWidth="75" text="Admin" resizable="false">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="isAdmin" />
-                        <!-- todo above fails to bind property (probably because field has same name as method) -->
-                    </cellValueFactory>
-                </TableColumn>
+                <TableColumn fx:id="isAdminColumn" prefWidth="75" text="Admin" resizable="false"/>
             </columns>
             <sortOrder>
                 <fx:reference source="loginColumn" />
