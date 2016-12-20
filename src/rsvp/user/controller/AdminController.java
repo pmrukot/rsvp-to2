@@ -5,7 +5,12 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -15,7 +20,9 @@ import rsvp.user.model.User;
 import rsvp.user.upload.Upload;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class AdminController implements ListChangeListener {
     private UserDAO userDAO;
@@ -67,10 +74,6 @@ public class AdminController implements ListChangeListener {
         }));
         editButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
         deleteButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
-        addButton.disableProperty().bind(firstNameField.textProperty().isEmpty()
-                .or(lastNameField.textProperty().isEmpty())
-                .or(isAdminField.textProperty().isEmpty())
-        );
         filteredList = new FilteredList<>(instance.getUsers());
         searchField.textProperty().addListener( (observable, oldValue, newValue) -> filteredList.setPredicate(user -> {
                 if(newValue == null || newValue.isEmpty()) {
@@ -113,42 +116,30 @@ public class AdminController implements ListChangeListener {
         }
     }
 
-    public void createSingleUser() {
-        User u;
-        if(loginField.getText().equals("")) {
-            if(passwordField.getText().equals("")) {
-                u = new User(firstNameField.getText(), lastNameField.getText(), Boolean.valueOf(isAdminField.getText()));
-            } else {
-                u = new User(firstNameField.getText(), lastNameField.getText(), passwordField.getText(), Boolean.valueOf(isAdminField.getText()));
-            }
-        } else {
-            u = new User(loginField.getText(), firstNameField.getText(), lastNameField.getText(), passwordField.getText(), Boolean.valueOf(isAdminField.getText()));
-        }
-        if(userDAO.createUser(u)) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Information Dialog");
-            alert.setHeaderText("Created new user successfully!\nUser login: " + u.getLogin());
-            alert.showAndWait();
-            loginField.setText("");
-            firstNameField.setText("");
-            lastNameField.setText("");
-            passwordField.setText("");
-            isAdminField.setText("");
-            instance.getUsers().add(u);
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error Dialog");
-            alert.setHeaderText("Failed to create new user!");
-            alert.showAndWait();
-        }
-    }
 
     public void editUser() {
-        // todo implement me (and maybe change to "save changes" depending on implementation)
         User selectedUser = usersTable.getSelectionModel().getSelectedItem();
         int index = instance.getUsers().indexOf(selectedUser);
-        System.out.println("editUser(). User index: " + index);
-        //instance.getUsers().set(index, selectedUser);
+        initEditUserLayout(selectedUser, index);
+    }
+
+    private void initEditUserLayout(User updatedUser, int index) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(rsvp.home.Main.class.getResource("../user/view/EditUserView.fxml"));
+
+            Parent editUserLayout = loader.load();
+
+            Scene scene = new Scene(editUserLayout, 600, 300);
+            Stage secondaryStage = new Stage();
+            secondaryStage.setScene(scene);
+            EditUserController controller = loader.<EditUserController>getController();
+            controller.initData(updatedUser, index);
+            secondaryStage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void deleteUser() {
@@ -173,5 +164,9 @@ public class AdminController implements ListChangeListener {
                         alert2.showAndWait();
                     }
                 });
+    }
+
+    public void addUser(ActionEvent actionEvent) {
+        initEditUserLayout(null, 0);
     }
 }
