@@ -14,6 +14,7 @@ import rsvp.booking.model.Booking;
 import rsvp.common.persistence.HibernateUtils;
 import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.TimeSlot;
+import rsvp.resources.model.UniversityRoom;
 
 import java.sql.Date;
 
@@ -29,7 +30,7 @@ public class BookingEditionController {
     private DatePicker reservationDatePicker;
 
     @FXML
-    private TextField roomId;
+    private ComboBox<UniversityRoom> universityRoom;
 
     @FXML
     private ComboBox<TimeSlot> firstTimeSlot;
@@ -49,23 +50,26 @@ public class BookingEditionController {
         this.booking = booking;
         try {
             this.reservationDatePicker.setValue(booking.getReservationDate().toLocalDate());
-            this.roomId.setText(String.valueOf(booking.getRoomId()));
         } catch (NullPointerException ignored) {}
+        this.universityRoom.getItems().addAll(bookingController.getUniversityRooms());
         this.firstTimeSlot.getItems().addAll(bookingController.getTimeSlots());
         this.lastTimeSlot.getItems().addAll(bookingController.getTimeSlots());
+        this.universityRoom.setValue(booking.getUniversityRoom());
+        this.firstTimeSlot.setValue(booking.getFirstSlot());
+        this.lastTimeSlot.setValue(booking.getLastSlot());
     }
 
     @FXML
     private void updateBooking() {
         try {
             Date date = Date.valueOf(reservationDatePicker.getValue());
-            Long room = Long.parseLong(roomId.getText());
             TimeSlot firstSlot = firstTimeSlot.getValue();
             TimeSlot lastSlot = lastTimeSlot.getValue();
+            UniversityRoom pickedUniversityRoom = universityRoom.getValue();
             booking.setFirstSlot(firstSlot);
             booking.setLastSlot(lastSlot);
             booking.setReservationDate(date);
-            booking.setRoomId(room);
+            booking.setUniversityRoom(pickedUniversityRoom);
             if(booking.isNewRecord()) {
                 dbBookingDao.createBooking(booking);
                 bookingController.addBooking(booking);

@@ -15,7 +15,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import rsvp.resources.DAO.TimeSlotDAO;
+import rsvp.resources.DAO.UniversityRoomDAO;
 import rsvp.resources.model.TimeSlot;
+import rsvp.resources.model.UniversityRoom;
 import rsvp.user.API.AuthenticationService;
 
 import java.io.IOException;
@@ -28,6 +30,8 @@ public class BookingController {
 
     private BookingDAO dbBookingDao = new DBBookingDAO();
 
+    private UniversityRoomDAO universityRoomDAO = new UniversityRoomDAO();
+
     private Stage primaryStage;
 
     public BookingController() {}
@@ -39,6 +43,8 @@ public class BookingController {
     private ObservableList<Booking> bookings = FXCollections.observableArrayList();
 
     private ObservableList<TimeSlot> timeSlots = FXCollections.observableArrayList();
+
+    private ObservableList<UniversityRoom> universityRooms = FXCollections.observableArrayList();
 
     @FXML
     private DatePicker reservationDatePicker;
@@ -71,7 +77,7 @@ public class BookingController {
     private TableColumn<Booking, String> ownerLogin;
 
     @FXML
-    private TableColumn<Booking, Long> roomId;
+    private TableColumn<Booking, String> universityRoomNumber;
 
     @FXML
     private void initialize() {
@@ -92,7 +98,13 @@ public class BookingController {
                     }
                     return new SimpleObjectProperty<LocalTime>(lastSlot.getEndTime());
                 });
-        roomId.setCellValueFactory(cellData -> new SimpleObjectProperty<Long>(cellData.getValue().getRoomId()));
+        universityRoomNumber.setCellValueFactory(cellData -> {
+            UniversityRoom universityRoom = cellData.getValue().getUniversityRoom();
+            if (universityRoom == null) {
+                return new SimpleObjectProperty<String>("Undefined");
+            }
+            return new SimpleObjectProperty<String>(universityRoom.getNumber());
+        });
         setData();
     }
 
@@ -201,9 +213,14 @@ public class BookingController {
         return this.timeSlots;
     }
 
+    public ObservableList<UniversityRoom> getUniversityRooms() {
+        return this.universityRooms;
+    }
+
     public void setData() {
         bookings.addAll(dbBookingDao.getAllBookings());
         timeSlots.addAll(timeSlotDAO.getAll());
+        universityRooms.addAll(universityRoomDAO.getAll());
         bookingsTable.setItems(bookings);
     }
 }

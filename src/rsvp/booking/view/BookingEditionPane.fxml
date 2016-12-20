@@ -25,11 +25,11 @@
             </GridPane.margin>
         </Label>
 
-        <TextField fx:id="roomId" GridPane.columnIndex="2" maxWidth="200">
+        <ComboBox fx:id="universityRoom" GridPane.columnIndex="2" maxWidth="200">
             <GridPane.margin>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </GridPane.margin>
-        </TextField>
+        </ComboBox>
 
         <Label text="Start Time Slot" GridPane.rowIndex="3">
             <GridPane.margin>
