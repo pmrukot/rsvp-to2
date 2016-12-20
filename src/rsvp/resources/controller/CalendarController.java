@@ -1,5 +1,6 @@
 package rsvp.resources.controller;
 
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,12 +12,15 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.util.Pair;
 import rsvp.booking.DAO.DBBookingDAO;
 import rsvp.booking.model.Booking;
 import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.CalendarTableItem;
 import rsvp.resources.model.TimeSlot;
 import rsvp.resources.model.UniversityRoom;
+import rsvp.resources.view.CalendarDayColumn;
 
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -31,19 +35,19 @@ public class CalendarController {
     @FXML
     TableColumn<CalendarTableItem, String> slotsColumn;
     @FXML
-    TableColumn<CalendarTableItem, String> mondayColumn;
+    CalendarDayColumn mondayColumn;
     @FXML
-    TableColumn<CalendarTableItem, String> tuesdayColumn;
+    CalendarDayColumn tuesdayColumn;
     @FXML
-    TableColumn<CalendarTableItem, String> wednesdayColumn;
+    CalendarDayColumn wednesdayColumn;
     @FXML
-    TableColumn<CalendarTableItem, String> thursdayColumn;
+    CalendarDayColumn thursdayColumn;
     @FXML
-    TableColumn<CalendarTableItem, String> fridayColumn;
+    CalendarDayColumn fridayColumn;
     @FXML
-    TableColumn<CalendarTableItem, String> saturdayColumn;
+    CalendarDayColumn saturdayColumn;
     @FXML
-    TableColumn<CalendarTableItem, String> sundayColumn;
+    CalendarDayColumn sundayColumn;
 
     @FXML
     Button previousButton;
@@ -60,13 +64,20 @@ public class CalendarController {
     private void initialize() {
 
         slotsColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getTimeSlotRepresentation()));
-        mondayColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getBookingDescriptionPerDay(1)));
-        tuesdayColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getBookingDescriptionPerDay(2)));
-        wednesdayColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getBookingDescriptionPerDay(3)));
-        thursdayColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getBookingDescriptionPerDay(4)));
-        fridayColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getBookingDescriptionPerDay(5)));
-        saturdayColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getBookingDescriptionPerDay(6)));
-        sundayColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getBookingDescriptionPerDay(7)));
+        mondayColumn.setCellValueFactory(p -> new SimpleObjectProperty<>(
+                new Pair<>(p.getValue().getBookingDescriptionPerDay(1), p.getValue().getColor(1))));
+        tuesdayColumn.setCellValueFactory(p -> new SimpleObjectProperty<>(
+                new Pair<>(p.getValue().getBookingDescriptionPerDay(2), p.getValue().getColor(2))));
+        wednesdayColumn.setCellValueFactory(p -> new SimpleObjectProperty<>(
+                new Pair<>(p.getValue().getBookingDescriptionPerDay(3), p.getValue().getColor(3))));
+        thursdayColumn.setCellValueFactory(p -> new SimpleObjectProperty<>(
+                new Pair<>(p.getValue().getBookingDescriptionPerDay(4), p.getValue().getColor(4))));
+        fridayColumn.setCellValueFactory(p -> new SimpleObjectProperty<>(
+                new Pair<>(p.getValue().getBookingDescriptionPerDay(5), p.getValue().getColor(5))));
+        saturdayColumn.setCellValueFactory(p -> new SimpleObjectProperty<>(
+                new Pair<>(p.getValue().getBookingDescriptionPerDay(6), p.getValue().getColor(6))));
+        sundayColumn.setCellValueFactory(p -> new SimpleObjectProperty<>(
+                new Pair<>(p.getValue().getBookingDescriptionPerDay(7), p.getValue().getColor(7))));
     }
 
     private void initializeCalendarTableContentForDates(Date start, Date end){
@@ -101,23 +112,40 @@ public class CalendarController {
         return !date.before(start) && !date.after(end);
     }
 
+    private Color getRandomColor(){
+        Random rand = new Random();
+        double r = rand.nextFloat() / 2f + 0.5;
+        double g = rand.nextFloat() / 2f + 0.5;
+        double b = rand.nextFloat() / 2f + 0.5;
+        return new Color(r, g, b, 1.0);
+    }
+
     private List<CalendarTableItem> provideCalendarTableItems(Date start, Date end){
         List<CalendarTableItem> result = new ArrayList<>();
         TimeSlotDAO timeSlotDAO = new TimeSlotDAO();
         List<TimeSlot> timeSlots = timeSlotDAO.getAll();
         Collections.sort(timeSlots);
+        Map<TimeSlot, CalendarTableItem> bookingItemsMap = new HashMap<>();
 
-        for (TimeSlot timeSlot: timeSlots){
-            Map<DayOfWeek, String> bookingsMap = new HashMap<>();
-            bookings.stream().filter(booking ->
-                    isInThePeriod(start, end, booking.getReservationDate())).
-                    filter(booking -> isBetweenTimeSlots(booking.getFirstSlot(), booking.getLastSlot(), timeSlot)).
-                    forEach(booking -> bookingsMap.put(booking.getReservationDate().toLocalDate().getDayOfWeek(),
-                            "booked by: " + booking.getOwner().getFirstName() + " " + booking.getOwner().getLastName()));
-
-            CalendarTableItem item = new CalendarTableItem(bookingsMap, (int)timeSlot.getId());
+        for (TimeSlot timeSlot : timeSlots){
+            CalendarTableItem item = new CalendarTableItem(timeSlot);
             result.add(item);
+            bookingItemsMap.put(timeSlot, item);
         }
+
+        bookings.stream().filter(booking ->
+                isInThePeriod(start, end, booking.getReservationDate())).
+                forEach(booking -> {
+                    Color color = getRandomColor();
+                    DayOfWeek dayOfWeek = booking.getReservationDate().toLocalDate().getDayOfWeek();
+                    timeSlots.stream().filter(timeSlot -> isBetweenTimeSlots(booking.getFirstSlot(),
+                            booking.getLastSlot(), timeSlot)).forEach(timeSlot -> {
+                        CalendarTableItem item = bookingItemsMap.get(timeSlot);
+                        item.addColor(dayOfWeek, color);
+                        item.addBookingsMap(dayOfWeek, booking);
+                    });
+                });
+
         return result;
     }
 
