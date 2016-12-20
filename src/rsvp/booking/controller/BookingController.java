@@ -84,20 +84,9 @@ public class BookingController {
         dbBookingDao.getAllBookingsForCurrentUser();
         reservationDate.setCellValueFactory(cellData -> new SimpleObjectProperty<Date>(cellData.getValue().getReservationDate()));
         ownerLogin.setCellValueFactory(cellData -> new SimpleObjectProperty<String>(cellData.getValue().getOwner().getLogin()));
-            startTime.setCellValueFactory(cellData -> {
-                TimeSlot firstSlot = cellData.getValue().getFirstSlot();
-                if (firstSlot == null) {
-                    return new SimpleObjectProperty<LocalTime>(LocalTime.MIN);
-                }
-                    return new SimpleObjectProperty<LocalTime>(firstSlot.getStartTime());
-                });
-                endTime.setCellValueFactory(cellData -> {
-                    TimeSlot lastSlot = cellData.getValue().getLastSlot();
-                    if (lastSlot == null) {
-                        return new SimpleObjectProperty<LocalTime>(LocalTime.MAX);
-                    }
-                    return new SimpleObjectProperty<LocalTime>(lastSlot.getEndTime());
-                });
+        startTime.setCellValueFactory(cellData -> new SimpleObjectProperty<LocalTime>(cellData.getValue().getStartTime()));
+        endTime.setCellValueFactory(cellData -> new SimpleObjectProperty<LocalTime>(cellData.getValue().getEndTime()));
+
         universityRoomNumber.setCellValueFactory(cellData -> {
             UniversityRoom universityRoom = cellData.getValue().getUniversityRoom();
             if (universityRoom == null) {
