@@ -98,10 +98,9 @@ public class CalendarController {
     }
 
     private void setDateRangeLabel(){
-//        String formattedStartDate = new SimpleDateFormat("dd/MM").format(this.currentStartDate);
-//        String formattedEndDate = new SimpleDateFormat("dd/MM/yyyy").format(this.currentEndDate);
-//        dateRangeLabel.setText(formattedStartDate + " - "+ formattedEndDate);
-        dateRangeLabel.setText(this.currentStartDate.toString() + "-" + this.currentEndDate.toString());
+        String formattedStartDate = new SimpleDateFormat("dd/MM").format(this.currentStartDate);
+        String formattedEndDate = new SimpleDateFormat("dd/MM/yyyy").format(this.currentEndDate);
+        dateRangeLabel.setText(formattedStartDate + " - "+ formattedEndDate);
     }
 
     private boolean isBetweenTimeSlots(TimeSlot start, TimeSlot end, TimeSlot timeSlot){
