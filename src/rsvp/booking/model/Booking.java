@@ -6,6 +6,7 @@ import rsvp.user.model.User;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -107,4 +108,18 @@ public class Booking {
     public boolean isNewRecord() { return this.newRecord; }
 
     public void markAsNewRecord(boolean newRecord) { this.newRecord = newRecord; }
+
+    public LocalTime getStartTime() {
+        if (getFirstSlot() == null) {
+            return LocalTime.MIN;
+        }
+        return getFirstSlot().getStartTime();
+    }
+
+    public LocalTime getEndTime() {
+        if (getLastSlot() == null) {
+            return LocalTime.MAX;
+        }
+        return getLastSlot().getEndTime();
+    }
 }
