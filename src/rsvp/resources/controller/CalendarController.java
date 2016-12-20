@@ -98,9 +98,10 @@ public class CalendarController {
     }
 
     private void setDateRangeLabel(){
-        String formattedStartDate = new SimpleDateFormat("dd/MM").format(this.currentStartDate);
-        String formattedEndDate = new SimpleDateFormat("dd/MM/yyyy").format(this.currentEndDate);
-        dateRangeLabel.setText(formattedStartDate + " - "+ formattedEndDate);
+//        String formattedStartDate = new SimpleDateFormat("dd/MM").format(this.currentStartDate);
+//        String formattedEndDate = new SimpleDateFormat("dd/MM/yyyy").format(this.currentEndDate);
+//        dateRangeLabel.setText(formattedStartDate + " - "+ formattedEndDate);
+        dateRangeLabel.setText(this.currentStartDate.toString() + "-" + this.currentEndDate.toString());
     }
 
     private boolean isBetweenTimeSlots(TimeSlot start, TimeSlot end, TimeSlot timeSlot){
@@ -178,8 +179,16 @@ public class CalendarController {
         bookings = bookingDAO.getAllBookingsForUniversityRoom(universityRoom);
 
         Calendar cal = Calendar.getInstance();
+        while (cal.get(Calendar.DAY_OF_WEEK) > cal.getFirstDayOfWeek()) {
+            cal.add(Calendar.DATE, -1);
+        }
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        currentStartDate = cal.getTime();
         cal.add(Calendar.DATE, 6);
-        currentStartDate = new Date();
         currentEndDate = cal.getTime();
 
         initializeCalendarTableContentForDates(currentStartDate, currentEndDate);
