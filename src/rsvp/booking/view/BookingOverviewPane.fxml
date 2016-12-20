@@ -45,7 +45,7 @@
             <TableColumn fx:id="startTime" prefWidth="75.0" text="Start Time" style="-fx-alignment: center" />
             <TableColumn fx:id="endTime" prefWidth="75.0" text="End Time" style="-fx-alignment: center" />
             <TableColumn fx:id="ownerLogin" prefWidth="75.0" text="User" style="-fx-alignment: center" />
-            <TableColumn fx:id="roomId" prefWidth="75.0" text="Room" style="-fx-alignment: center" />
+            <TableColumn fx:id="universityRoomNumber" prefWidth="75.0" text="Room" style="-fx-alignment: center" />
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

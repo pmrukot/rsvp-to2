@@ -43,4 +43,8 @@ public class UniversityRoom {
     public void setCapacity(Integer capacity) {
         this.capacity = capacity;
     }
+
+    public String toString() {
+        return getNumber();
+    }
 }

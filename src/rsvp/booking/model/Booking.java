@@ -1,6 +1,7 @@
 package rsvp.booking.model;
 
 import rsvp.resources.model.TimeSlot;
+import rsvp.resources.model.UniversityRoom;
 import rsvp.user.model.User;
 
 import javax.persistence.*;
@@ -31,8 +32,9 @@ public class Booking {
     @JoinColumn(name = "LAST_SLOT_ID")
     private TimeSlot lastSlot;
 
-    @Column(name = "roomId")
-    private Long roomId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "universityroom_id")
+    private UniversityRoom universityRoom;
 
     @ManyToMany(
             cascade = {
@@ -90,9 +92,9 @@ public class Booking {
         return this.owner;
     }
 
-    public void setRoomId(Long roomId) { this.roomId = roomId; }
+    public void setUniversityRoom(UniversityRoom universityRoom) { this.universityRoom = universityRoom; }
 
-    public Long getRoomId() { return this.roomId; }
+    public UniversityRoom getUniversityRoom() { return this.universityRoom; }
 
     public Set<User> getParticipants() {
         return this.participants;
