@@ -4,31 +4,12 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import rsvp.resources.model.UniversityRoom;
 
-public class UniversityRoomValidation {
+public class UniversityRoomValidation extends Validation {
     private static final String CAPACITY_ALERT = "You have to provide capacity greater than 0";
     private static final String NO_ITEM_SELECTED_ALERT = "You have to select some room in order to do modification";
     private static final String IMPROPER_NUMBER_FORMAT_ALERT = "You have to provide valid number format";
     private static final String NO_MODYFICATION_ALERT = "You have to provide different values than before";
     private static final String NOT_ENOUGH_ARGUMENTS_ALERT = "You have to provide all arguments";
-
-    private static void handleErrorAlert(Alert errorAlert, TextField firstTextField, TextField secondTextField, String alertMessage) {
-        showError(errorAlert, alertMessage);
-        clearFields(firstTextField, secondTextField);
-    }
-
-    private static void showError(Alert errorAlert, String alertMessage) {
-        errorAlert.setContentText(alertMessage);
-        errorAlert.showAndWait();
-    }
-
-    private static void clearFields(TextField firstTextField, TextField secondTextField) {
-        firstTextField.clear();
-        secondTextField.clear();
-    }
-
-    private static boolean notEnoughArguments(TextField firstTextField, TextField secondTextField) {
-        return firstTextField.getText().isEmpty() || secondTextField.getText().isEmpty();
-    }
 
     private static boolean noItemSelected(UniversityRoom universityRoom) {
         return universityRoom == null;

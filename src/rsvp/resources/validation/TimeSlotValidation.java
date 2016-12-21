@@ -8,28 +8,13 @@ import rsvp.resources.model.TimeSlot;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
-public class TimeSlotValidation {
+public class TimeSlotValidation extends Validation {
     private static final String NO_ITEM_SELECTED_ALERT = "You have to select some time slot in order to do modification";
     private static final String IMPROPER_HOUR_FORMAT_ALERT = "You have to provide valid hour format (hh:mm)";
     private static final String NO_MODYFICATION_ALERT = "You have to provide different values than before";
     private static final String NOT_ENOUGH_ARGUMENTS_ALERT = "You have to provide all arguments";
     private static final String NON_CHRONOLOGICAL_ORDER_ALERT = "You have to provide start time earlier than end time";
     private static final String COLLISION_ALERT = "You have to provide time slot not colliding with existing ones";
-
-    private static void handleErrorAlert(Alert errorAlert, TextField firstTextField, TextField secondTextField, String alertMessage) {
-        showError(errorAlert, alertMessage);
-        clearFields(firstTextField, secondTextField);
-    }
-
-    private static void showError(Alert errorAlert, String alertMessage) {
-        errorAlert.setContentText(alertMessage);
-        errorAlert.showAndWait();
-    }
-
-    private static void clearFields(TextField firstTextField, TextField secondTextField) {
-        firstTextField.clear();
-        secondTextField.clear();
-    }
 
     private static boolean isColliding(ObservableList<TimeSlot> items, LocalTime insertedStartTime, LocalTime insertedEndTime) {
         for(TimeSlot item : items) {
@@ -41,10 +26,6 @@ public class TimeSlotValidation {
             if(insertedStartTime.isBefore(currentEndTime) && insertedEndTime.isAfter(currentEndTime)) return true;
         }
         return false;
-    }
-
-    private static boolean notEnoughArguments(TextField firstTextField, TextField secondTextField) {
-        return firstTextField.getText().isEmpty() || secondTextField.getText().isEmpty();
     }
 
     private static boolean notChronological(LocalTime startTime, LocalTime endTime) {
