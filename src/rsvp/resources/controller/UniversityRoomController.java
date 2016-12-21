@@ -11,7 +11,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.IntegerStringConverter;
 import rsvp.resources.DAO.UniversityRoomDAO;
 import rsvp.resources.model.UniversityRoom;
-import rsvp.resources.validation.UniversityRoomManager;
+import rsvp.resources.validation.UniversityRoomValidation;
 import rsvp.resources.view.CalendarCell;
 
 public class UniversityRoomController {
@@ -79,7 +79,7 @@ public class UniversityRoomController {
 
     @FXML
     private void handleCreateButtonAction(ActionEvent event) {
-        String validationOutput = UniversityRoomManager.createValidation(numberFieldCreate, capacityFieldCreate);
+        String validationOutput = UniversityRoomValidation.createValidation(numberFieldCreate, capacityFieldCreate);
         if (validationOutput != null) {
             handleErrorAlert(numberFieldCreate, capacityFieldCreate, validationOutput);
             return;
@@ -97,7 +97,7 @@ public class UniversityRoomController {
     @FXML
     private void handleDeleteButtonAction(ActionEvent event) {
         UniversityRoom chosenUniversityRoom = universityRoomListTableView.getSelectionModel().getSelectedItem();
-        String validationOutput = UniversityRoomManager.deleteValidation(chosenUniversityRoom);
+        String validationOutput = UniversityRoomValidation.deleteValidation(chosenUniversityRoom);
         if (validationOutput != null) {
             showError(validationOutput);
             return;
@@ -110,7 +110,7 @@ public class UniversityRoomController {
     @FXML
     private void handleUpdateButtonAction(ActionEvent event) {
         UniversityRoom chosenUniversityRoom = universityRoomListTableView.getSelectionModel().getSelectedItem();
-        String validationOutput = UniversityRoomManager.updateValidation(numberFieldUpdate, capacityFieldUpdate, chosenUniversityRoom);
+        String validationOutput = UniversityRoomValidation.updateValidation(numberFieldUpdate, capacityFieldUpdate, chosenUniversityRoom);
         if (validationOutput != null) {
             handleErrorAlert(numberFieldUpdate, capacityFieldUpdate, validationOutput);
         }

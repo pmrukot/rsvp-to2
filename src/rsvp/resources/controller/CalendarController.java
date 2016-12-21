@@ -20,6 +20,7 @@ import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.CalendarTableItem;
 import rsvp.resources.model.TimeSlot;
 import rsvp.resources.model.UniversityRoom;
+import rsvp.resources.validation.TimeSlotValidation;
 import rsvp.resources.view.CalendarDayColumn;
 
 import java.text.SimpleDateFormat;
@@ -103,11 +104,6 @@ public class CalendarController {
         dateRangeLabel.setText(formattedStartDate + " - "+ formattedEndDate);
     }
 
-    private boolean isBetweenTimeSlots(TimeSlot start, TimeSlot end, TimeSlot timeSlot){
-        return (timeSlot.getEndTime().isBefore(end.getStartTime()) &&
-                timeSlot.getStartTime().isAfter(start.getEndTime())) || start.equals(timeSlot) || end.equals(timeSlot);
-    }
-
     private boolean isInThePeriod(Date start, Date end, Date date){
         return !date.before(start) && !date.after(end);
     }
@@ -138,7 +134,7 @@ public class CalendarController {
                 forEach(booking -> {
                     Color color = getRandomColor();
                     DayOfWeek dayOfWeek = booking.getReservationDate().toLocalDate().getDayOfWeek();
-                    timeSlots.stream().filter(timeSlot -> isBetweenTimeSlots(booking.getFirstSlot(),
+                    timeSlots.stream().filter(timeSlot -> TimeSlotValidation.isBetweenTimeSlots(booking.getFirstSlot(),
                             booking.getLastSlot(), timeSlot)).forEach(timeSlot -> {
                         CalendarTableItem item = bookingItemsMap.get(timeSlot);
                         item.addColor(dayOfWeek, color);

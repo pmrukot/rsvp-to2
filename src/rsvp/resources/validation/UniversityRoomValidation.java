@@ -3,7 +3,7 @@ package rsvp.resources.validation;
 import javafx.scene.control.TextField;
 import rsvp.resources.model.UniversityRoom;
 
-public class UniversityRoomManager {
+public class UniversityRoomValidation {
     private static final String CAPACITY_ALERT = "You have to provide capacity greater than 0 and lesser than 200";
     private static final String NO_ITEM_SELECTED_ALERT = "You have to select some room in order to do modification";
     private static final String IMPROPER_NUMBER_FORMAT_ALERT = "You have to provide valid number format";
@@ -12,6 +12,10 @@ public class UniversityRoomManager {
 
     private static boolean notEnoughArguments(TextField firstTextField, TextField secondTextField) {
         return firstTextField.getText().isEmpty() || secondTextField.getText().isEmpty();
+    }
+
+    private static boolean noItemSelected(UniversityRoom universityRoom) {
+        return universityRoom == null;
     }
 
     public static String createValidation(TextField numberFieldCreate, TextField capacityFieldCreate) {
@@ -33,7 +37,7 @@ public class UniversityRoomManager {
     }
 
     public static String deleteValidation(UniversityRoom chosenUniversityRoom) {
-        if (chosenUniversityRoom == null) {
+        if (noItemSelected(chosenUniversityRoom)) {
             return NO_ITEM_SELECTED_ALERT;
         }
         return null;
@@ -52,7 +56,7 @@ public class UniversityRoomManager {
             return IMPROPER_NUMBER_FORMAT_ALERT;
         }
 
-        if (chosenUniversityRoom == null) {
+        if (noItemSelected(chosenUniversityRoom)) {
             return NO_ITEM_SELECTED_ALERT;
         }
 
