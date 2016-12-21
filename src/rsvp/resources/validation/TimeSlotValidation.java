@@ -1,6 +1,7 @@
 package rsvp.resources.validation;
 
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import rsvp.resources.model.TimeSlot;
 
@@ -14,6 +15,21 @@ public class TimeSlotValidation {
     private static final String NOT_ENOUGH_ARGUMENTS_ALERT = "You have to provide all arguments";
     private static final String NON_CHRONOLOGICAL_ORDER_ALERT = "You have to provide start time earlier than end time";
     private static final String COLLISION_ALERT = "You have to provide time slot not colliding with existing ones";
+
+    private static void handleErrorAlert(Alert errorAlert, TextField firstTextField, TextField secondTextField, String alertMessage) {
+        showError(errorAlert, alertMessage);
+        clearFields(firstTextField, secondTextField);
+    }
+
+    private static void showError(Alert errorAlert, String alertMessage) {
+        errorAlert.setContentText(alertMessage);
+        errorAlert.showAndWait();
+    }
+
+    private static void clearFields(TextField firstTextField, TextField secondTextField) {
+        firstTextField.clear();
+        secondTextField.clear();
+    }
 
     private static boolean isColliding(ObservableList<TimeSlot> items, LocalTime insertedStartTime, LocalTime insertedEndTime) {
         for(TimeSlot item : items) {
@@ -39,9 +55,10 @@ public class TimeSlotValidation {
         return timeSlot == null;
     }
 
-    public static String createValidation(ObservableList<TimeSlot> items, TextField startTimeFieldCreate, TextField endTimeFieldCreate) {
+    public static boolean createValidationPassed(Alert errorAlert, ObservableList<TimeSlot> items, TextField startTimeFieldCreate, TextField endTimeFieldCreate) {
         if (notEnoughArguments(startTimeFieldCreate, endTimeFieldCreate)) {
-            return NOT_ENOUGH_ARGUMENTS_ALERT;
+            handleErrorAlert(errorAlert, startTimeFieldCreate, endTimeFieldCreate, NOT_ENOUGH_ARGUMENTS_ALERT);
+            return false;
         }
 
         LocalTime startTime, endTime;
@@ -49,33 +66,39 @@ public class TimeSlotValidation {
             startTime = LocalTime.parse(startTimeFieldCreate.getText());
             endTime = LocalTime.parse(endTimeFieldCreate.getText());
         } catch (DateTimeParseException e) {
-            return IMPROPER_HOUR_FORMAT_ALERT;
+            handleErrorAlert(errorAlert, startTimeFieldCreate, endTimeFieldCreate, IMPROPER_HOUR_FORMAT_ALERT);
+            return false;
         }
 
         if (notChronological(startTime, endTime)) {
-            return NON_CHRONOLOGICAL_ORDER_ALERT;
+            handleErrorAlert(errorAlert, startTimeFieldCreate, endTimeFieldCreate, NON_CHRONOLOGICAL_ORDER_ALERT);
+            return false;
         }
 
         if (isColliding(items, startTime, endTime)) {
-            return COLLISION_ALERT;
+            handleErrorAlert(errorAlert, startTimeFieldCreate, endTimeFieldCreate, COLLISION_ALERT);
+            return false;
         }
-        return null;
+        return true;
     }
 
-    public static String deleteValidation(TimeSlot chosenTimeSlot) {
+    public static boolean deleteValidationPassed(Alert errorAlert, TimeSlot chosenTimeSlot) {
         if (noItemSelected(chosenTimeSlot)) {
-            return NO_ITEM_SELECTED_ALERT;
+            showError(errorAlert, NO_ITEM_SELECTED_ALERT);
+            return false;
         }
-        return null;
+        return true;
     }
 
-    public static String updateValidation(ObservableList<TimeSlot> items, TextField startTimeFieldUpdate, TextField endTimeFieldUpdate, TimeSlot chosenTimeSlot) {
+    public static boolean updateValidationPassed(Alert errorAlert, ObservableList<TimeSlot> items, TextField startTimeFieldUpdate, TextField endTimeFieldUpdate, TimeSlot chosenTimeSlot) {
         if (noItemSelected(chosenTimeSlot)) {
-            return NO_ITEM_SELECTED_ALERT;
+            handleErrorAlert(errorAlert, startTimeFieldUpdate, endTimeFieldUpdate, NO_ITEM_SELECTED_ALERT);
+            return false;
         }
 
         if (notEnoughArguments(startTimeFieldUpdate, endTimeFieldUpdate)) {
-            return NOT_ENOUGH_ARGUMENTS_ALERT;
+            handleErrorAlert(errorAlert, startTimeFieldUpdate, endTimeFieldUpdate, NOT_ENOUGH_ARGUMENTS_ALERT);
+            return false;
         }
 
         LocalTime newStartTime, newEndTime;
@@ -83,21 +106,25 @@ public class TimeSlotValidation {
             newStartTime = LocalTime.parse(startTimeFieldUpdate.getText());
             newEndTime = LocalTime.parse(endTimeFieldUpdate.getText());
         } catch (DateTimeParseException e) {
-            return IMPROPER_HOUR_FORMAT_ALERT;
+            handleErrorAlert(errorAlert, startTimeFieldUpdate, endTimeFieldUpdate, IMPROPER_HOUR_FORMAT_ALERT);
+            return false;
         }
 
         if (notChronological(newStartTime, newEndTime)) {
-            return NON_CHRONOLOGICAL_ORDER_ALERT;
+            handleErrorAlert(errorAlert, startTimeFieldUpdate, endTimeFieldUpdate, NON_CHRONOLOGICAL_ORDER_ALERT);
+            return false;
         }
 
         if (chosenTimeSlot.getStartTime().equals(newStartTime) && chosenTimeSlot.getEndTime().equals(newEndTime)) {
-            return NO_MODYFICATION_ALERT;
+            handleErrorAlert(errorAlert, startTimeFieldUpdate, endTimeFieldUpdate, NO_MODYFICATION_ALERT);
+            return false;
         }
 
         if (isColliding(items, newStartTime, newEndTime)) {
-            return COLLISION_ALERT;
+            handleErrorAlert(errorAlert, startTimeFieldUpdate, endTimeFieldUpdate, COLLISION_ALERT);
+            return false;
         }
-        return null;
+        return true;
     }
 
     public static boolean isBetweenTimeSlots(TimeSlot start, TimeSlot end, TimeSlot timeSlot){

@@ -14,9 +14,7 @@ import javafx.util.converter.LocalTimeStringConverter;
 import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.TimeSlot;
 import rsvp.resources.validation.TimeSlotValidation;
-
 import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
 
 public class TimeSlotController {
 
@@ -46,16 +44,6 @@ public class TimeSlotController {
 
     Alert errorAlert;
 
-    private void handleErrorAlert(TextField firstTextField, TextField secondTextField, String alertMessage) {
-        showError(alertMessage);
-        clearFields(firstTextField, secondTextField);
-    }
-
-    private void showError(String alertMessage) {
-        errorAlert.setContentText(alertMessage);
-        errorAlert.showAndWait();
-    }
-
     private void clearFields(TextField firstTextField, TextField secondTextField) {
         firstTextField.clear();
         secondTextField.clear();
@@ -82,9 +70,7 @@ public class TimeSlotController {
 
     @FXML
     private void handleCreateButtonAction(ActionEvent event) {
-        String validationOutput = TimeSlotValidation.createValidation(items, startTimeFieldCreate, endTimeFieldCreate);
-        if (validationOutput != null) {
-            handleErrorAlert(startTimeFieldCreate, endTimeFieldCreate, validationOutput);
+        if(!TimeSlotValidation.createValidationPassed(errorAlert, items, startTimeFieldCreate, endTimeFieldCreate)) {
             return;
         }
 
@@ -99,11 +85,10 @@ public class TimeSlotController {
     @FXML
     private void handleDeleteButtonAction(ActionEvent event) {
         TimeSlot chosenTimeSlot = timeSlotListTableView.getSelectionModel().getSelectedItem();
-        String validationOutput = TimeSlotValidation.deleteValidation(chosenTimeSlot);
-        if (validationOutput != null) {
-            showError(validationOutput);
+        if(!TimeSlotValidation.deleteValidationPassed(errorAlert, chosenTimeSlot)) {
             return;
         }
+
 
         timeSlotDAO.delete(chosenTimeSlot);
         items.remove(chosenTimeSlot);
@@ -112,9 +97,7 @@ public class TimeSlotController {
     @FXML
     private void handleUpdateButtonAction(ActionEvent event) {
         TimeSlot chosenTimeSlot = timeSlotListTableView.getSelectionModel().getSelectedItem();
-        String validationOutput = TimeSlotValidation.updateValidation(items, startTimeFieldUpdate, endTimeFieldUpdate, chosenTimeSlot);
-        if (validationOutput != null) {
-            handleErrorAlert(startTimeFieldUpdate, endTimeFieldUpdate, validationOutput);
+        if(!TimeSlotValidation.updateValidationPassed(errorAlert, items, startTimeFieldUpdate, endTimeFieldUpdate, chosenTimeSlot)) {
             return;
         }
 
