@@ -51,14 +51,18 @@ public class TimeSlotController {
     Alert errorAlert;
 
     private void handleErrorAlert(TextField firstTextField, TextField secondTextField, String alertMessage) {
-        if (alertMessage != null) {
-            errorAlert.setContentText(alertMessage);
-            errorAlert.showAndWait();
-        }
-        if (firstTextField != null)
-            firstTextField.clear();
-        if (secondTextField != null)
-            secondTextField.clear();
+        showError(alertMessage);
+        clearFields(firstTextField, secondTextField);
+    }
+
+    private void showError(String alertMessage) {
+        errorAlert.setContentText(alertMessage);
+        errorAlert.showAndWait();
+    }
+
+    private void clearFields(TextField firstTextField, TextField secondTextField) {
+        firstTextField.clear();
+        secondTextField.clear();
     }
 
     private boolean isColliding(LocalTime insertedStartTime, LocalTime insertedEndTime) {
@@ -121,14 +125,14 @@ public class TimeSlotController {
 
         items.add(createdTimeSlot);
         timeSlotDAO.create(createdTimeSlot);
-        handleErrorAlert(startTimeFieldCreate, endTimeFieldCreate, null);
+        clearFields(startTimeFieldCreate, endTimeFieldCreate);
     }
 
     @FXML
     private void handleDeleteButtonAction(ActionEvent event) {
         TimeSlot chosenTimeSlot = timeSlotListTableView.getSelectionModel().getSelectedItem();
         if (chosenTimeSlot == null) {
-            handleErrorAlert(null, null, NO_ITEM_SELECTED_ALERT);
+            showError(NO_ITEM_SELECTED_ALERT);
             return;
         }
 
@@ -174,7 +178,7 @@ public class TimeSlotController {
         }
 
         timeSlotDAO.update(chosenTimeSlot, newStartTime, newEndTime);
-        handleErrorAlert(startTimeFieldUpdate, endTimeFieldUpdate, null);
+        clearFields(startTimeFieldUpdate, endTimeFieldUpdate);
         items.clear();
         items.addAll(timeSlotDAO.getAll());
         timeSlotListTableView.setItems(items);
