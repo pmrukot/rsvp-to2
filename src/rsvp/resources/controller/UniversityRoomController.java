@@ -40,17 +40,7 @@ public class UniversityRoomController {
 
     Alert errorAlert;
 
-    private void handleErrorAlert(TextField firstTextField, TextField secondTextField, String alertMessage) {
-        showError(alertMessage);
-        clearFields(firstTextField, secondTextField);
-    }
-
-    private void showError(String alertMessage) {
-        errorAlert.setContentText(alertMessage);
-        errorAlert.showAndWait();
-    }
-
-    private void clearFields(TextField firstTextField, TextField secondTextField) {
+    private static void clearFields(TextField firstTextField, TextField secondTextField) {
         firstTextField.clear();
         secondTextField.clear();
     }
@@ -79,15 +69,12 @@ public class UniversityRoomController {
 
     @FXML
     private void handleCreateButtonAction(ActionEvent event) {
-        String validationOutput = UniversityRoomValidation.createValidation(numberFieldCreate, capacityFieldCreate);
-        if (validationOutput != null) {
-            handleErrorAlert(numberFieldCreate, capacityFieldCreate, validationOutput);
+        if (!UniversityRoomValidation.createValidationPassed(errorAlert, numberFieldCreate, capacityFieldCreate)) {
             return;
         }
 
         String number = numberFieldCreate.getText();
         Integer capacity = Integer.parseInt(capacityFieldCreate.getText());
-
         UniversityRoom createdUniversityRoom = new UniversityRoom(number, capacity);
         items.add(createdUniversityRoom);
         universityRoomDAO.create(createdUniversityRoom);
@@ -97,9 +84,7 @@ public class UniversityRoomController {
     @FXML
     private void handleDeleteButtonAction(ActionEvent event) {
         UniversityRoom chosenUniversityRoom = universityRoomListTableView.getSelectionModel().getSelectedItem();
-        String validationOutput = UniversityRoomValidation.deleteValidation(chosenUniversityRoom);
-        if (validationOutput != null) {
-            showError(validationOutput);
+        if (!UniversityRoomValidation.deleteValidationPassed(errorAlert, chosenUniversityRoom)) {
             return;
         }
 
@@ -110,14 +95,12 @@ public class UniversityRoomController {
     @FXML
     private void handleUpdateButtonAction(ActionEvent event) {
         UniversityRoom chosenUniversityRoom = universityRoomListTableView.getSelectionModel().getSelectedItem();
-        String validationOutput = UniversityRoomValidation.updateValidation(numberFieldUpdate, capacityFieldUpdate, chosenUniversityRoom);
-        if (validationOutput != null) {
-            handleErrorAlert(numberFieldUpdate, capacityFieldUpdate, validationOutput);
+        if (!UniversityRoomValidation.updateValidationPassed(errorAlert, numberFieldUpdate, capacityFieldUpdate, chosenUniversityRoom)) {
+            return;
         }
 
         String newNumber = numberFieldUpdate.getText();
         Integer newCapacity = Integer.parseInt(capacityFieldUpdate.getText());
-
         universityRoomDAO.update(chosenUniversityRoom, newNumber, newCapacity);
         clearFields(numberFieldUpdate, capacityFieldUpdate);
         items.clear();

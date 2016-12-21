@@ -70,12 +70,12 @@ public class TimeSlotValidation {
     }
 
     public static String updateValidation(ObservableList<TimeSlot> items, TextField startTimeFieldUpdate, TextField endTimeFieldUpdate, TimeSlot chosenTimeSlot) {
-        if (notEnoughArguments(startTimeFieldUpdate, endTimeFieldUpdate)) {
-            return NOT_ENOUGH_ARGUMENTS_ALERT;
-        }
-
         if (noItemSelected(chosenTimeSlot)) {
             return NO_ITEM_SELECTED_ALERT;
+        }
+
+        if (notEnoughArguments(startTimeFieldUpdate, endTimeFieldUpdate)) {
+            return NOT_ENOUGH_ARGUMENTS_ALERT;
         }
 
         LocalTime newStartTime, newEndTime;
