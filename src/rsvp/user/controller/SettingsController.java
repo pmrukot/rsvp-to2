@@ -1,18 +1,16 @@
 package rsvp.user.controller;
 
 import javafx.beans.binding.BooleanBinding;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import rsvp.user.API.AuthenticationService;
 import rsvp.user.API.UserProviderSingleton;
 import rsvp.user.DAO.DBUserDAO;
 import rsvp.user.model.User;
 import rsvp.user.DAO.UserDAO;
+import rsvp.user.view.Alert;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -110,16 +108,12 @@ public class SettingsController implements Initializable{
     }
 
     private void showErrorDialog(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error Dialog");
-        alert.setHeaderText(message);
+        Alert alert = new Alert(message, javafx.scene.control.Alert.AlertType.ERROR);
         alert.showAndWait();
     }
 
     private void showInformationDialog(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information Dialog");
-        alert.setHeaderText(message);
+        Alert alert = new Alert(message, javafx.scene.control.Alert.AlertType.INFORMATION);
         alert.showAndWait();
     }
 

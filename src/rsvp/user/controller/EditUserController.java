@@ -2,11 +2,13 @@ package rsvp.user.controller;
 
 
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -14,6 +16,7 @@ import rsvp.user.API.UserProviderSingleton;
 import rsvp.user.DAO.DBUserDAO;
 import rsvp.user.DAO.UserDAO;
 import rsvp.user.model.User;
+import rsvp.user.view.Alert;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -29,6 +32,7 @@ public class EditUserController implements Initializable{
     public TextField password;
     private User editedUser;
     private int index;
+
 
 
     @Override
@@ -76,15 +80,11 @@ public class EditUserController implements Initializable{
             u = new User(login.getText(), firstName.getText(), lastName.getText(), password.getText(), admin.isSelected());
         }
         if(userDAO.createUser(u)) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Information Dialog");
-            alert.setHeaderText("Created new user successfully!\nUser login: " + u.getLogin());
+            Alert alert = new Alert("Created new user successfully!\nUser login: " + u.getLogin(), AlertType.INFORMATION);
             alert.showAndWait();
             instance.getUsers().add(u);
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error Dialog");
-            alert.setHeaderText("Failed to create new user!");
+            Alert alert = new Alert("Failed to create new user!", AlertType.ERROR);
             alert.showAndWait();
         }
     }
@@ -98,15 +98,11 @@ public class EditUserController implements Initializable{
         editedUser.setAdmin(admin.isSelected());
 
         if(userDAO.updateUser(editedUser)) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Information Dialog");
-            alert.setHeaderText("User edited successfully!\nUser login: " + editedUser.getLogin());
+            Alert alert = new Alert("User edited successfully!\nUser login: " + editedUser.getLogin(), AlertType.INFORMATION);
             alert.showAndWait();
             instance.getUsers().set(index, editedUser);
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error Dialog");
-            alert.setHeaderText("Failed to create new user!");
+            Alert alert = new Alert("Failed to create new user!", AlertType.ERROR);
             alert.showAndWait();
         }
     }
@@ -119,14 +115,16 @@ public class EditUserController implements Initializable{
     }
 
     private void editUserBinding() {
+        BooleanProperty isAdmin = new SimpleBooleanProperty(editedUser.isAdmin());
 
-        //todo: fix checkbox binding
         BooleanBinding changeUserDataBinding = login.textProperty().isEqualTo(editedUser.getLogin())
                 .and(firstName.textProperty().isEqualTo(editedUser.getFirstName()))
                 .and(lastName.textProperty().isEqualTo(editedUser.getLastName()))
-                .and(password.textProperty().isEqualTo(editedUser.getPassword()));
-                //.and(admin.selectedProperty().isEqualTo(editedUser.isAdmin());
+                .and(password.textProperty().isEqualTo(editedUser.getPassword()))
+                .and(admin.selectedProperty().isEqualTo(isAdmin));
+
         saveEditedUser.disableProperty().bind(changeUserDataBinding);
+
     }
 
 }

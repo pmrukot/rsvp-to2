@@ -1,6 +1,5 @@
 package rsvp.user.API;
 
-import javafx.scene.control.Alert;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import rsvp.common.persistence.HibernateUtils;

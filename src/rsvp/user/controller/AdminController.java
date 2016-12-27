@@ -8,21 +8,23 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import rsvp.user.API.UserProviderSingleton;
 import rsvp.user.DAO.*;
 import rsvp.user.model.User;
 import rsvp.user.upload.Upload;
+import rsvp.user.view.*;
+import rsvp.user.view.Alert;
+
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.Optional;
 
 public class AdminController implements ListChangeListener {
     private UserDAO userDAO;
@@ -105,9 +107,7 @@ public class AdminController implements ListChangeListener {
         try {
             if(file != null){
                 List<User> createdUsers = Upload.createUsersFromCsv(file);
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Information Dialog");
-                alert.setHeaderText(String.format("%s users were created!", createdUsers.size()));
+                Alert alert = new Alert(String.format("%s users were created!", createdUsers.size()), AlertType.INFORMATION);
                 alert.showAndWait();
                 instance.getUsers().addAll(createdUsers);
             }
@@ -144,26 +144,19 @@ public class AdminController implements ListChangeListener {
 
     public void deleteUser() {
         User selectedUser = usersTable.getSelectionModel().getSelectedItem();
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation Dialog");
-        alert.setHeaderText(String.format("Are you sure that you want to delete user %s?", selectedUser.getLogin()));
-        alert.showAndWait()
-                .filter(response -> response == ButtonType.OK)
-                .ifPresent(response ->  {
-                    if(userDAO.deleteUser(selectedUser)) {
-                        String login = selectedUser.getLogin();
-                        Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
-                        alert2.setTitle("Information Dialog");
-                        alert2.setHeaderText(String.format("Deleting user %s succeeded!", login));
-                        alert2.showAndWait();
-                        instance.getUsers().remove(selectedUser);
-                    } else {
-                        Alert alert2 = new Alert(Alert.AlertType.ERROR);
-                        alert2.setTitle("Error Dialog");
-                        alert2.setHeaderText(String.format("Failed to delete user %s!", selectedUser.getLogin()));
-                        alert2.showAndWait();
-                    }
-                });
+        Alert alert = new Alert(String.format("Are you sure that you want to delete user %s?", selectedUser.getLogin()), AlertType.CONFIRMATION);
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.get() == ButtonType.OK) {
+            if(userDAO.deleteUser(selectedUser)) {
+                String login = selectedUser.getLogin();
+                Alert alert2 = new Alert(String.format("Deleting user %s succeeded!", login), AlertType.INFORMATION);
+                alert2.showAndWait();
+                instance.getUsers().remove(selectedUser);
+            } else {
+                Alert alert2 = new Alert(String.format("Failed to delete user %s!", selectedUser.getLogin()), AlertType.ERROR);
+                alert2.showAndWait();
+            }
+        }
     }
 
     public void addUser(ActionEvent actionEvent) {
