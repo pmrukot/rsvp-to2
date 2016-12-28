@@ -55,7 +55,7 @@
             </GridPane.margin>
         </ComboBox>
 
-        <Button fx:id="saveButton" onAction="#updateBooking" text="Save">
+        <Button fx:id="saveButton" onAction="#processBooking" text="Save">
             <VBox.margin>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </VBox.margin>

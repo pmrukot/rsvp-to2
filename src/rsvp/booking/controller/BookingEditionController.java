@@ -1,11 +1,9 @@
 package rsvp.booking.controller;
 
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -60,24 +58,55 @@ public class BookingEditionController {
     }
 
     @FXML
-    private void updateBooking() {
+    private void processBooking() {
         try {
-            Date date = Date.valueOf(reservationDatePicker.getValue());
-            TimeSlot firstSlot = firstTimeSlot.getValue();
-            TimeSlot lastSlot = lastTimeSlot.getValue();
-            UniversityRoom pickedUniversityRoom = universityRoom.getValue();
-            booking.setFirstSlot(firstSlot);
-            booking.setLastSlot(lastSlot);
-            booking.setReservationDate(date);
-            booking.setUniversityRoom(pickedUniversityRoom);
+            updateBooking();
+            persistBooking();
+            dialogStage.close();
+        } catch (NullPointerException ignored) {}
+    }
+
+    private void updateBooking() {
+        booking.setFirstSlot(firstTimeSlot.getValue());
+        booking.setLastSlot(lastTimeSlot.getValue());
+        booking.setReservationDate(Date.valueOf(reservationDatePicker.getValue()));
+        booking.setUniversityRoom(universityRoom.getValue());
+    }
+
+    private void persistBooking() {
+        if(booking.isValid() && !isOverlappingOtherBookings()) {
             if(booking.isNewRecord()) {
                 dbBookingDao.createBooking(booking);
                 bookingController.addBooking(booking);
             } else {
                 dbBookingDao.updateBooking(booking);
             }
-            dialogStage.close();
-        } catch (NullPointerException ignored) {}
+        } else {
+            showAlert();
+        }
+    }
+
+    public boolean isOverlappingOtherBookings() {
+        ObservableList<Booking> bookings = bookingController.getBookings();
+        bookings.removeIf(booking1 -> booking1.getUniversityRoom().getId() != booking.getUniversityRoom().getId() ||
+        booking1.getReservationDate().compareTo(booking.getReservationDate()) != 0);
+        for(Booking iteratingBooking : bookings) {
+            if(iteratingBooking.getId() != booking.getId()
+                    && iteratingBooking.getStartTime().compareTo(booking.getEndTime()) <= 0
+                    && iteratingBooking.getEndTime().compareTo(booking.getStartTime()) >= 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void showAlert() {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Warning");
+        alert.setHeaderText("Invalid Booking Data");
+        alert.setContentText("Make sure you populated fields with appropriate values");
+
+        alert.showAndWait();
     }
 
 
