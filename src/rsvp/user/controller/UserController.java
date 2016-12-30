@@ -7,6 +7,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -18,13 +20,14 @@ import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.TimeSlot;
 import rsvp.user.model.ReservationsPerWeek;
 
+import java.awt.*;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 public class UserController implements ListChangeListener{
@@ -39,21 +42,21 @@ public class UserController implements ListChangeListener{
     private TableView<ReservationsPerWeek> myCalendarTable;
 
     @FXML
-    public TableColumn slots;
+    public TableColumn<ReservationsPerWeek, String> slots;
     @FXML
     private TableColumn monday;
     @FXML
-    private TableColumn tuesday;
+    private TableColumn<ReservationsPerWeek, String> tuesday;
     @FXML
-    private TableColumn wednesday;
+    private TableColumn<ReservationsPerWeek, String> wednesday;
     @FXML
-    private TableColumn thursday;
+    private TableColumn<ReservationsPerWeek, String> thursday;
     @FXML
-    private TableColumn friday;
+    private TableColumn<ReservationsPerWeek, String> friday;
     @FXML
-    private TableColumn saturday;
+    private TableColumn<ReservationsPerWeek, String> saturday;
     @FXML
-    private TableColumn sunday;
+    private TableColumn<ReservationsPerWeek, String> sunday;
 
     private Date currentStartDate;
     private Date currentEndDate;
@@ -75,6 +78,7 @@ public class UserController implements ListChangeListener{
         currentEndDate = getDate(DayOfWeek.SUNDAY, LocalDate.now());
         setDateRangeLabel();
         setIcons();
+        setColors();
     }
 
     private void getReservations(LocalDate currentDate) {
@@ -93,18 +97,43 @@ public class UserController implements ListChangeListener{
             Optional<Booking> sundayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.SUNDAY, currentDate))).findFirst();
 
             reservations.add(new ReservationsPerWeek(timeSlot.toString(),
-                    mondayReservation.isPresent() ? mondayReservation.get().getUniversityRoom().getNumber() : "",
-                    tuesdayReservation.isPresent() ? tuesdayReservation.get().getUniversityRoom().getNumber() : "",
-                    wednesdayReservation.isPresent() ? wednesdayReservation.get().getUniversityRoom().getNumber() : "",
-                    thursdayReservation.isPresent() ? thursdayReservation.get().getUniversityRoom().getNumber() : "",
-                    fridayReservation.isPresent() ? fridayReservation.get().getUniversityRoom().getNumber() : "",
-                    saturdayReservation.isPresent() ? saturdayReservation.get().getUniversityRoom().getNumber() : "",
-                    sundayReservation.isPresent() ? sundayReservation.get().getUniversityRoom().getNumber() : ""));
+                    mondayReservation.isPresent() ? deleteRepetitions(mondayReservation.get(), DayOfWeek.MONDAY): "",
+                    tuesdayReservation.isPresent() ? deleteRepetitions(tuesdayReservation.get(), DayOfWeek.TUESDAY) : "",
+                    wednesdayReservation.isPresent() ? deleteRepetitions(wednesdayReservation.get(), DayOfWeek.WEDNESDAY) : "",
+                    thursdayReservation.isPresent() ? deleteRepetitions(thursdayReservation.get(), DayOfWeek.THURSDAY) : "",
+                    fridayReservation.isPresent() ? deleteRepetitions(fridayReservation.get(), DayOfWeek.FRIDAY) : "",
+                    saturdayReservation.isPresent() ? deleteRepetitions(saturdayReservation.get(), DayOfWeek.SATURDAY) : "",
+                    sundayReservation.isPresent() ? deleteRepetitions(sundayReservation.get(), DayOfWeek.SUNDAY) : ""));
         }
     }
     private  List<TimeSlot> getTimeSlots() {
         TimeSlotDAO timeSlotDAO = new TimeSlotDAO();
         return timeSlotDAO.getAll();
+    }
+
+    private String deleteRepetitions(Booking reservation, DayOfWeek dayOfWeek) {
+        int index = reservations.size() - 1;
+        if(index < 0) {
+            return reservation.getUniversityRoom().getNumber();
+        }
+        ReservationsPerWeek res = reservations.get(index);
+        switch (dayOfWeek) {
+            case MONDAY:
+                return res.getMonday().equals(reservation.getUniversityRoom().getNumber()) ? "." : reservation.getUniversityRoom().getNumber();
+            case TUESDAY:
+                return res.getTuesday().equals(reservation.getUniversityRoom().getNumber()) ? "." : reservation.getUniversityRoom().getNumber();
+            case WEDNESDAY:
+                return res.getWednesday().equals(reservation.getUniversityRoom().getNumber()) ? "." : reservation.getUniversityRoom().getNumber();
+            case THURSDAY:
+                return res.getThursday().equals(reservation.getUniversityRoom().getNumber()) ? "." : reservation.getUniversityRoom().getNumber();
+            case FRIDAY:
+                return res.getFriday().equals(reservation.getUniversityRoom().getNumber()) ? "." : reservation.getUniversityRoom().getNumber();
+            case SATURDAY:
+                return res.getSaturday().equals(reservation.getUniversityRoom().getNumber()) ? "." : reservation.getUniversityRoom().getNumber();
+            case SUNDAY:
+                return res.getSunday().equals(reservation.getUniversityRoom().getNumber()) ? "." : reservation.getUniversityRoom().getNumber();
+        }
+        return null;
     }
 
     private boolean containsTimeSlot(Booking reservation, TimeSlot timeSlot) {
@@ -143,6 +172,7 @@ public class UserController implements ListChangeListener{
         currentStartDate = Date.valueOf(currentStartDate.toLocalDate().minusDays(7));
         setData(currentStartDate.toLocalDate());
         setDateRangeLabel();
+        setColors();
     }
 
     public void handleShowNextWeek(ActionEvent actionEvent) {
@@ -150,6 +180,7 @@ public class UserController implements ListChangeListener{
         currentEndDate = Date.valueOf(currentStartDate.toLocalDate().plusDays(6));
         setData(currentStartDate.toLocalDate());
         setDateRangeLabel();
+        setColors();
     }
 
     private void setIcons() {
@@ -167,5 +198,54 @@ public class UserController implements ListChangeListener{
         String formattedStartDate = new SimpleDateFormat("dd/MM").format(this.currentStartDate);
         String formattedEndDate = new SimpleDateFormat("dd/MM/yyyy").format(this.currentEndDate);
         dateRangeLabel.setText(formattedStartDate + " - "+ formattedEndDate);
+    }
+
+    private String getRandomColor(){
+        Random ra = new Random();
+        int r, g, b;
+        r=ra.nextInt(255);
+        g=ra.nextInt(255);
+        b=ra.nextInt(255);
+        Color color = new Color(r,g,b);
+        String hex = Integer.toHexString(color.getRGB() & 0xffffff);
+        if (hex.length() < 6) {
+            hex = "0" + hex;
+        }
+        return  "#" + hex;
+    }
+
+    private void setColors() {
+        for (TableColumn col : myCalendarTable.getColumns()) {
+            if(col.getId().equals("slots")) {
+                continue;
+            }
+            col.setCellFactory(column -> {
+                return new TableCell<TableColumn, String>() {
+                    String old;
+                    String color;
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if (item == null || empty) {
+                            setText(null);
+                            setStyle("");
+                        } else {
+
+                            if (item.isEmpty()) {
+                                setStyle("");
+                            } else if(item.equals(".")){
+                                color = getRandomColor();
+                                setStyle("-fx-background-color: " + color);
+                            } else {
+                                setText(item);
+                                color = getRandomColor();
+                                setStyle("-fx-background-color: " + color);
+                            }
+                        }
+                    }
+                };
+            });
+        }
     }
 }
