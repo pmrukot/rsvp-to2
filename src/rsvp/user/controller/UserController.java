@@ -4,9 +4,12 @@ package rsvp.user.controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import rsvp.booking.DAO.BookingDAO;
 import rsvp.booking.DAO.DBBookingDAO;
@@ -16,8 +19,10 @@ import rsvp.resources.model.TimeSlot;
 import rsvp.user.model.ReservationsPerWeek;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,6 +30,9 @@ import java.util.stream.Collectors;
 public class UserController implements ListChangeListener{
 
 
+    public Button previousButton;
+    public Label dateRangeLabel;
+    public Button nextButton;
     private Stage primaryStage;
     private ObservableList<ReservationsPerWeek> reservations = FXCollections.observableArrayList();
     @FXML
@@ -47,6 +55,9 @@ public class UserController implements ListChangeListener{
     @FXML
     private TableColumn sunday;
 
+    private Date currentStartDate;
+    private Date currentEndDate;
+
 
     @FXML
     private void initialize() {
@@ -59,22 +70,27 @@ public class UserController implements ListChangeListener{
         friday.setCellValueFactory(new PropertyValueFactory<ReservationsPerWeek, String>("friday"));
         saturday.setCellValueFactory(new PropertyValueFactory<ReservationsPerWeek, String>("saturday"));
         sunday.setCellValueFactory(new PropertyValueFactory<ReservationsPerWeek, String>("sunday"));
-        setData();
+        setData(LocalDate.now());
+        currentStartDate = getDate(DayOfWeek.MONDAY, LocalDate.now());
+        currentEndDate = getDate(DayOfWeek.SUNDAY, LocalDate.now());
+        setDateRangeLabel();
+        setIcons();
     }
 
-    private void getReservations() {
+    private void getReservations(LocalDate currentDate) {
+        reservations.clear();
         BookingDAO bookingDAO = new DBBookingDAO();
         List<Booking> allReservations = bookingDAO.getAllBookingsForCurrentUser();
         List<TimeSlot> timeSlots = getTimeSlots();
         for(TimeSlot timeSlot : timeSlots) {
             List<Booking> reservationForTimeSlot = allReservations.stream().filter(res -> containsTimeSlot(res, timeSlot)).collect(Collectors.toList());
-            Optional<Booking> mondayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.MONDAY))).findFirst();
-            Optional<Booking> tuesdayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.TUESDAY))).findFirst();
-            Optional<Booking> wednesdayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.WEDNESDAY))).findFirst();
-            Optional<Booking> thursdayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.THURSDAY))).findFirst();
-            Optional<Booking> fridayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.FRIDAY))).findFirst();
-            Optional<Booking> saturdayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.SATURDAY))).findFirst();
-            Optional<Booking> sundayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.SUNDAY))).findFirst();
+            Optional<Booking> mondayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.MONDAY, currentDate))).findFirst();
+            Optional<Booking> tuesdayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.TUESDAY, currentDate))).findFirst();
+            Optional<Booking> wednesdayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.WEDNESDAY, currentDate))).findFirst();
+            Optional<Booking> thursdayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.THURSDAY, currentDate))).findFirst();
+            Optional<Booking> fridayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.FRIDAY, currentDate))).findFirst();
+            Optional<Booking> saturdayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.SATURDAY, currentDate))).findFirst();
+            Optional<Booking> sundayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.SUNDAY, currentDate))).findFirst();
 
             reservations.add(new ReservationsPerWeek(timeSlot.toString(),
                     mondayReservation.isPresent() ? mondayReservation.get().getUniversityRoom().getNumber() : "",
@@ -100,8 +116,7 @@ public class UserController implements ListChangeListener{
         return false;
     }
 
-    private Date getDate(DayOfWeek dayOfWeek) {
-        LocalDate currentDate = LocalDate.now();
+    private Date getDate(DayOfWeek dayOfWeek, LocalDate currentDate) {
         DayOfWeek currentDayOfWeek = currentDate.getDayOfWeek();
         if(dayOfWeek.equals(currentDayOfWeek)){
             return Date.valueOf(currentDate);
@@ -111,14 +126,46 @@ public class UserController implements ListChangeListener{
         return Date.valueOf(currentDate.plusDays(dayOfWeek.getValue() - currentDayOfWeek.getValue()));
     }
 
-    private void setData() {
-        getReservations();
+    private void setData(LocalDate date) {
+        getReservations(date);
         myCalendarTable.setItems(reservations);
+        myCalendarTable.getColumns().clear();
         myCalendarTable.getColumns().addAll(slots, monday, tuesday, wednesday, thursday, friday, saturday, sunday);
     }
 
     @Override
     public void onChanged(Change c) {
-        setData();
+        setData(LocalDate.now());
+    }
+
+    public void handleShowPreviousWeek(ActionEvent actionEvent) {
+        currentEndDate = Date.valueOf(currentStartDate.toLocalDate().minusDays(1));
+        currentStartDate = Date.valueOf(currentStartDate.toLocalDate().minusDays(7));
+        setData(currentStartDate.toLocalDate());
+        setDateRangeLabel();
+    }
+
+    public void handleShowNextWeek(ActionEvent actionEvent) {
+        currentStartDate = Date.valueOf(currentEndDate.toLocalDate().plusDays(1));
+        currentEndDate = Date.valueOf(currentStartDate.toLocalDate().plusDays(6));
+        setData(currentStartDate.toLocalDate());
+        setDateRangeLabel();
+    }
+
+    private void setIcons() {
+        ImageView previousView = new ImageView(new Image(getClass().getResourceAsStream("../view/images/previous.png")));
+        previousView.setFitWidth(20);
+        previousView.setFitHeight(20);
+        previousButton.setGraphic(previousView);
+        ImageView nextView = new ImageView(new Image(getClass().getResourceAsStream("../view/images/next.png")));
+        nextView.setFitWidth(20);
+        nextView.setFitHeight(20);
+        nextButton.setGraphic(nextView);
+    }
+
+    private void setDateRangeLabel(){
+        String formattedStartDate = new SimpleDateFormat("dd/MM").format(this.currentStartDate);
+        String formattedEndDate = new SimpleDateFormat("dd/MM/yyyy").format(this.currentEndDate);
+        dateRangeLabel.setText(formattedStartDate + " - "+ formattedEndDate);
     }
 }

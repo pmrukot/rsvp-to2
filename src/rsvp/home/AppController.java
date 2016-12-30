@@ -32,9 +32,6 @@ public class AppController {
     private TabPane resourcesPage;
 
     @FXML
-    private VBox userPage;
-
-    @FXML
     private TextField login;
 
     @FXML
