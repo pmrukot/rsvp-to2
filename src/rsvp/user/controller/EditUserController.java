@@ -17,7 +17,6 @@ import rsvp.user.view.Alert;
 public class EditUserController {
     private int index;
     private User editedUser;
-    private UserListManager userListManager;
     private UserDAO userDAO;
     @FXML
     public TextField login;
@@ -32,10 +31,9 @@ public class EditUserController {
     @FXML
     public Button saveEditedUser;
 
-    void initData(int index, User user, UserListManager userListManager, UserDAO userDAO) {
+    void initData(int index, User user, UserDAO userDAO) {
         this.index = index;
         editedUser = user;
-        this.userListManager = userListManager;
         this.userDAO = userDAO;
         if(user != null) {
             login.setText(user.getLogin());
@@ -73,7 +71,7 @@ public class EditUserController {
         if(userDAO.createUser(u)) {
             Alert alert = new Alert("Created new user successfully!\nUser login: " + u.getLogin(), AlertType.INFORMATION);
             alert.showAndWait();
-            userListManager.addUser(u);
+            UserListManagerSingleton.getInstance().addUser(u);
         } else {
             Alert alert = new Alert("Failed to create new user!", AlertType.ERROR);
             alert.showAndWait();
@@ -90,7 +88,7 @@ public class EditUserController {
         if(userDAO.updateUser(editedUser)) {
             Alert alert = new Alert("User edited successfully!\nUser login: " + editedUser.getLogin(), AlertType.INFORMATION);
             alert.showAndWait();
-            userListManager.updateUser(index, editedUser);
+            UserListManagerSingleton.getInstance().updateUser(index, editedUser);
         } else {
             Alert alert = new Alert("Failed to create new user!", AlertType.ERROR);
             alert.showAndWait();

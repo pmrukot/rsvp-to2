@@ -24,7 +24,6 @@ import java.util.List;
 
 public class AdminController implements ListChangeListener {
     private UserDAO userDAO;
-    private UserListManager userListManager;
     private FilteredList<User> filteredList;
     @FXML
     private TextField searchField;
@@ -49,7 +48,7 @@ public class AdminController implements ListChangeListener {
     @SuppressWarnings("unchecked")
     public void initialize() {
         userDAO = new DBUserDAO();
-        userListManager = new UserListManager(userDAO.findUsersByName(""), this);
+        UserListManagerSingleton.getInstance().addListener(this);
         isAdminColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().isAdmin()));
         usersTable.getColumns().addListener( (ListChangeListener) (c -> { // prevent column reordering
             c.next();
@@ -60,7 +59,7 @@ public class AdminController implements ListChangeListener {
         }));
         editButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
         deleteButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
-        filteredList = new FilteredList<>(userListManager.getUsers());
+        filteredList = new FilteredList<>(UserListManagerSingleton.getInstance().getUsers());
         searchField.textProperty().addListener( (observable, oldValue, newValue) -> filteredList.setPredicate(user -> {
                 if(newValue == null || newValue.isEmpty()) {
                     return true;
@@ -94,7 +93,7 @@ public class AdminController implements ListChangeListener {
                 List<User> createdUsers = Upload.createUsersFromCsv(file);
                 Alert alert = new Alert(String.format("%s users were created!", createdUsers.size()), AlertType.INFORMATION);
                 alert.showAndWait();
-                userListManager.addAllUsers(createdUsers);
+                UserListManagerSingleton.getInstance().addAllUsers(createdUsers);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -103,7 +102,7 @@ public class AdminController implements ListChangeListener {
 
     public void editUser() {
         User selectedUser = usersTable.getSelectionModel().getSelectedItem();
-        int index = userListManager.indexOf(selectedUser);
+        int index = UserListManagerSingleton.getInstance().indexOf(selectedUser);
         initEditUserLayout(index, selectedUser);
     }
 
@@ -115,8 +114,8 @@ public class AdminController implements ListChangeListener {
             Scene scene = new Scene(editUserLayout, 600, 300);
             Stage secondaryStage = new Stage();
             secondaryStage.setScene(scene);
-            EditUserController controller = loader.<EditUserController>getController();
-            controller.initData(index, updatedUser, userListManager, userDAO);
+            EditUserController controller = loader.getController();
+            controller.initData(index, updatedUser, userDAO);
             secondaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -134,7 +133,7 @@ public class AdminController implements ListChangeListener {
                         String login = selectedUser.getLogin();
                         Alert alert2 = new Alert(String.format("Deleting user %s succeeded!", login), AlertType.INFORMATION);
                         alert2.showAndWait();
-                        userListManager.removeUser(selectedUser);
+                        UserListManagerSingleton.getInstance().removeUser(selectedUser);
                     } else {
                         Alert alert2 = new Alert(String.format("Failed to delete user %s!", selectedUser.getLogin()), AlertType.ERROR);
                         alert2.showAndWait();

@@ -3,31 +3,21 @@ package rsvp.user.API;
 import javafx.collections.ListChangeListener;
 import rsvp.user.DAO.DBUserDAO;
 import rsvp.user.DAO.UserDAO;
+import rsvp.user.controller.UserListManagerSingleton;
 import rsvp.user.model.User;
 import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
 import java.util.stream.Collectors;
 
-public class UserProviderSingleton extends Observable implements ListChangeListener {
-    private static UserProviderSingleton instance;
+public class UserProvider extends Observable implements ListChangeListener {
     private static UserDAO userDAO;
     private static List<User> users;
 
-    private UserProviderSingleton() {
+    private UserProvider() {
         userDAO = new DBUserDAO();
         users = userDAO.findUsersByName("");
-    }
-
-    public static UserProviderSingleton getInstance() {
-        if(instance == null) {
-            synchronized (UserProviderSingleton.class) {
-                if(instance == null) {
-                    instance = new UserProviderSingleton();
-                }
-            }
-        }
-        return instance;
+        UserListManagerSingleton.getInstance().addListener(this);
     }
 
     public List<User> getUsers() {
