@@ -5,30 +5,26 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import rsvp.user.API.UserProviderSingleton;
-import rsvp.user.DAO.*;
+import rsvp.user.DAO.DBUserDAO;
+import rsvp.user.DAO.UserDAO;
 import rsvp.user.model.User;
 import rsvp.user.upload.Upload;
-import rsvp.user.view.*;
 import rsvp.user.view.Alert;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 public class AdminController implements ListChangeListener {
     private UserDAO userDAO;
-    private UserProviderSingleton instance;
+    private UserListManager userListManager;
     private FilteredList<User> filteredList;
     @FXML
     private TextField searchField;
@@ -48,24 +44,12 @@ public class AdminController implements ListChangeListener {
     private TableColumn<User, String> passwordColumn;
     @FXML
     private TableColumn<User, Boolean> isAdminColumn;
-    @FXML
-    private TextField loginField;
-    @FXML
-    private TextField firstNameField;
-    @FXML
-    private TextField lastNameField;
-    @FXML
-    private TextField passwordField;
-    @FXML
-    private TextField isAdminField;
-    @FXML
-    private Button addButton;
 
     @FXML
     @SuppressWarnings("unchecked")
     public void initialize() {
         userDAO = new DBUserDAO();
-        instance = UserProviderSingleton.getInstance();
+        userListManager = new UserListManager(userDAO.findUsersByName(""), this);
         isAdminColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().isAdmin()));
         usersTable.getColumns().addListener( (ListChangeListener) (c -> { // prevent column reordering
             c.next();
@@ -76,7 +60,7 @@ public class AdminController implements ListChangeListener {
         }));
         editButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
         deleteButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
-        filteredList = new FilteredList<>(instance.getUsers());
+        filteredList = new FilteredList<>(userListManager.getUsers());
         searchField.textProperty().addListener( (observable, oldValue, newValue) -> filteredList.setPredicate(user -> {
                 if(newValue == null || newValue.isEmpty()) {
                     return true;
@@ -92,6 +76,7 @@ public class AdminController implements ListChangeListener {
 
     @Override
     public void onChanged(Change c) {
+        // when source list changed re-apply filter
         filteredList.filtered(user -> {
             String lowerCaseFilter = searchField.getText().toLowerCase();
             return user.getLastName().toLowerCase().contains(lowerCaseFilter);
@@ -109,57 +94,55 @@ public class AdminController implements ListChangeListener {
                 List<User> createdUsers = Upload.createUsersFromCsv(file);
                 Alert alert = new Alert(String.format("%s users were created!", createdUsers.size()), AlertType.INFORMATION);
                 alert.showAndWait();
-                instance.getUsers().addAll(createdUsers);
+                userListManager.addAllUsers(createdUsers);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
     public void editUser() {
         User selectedUser = usersTable.getSelectionModel().getSelectedItem();
-        int index = instance.getUsers().indexOf(selectedUser);
-        initEditUserLayout(selectedUser, index);
+        int index = userListManager.indexOf(selectedUser);
+        initEditUserLayout(index, selectedUser);
     }
 
-    private void initEditUserLayout(User updatedUser, int index) {
+    private void initEditUserLayout(int index, User updatedUser) {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(rsvp.home.Main.class.getResource("../user/view/EditUserView.fxml"));
-
             Parent editUserLayout = loader.load();
-
             Scene scene = new Scene(editUserLayout, 600, 300);
             Stage secondaryStage = new Stage();
             secondaryStage.setScene(scene);
             EditUserController controller = loader.<EditUserController>getController();
-            controller.initData(updatedUser, index);
+            controller.initData(index, updatedUser, userListManager, userDAO);
             secondaryStage.show();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void deleteUser() {
+        // todo alert decomposition broke this. adding return in showAndWait kind of fixed it.
         User selectedUser = usersTable.getSelectionModel().getSelectedItem();
         Alert alert = new Alert(String.format("Are you sure that you want to delete user %s?", selectedUser.getLogin()), AlertType.CONFIRMATION);
-        Optional<ButtonType> result = alert.showAndWait();
-        if(result.get() == ButtonType.OK) {
-            if(userDAO.deleteUser(selectedUser)) {
-                String login = selectedUser.getLogin();
-                Alert alert2 = new Alert(String.format("Deleting user %s succeeded!", login), AlertType.INFORMATION);
-                alert2.showAndWait();
-                instance.getUsers().remove(selectedUser);
-            } else {
-                Alert alert2 = new Alert(String.format("Failed to delete user %s!", selectedUser.getLogin()), AlertType.ERROR);
-                alert2.showAndWait();
-            }
-        }
+        alert.showAndWait()
+                .filter(response -> response == ButtonType.OK)
+                .ifPresent(response -> {
+                    if(userDAO.deleteUser(selectedUser)) {
+                        String login = selectedUser.getLogin();
+                        Alert alert2 = new Alert(String.format("Deleting user %s succeeded!", login), AlertType.INFORMATION);
+                        alert2.showAndWait();
+                        userListManager.removeUser(selectedUser);
+                    } else {
+                        Alert alert2 = new Alert(String.format("Failed to delete user %s!", selectedUser.getLogin()), AlertType.ERROR);
+                        alert2.showAndWait();
+                    }
+                });
     }
 
-    public void addUser(ActionEvent actionEvent) {
-        initEditUserLayout(null, 0);
+    public void addUser() {
+        initEditUserLayout(0, null);
     }
 }

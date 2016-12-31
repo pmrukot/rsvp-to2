@@ -1,21 +1,22 @@
 package rsvp.user.API;
 
-import javafx.collections.ObservableList;
-import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import rsvp.user.DAO.DBUserDAO;
 import rsvp.user.DAO.UserDAO;
 import rsvp.user.model.User;
+import java.util.Collections;
 import java.util.List;
+import java.util.Observable;
 import java.util.stream.Collectors;
 
-public class UserProviderSingleton {
+public class UserProviderSingleton extends Observable implements ListChangeListener {
     private static UserProviderSingleton instance;
     private static UserDAO userDAO;
-    private static ObservableList<User> users;
+    private static List<User> users;
 
     private UserProviderSingleton() {
         userDAO = new DBUserDAO();
-        users = FXCollections.observableList(userDAO.findUsersByName(""));
+        users = userDAO.findUsersByName("");
     }
 
     public static UserProviderSingleton getInstance() {
@@ -29,43 +30,53 @@ public class UserProviderSingleton {
         return instance;
     }
 
-    public void refreshUsers() {
-        users.clear();
-        users.addAll(userDAO.findUsersByName(""));
-    }
-
-    public ObservableList<User> getUsers() {
-        return users;
+    public List<User> getUsers() {
+        return Collections.unmodifiableList(users);
     }
 
     public List<User> getUsersByLogin(String login) {
-        return users.stream().filter(u -> u.getLogin().toLowerCase().contains(login.toLowerCase()))
-                .collect(Collectors.toList());
+        return Collections.unmodifiableList(
+                users.stream().filter(u -> u.getLogin().toLowerCase().contains(login.toLowerCase()))
+                .collect(Collectors.toList())
+        );
     }
 
     public List<User> getUsersByFirstName(String firstName) {
-        return users.stream().filter(u -> u.getFirstName().toLowerCase().contains(firstName.toLowerCase()))
-                .collect(Collectors.toList());
+        return Collections.unmodifiableList(
+                users.stream().filter(u -> u.getFirstName().toLowerCase().contains(firstName.toLowerCase()))
+                .collect(Collectors.toList())
+        );
     }
 
     public List<User> getUsersByLastName(String lastName) {
-        return users.stream().filter(u -> u.getLastName().toLowerCase().contains(lastName.toLowerCase()))
-                .collect(Collectors.toList());
+        return Collections.unmodifiableList(
+                users.stream().filter(u -> u.getLastName().toLowerCase().contains(lastName.toLowerCase()))
+                .collect(Collectors.toList())
+        );
     }
 
     public List<User> getUsersByFirstAndLastName(String firstAndLastName) {
-        return users.stream().filter(u -> {
-            String[] names = firstAndLastName.split("\\s+");
-            if(names.length > 0) {
-                if(names.length == 1) {
-                    return u.getFirstName().toLowerCase().contains(names[0].toLowerCase());
+        return Collections.unmodifiableList(
+                users.stream().filter(u -> {
+                String[] names = firstAndLastName.split("\\s+");
+                if(names.length > 0) {
+                    if(names.length == 1) {
+                        return u.getFirstName().toLowerCase().contains(names[0].toLowerCase());
+                    } else {
+                        return u.getFirstName().toLowerCase().equals(names[0].toLowerCase()) &&
+                                u.getLastName().toLowerCase().contains(names[1].toLowerCase());
+                    }
                 } else {
-                    return u.getFirstName().toLowerCase().equals(names[0].toLowerCase()) &&
-                            u.getLastName().toLowerCase().contains(names[1].toLowerCase());
+                    return true;
                 }
-            } else {
-                return true;
-            }
-        }).collect(Collectors.toList());
+            }).collect(Collectors.toList())
+        );
+    }
+
+    @Override
+    public void onChanged(Change c) {
+        users = userDAO.findUsersByName("");
+        setChanged();
+        notifyObservers();
     }
 }
