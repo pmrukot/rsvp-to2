@@ -5,13 +5,19 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 import rsvp.resources.DAO.UniversityRoomDAO;
 import rsvp.resources.model.UniversityRoom;
 import rsvp.resources.view.CalendarCell;
+
+import java.io.IOException;
 
 public class UniversityRoomController {
     private static final String CAPACITY_ALERT = "You have to provide capacity greater than 0 and lesser than 200";
@@ -55,6 +61,21 @@ public class UniversityRoomController {
             secondTextField.clear();
     }
 
+    public void createNewCalendarWindow(UniversityRoom universityRoom){
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("../view/CalendarView.fxml"));
+            HBox root = loader.load();
+            CalendarController controller = loader.<CalendarController>getController();
+            controller.setContentForUniversityRoom(universityRoom);
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     private void initialize() {
         errorAlert = new Alert(Alert.AlertType.ERROR);
@@ -71,7 +92,7 @@ public class UniversityRoomController {
         capacityColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
         calendarColumn.setCellValueFactory(p -> new SimpleBooleanProperty(p.getValue() != null));
-        calendarColumn.setCellFactory(p -> new CalendarCell());
+        calendarColumn.setCellFactory(p -> new CalendarCell(this));
 
         items.addAll(universityRoomDAO.getAll());
         universityRoomListTableView.setItems(items);
