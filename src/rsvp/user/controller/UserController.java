@@ -128,7 +128,7 @@ public class UserController implements ListChangeListener{
         return !date.before(start) && !date.after(end);
     }
 
-    public boolean isBetweenTimeSlots(TimeSlot start, TimeSlot end, TimeSlot timeSlot){
+    private boolean isBetweenTimeSlots(TimeSlot start, TimeSlot end, TimeSlot timeSlot){
         if(start == null && end == null) return true;
         if(start == null) return (end.compareTo(timeSlot) == 1 || end.getId() == timeSlot.getId());
         if(end == null) return (start.compareTo(timeSlot) == -1 || start.getId() == timeSlot.getId());
