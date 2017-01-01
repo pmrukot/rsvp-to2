@@ -1,6 +1,8 @@
 package rsvp.user.controller;
 
 
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -9,26 +11,23 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
-import rsvp.booking.DAO.BookingDAO;
+import javafx.util.Pair;
 import rsvp.booking.DAO.DBBookingDAO;
 import rsvp.booking.model.Booking;
 import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.TimeSlot;
-import rsvp.user.model.ReservationsPerWeek;
+import rsvp.user.view.MyCalendarCell;
+import rsvp.user.view.MyCalendarColumn;
 
-import java.awt.*;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.stream.Collectors;
 
 public class UserController implements ListChangeListener{
 
@@ -36,110 +35,106 @@ public class UserController implements ListChangeListener{
     public Button previousButton;
     public Label dateRangeLabel;
     public Button nextButton;
-    private Stage primaryStage;
-    private ObservableList<ReservationsPerWeek> reservations = FXCollections.observableArrayList();
     @FXML
-    private TableView<ReservationsPerWeek> myCalendarTable;
+    private TableView<MyCalendarCell> myCalendarTable;
 
     @FXML
-    public TableColumn<ReservationsPerWeek, String> slots;
+    public TableColumn<MyCalendarCell, String> slots;
     @FXML
-    private TableColumn monday;
+    private MyCalendarColumn monday;
     @FXML
-    private TableColumn<ReservationsPerWeek, String> tuesday;
+    private MyCalendarColumn tuesday;
     @FXML
-    private TableColumn<ReservationsPerWeek, String> wednesday;
+    private MyCalendarColumn wednesday;
     @FXML
-    private TableColumn<ReservationsPerWeek, String> thursday;
+    private MyCalendarColumn thursday;
     @FXML
-    private TableColumn<ReservationsPerWeek, String> friday;
+    private MyCalendarColumn friday;
     @FXML
-    private TableColumn<ReservationsPerWeek, String> saturday;
+    private MyCalendarColumn saturday;
     @FXML
-    private TableColumn<ReservationsPerWeek, String> sunday;
+    private MyCalendarColumn sunday;
 
     private Date currentStartDate;
     private Date currentEndDate;
+    private List<Booking> bookings;
 
 
     @FXML
     private void initialize() {
+        DBBookingDAO bookingDAO = new DBBookingDAO();
+        bookings = bookingDAO.getAllBookingsForCurrentUser();
         myCalendarTable.setEditable(false);
-        slots.setCellValueFactory(new PropertyValueFactory<ReservationsPerWeek, String>("slots"));
-        monday.setCellValueFactory(new PropertyValueFactory<ReservationsPerWeek, String>("monday"));
-        tuesday.setCellValueFactory(new PropertyValueFactory<ReservationsPerWeek, String>("tuesday"));
-        wednesday.setCellValueFactory(new PropertyValueFactory<ReservationsPerWeek, String>("wednesday"));
-        thursday.setCellValueFactory(new PropertyValueFactory<ReservationsPerWeek, String>("thursday"));
-        friday.setCellValueFactory(new PropertyValueFactory<ReservationsPerWeek, String>("friday"));
-        saturday.setCellValueFactory(new PropertyValueFactory<ReservationsPerWeek, String>("saturday"));
-        sunday.setCellValueFactory(new PropertyValueFactory<ReservationsPerWeek, String>("sunday"));
-        setData(LocalDate.now());
+        slots.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getTimeSlotRepresentation()));
+        monday.setCellValueFactory(p -> new SimpleObjectProperty<>(
+                new Pair<>(p.getValue().getBookingDescriptionPerDay(1), p.getValue().getColor(1))));
+        tuesday.setCellValueFactory(p -> new SimpleObjectProperty<>(
+                new Pair<>(p.getValue().getBookingDescriptionPerDay(2), p.getValue().getColor(2))));
+        wednesday.setCellValueFactory(p -> new SimpleObjectProperty<>(
+                new Pair<>(p.getValue().getBookingDescriptionPerDay(3), p.getValue().getColor(3))));
+        thursday.setCellValueFactory(p -> new SimpleObjectProperty<>(
+                new Pair<>(p.getValue().getBookingDescriptionPerDay(4), p.getValue().getColor(4))));
+        friday.setCellValueFactory(p -> new SimpleObjectProperty<>(
+                new Pair<>(p.getValue().getBookingDescriptionPerDay(5), p.getValue().getColor(5))));
+        saturday.setCellValueFactory(p -> new SimpleObjectProperty<>(
+                new Pair<>(p.getValue().getBookingDescriptionPerDay(6), p.getValue().getColor(6))));
+        sunday.setCellValueFactory(p -> new SimpleObjectProperty<>(
+                new Pair<>(p.getValue().getBookingDescriptionPerDay(7), p.getValue().getColor(7))));
+
+
         currentStartDate = getDate(DayOfWeek.MONDAY, LocalDate.now());
         currentEndDate = getDate(DayOfWeek.SUNDAY, LocalDate.now());
         setDateRangeLabel();
         setIcons();
-        setColors();
+        initializeMyCalendarContent(currentStartDate, currentEndDate);
+
     }
 
-    private void getReservations(LocalDate currentDate) {
-        reservations.clear();
-        BookingDAO bookingDAO = new DBBookingDAO();
-        List<Booking> allReservations = bookingDAO.getAllBookingsForCurrentUser();
-        List<TimeSlot> timeSlots = getTimeSlots();
-        for(TimeSlot timeSlot : timeSlots) {
-            List<Booking> reservationForTimeSlot = allReservations.stream().filter(res -> containsTimeSlot(res, timeSlot)).collect(Collectors.toList());
-            Optional<Booking> mondayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.MONDAY, currentDate))).findFirst();
-            Optional<Booking> tuesdayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.TUESDAY, currentDate))).findFirst();
-            Optional<Booking> wednesdayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.WEDNESDAY, currentDate))).findFirst();
-            Optional<Booking> thursdayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.THURSDAY, currentDate))).findFirst();
-            Optional<Booking> fridayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.FRIDAY, currentDate))).findFirst();
-            Optional<Booking> saturdayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.SATURDAY, currentDate))).findFirst();
-            Optional<Booking> sundayReservation = reservationForTimeSlot.stream().filter(res -> res.getReservationDate().equals(getDate(DayOfWeek.SUNDAY, currentDate))).findFirst();
-
-            reservations.add(new ReservationsPerWeek(timeSlot.toString(),
-                    mondayReservation.isPresent() ? deleteRepetitions(mondayReservation.get(), DayOfWeek.MONDAY): "",
-                    tuesdayReservation.isPresent() ? deleteRepetitions(tuesdayReservation.get(), DayOfWeek.TUESDAY) : "",
-                    wednesdayReservation.isPresent() ? deleteRepetitions(wednesdayReservation.get(), DayOfWeek.WEDNESDAY) : "",
-                    thursdayReservation.isPresent() ? deleteRepetitions(thursdayReservation.get(), DayOfWeek.THURSDAY) : "",
-                    fridayReservation.isPresent() ? deleteRepetitions(fridayReservation.get(), DayOfWeek.FRIDAY) : "",
-                    saturdayReservation.isPresent() ? deleteRepetitions(saturdayReservation.get(), DayOfWeek.SATURDAY) : "",
-                    sundayReservation.isPresent() ? deleteRepetitions(sundayReservation.get(), DayOfWeek.SUNDAY) : ""));
-        }
+    private void initializeMyCalendarContent(Date start, Date end){
+        ObservableList<MyCalendarCell> calendarTableItems = FXCollections.observableArrayList();
+        calendarTableItems.addAll(fillTableCells(start, end));
+        myCalendarTable.setItems(calendarTableItems);
     }
-    private  List<TimeSlot> getTimeSlots() {
+
+    private List<MyCalendarCell> fillTableCells(Date start, Date end){
+        List<MyCalendarCell> result = new ArrayList<>();
         TimeSlotDAO timeSlotDAO = new TimeSlotDAO();
-        return timeSlotDAO.getAll();
+        List<TimeSlot> timeSlots = timeSlotDAO.getAll();
+        Collections.sort(timeSlots);
+        Map<TimeSlot, MyCalendarCell> bookingItemsMap = new HashMap<>();
+
+        for (TimeSlot timeSlot : timeSlots){
+            MyCalendarCell item = new MyCalendarCell(timeSlot, timeSlots);
+            result.add(item);
+            bookingItemsMap.put(timeSlot, item);
+        }
+
+        bookings.stream().filter(booking ->
+                isInThePeriod(start, end, booking.getReservationDate())).
+                forEach(booking -> {
+                    Color color = getRandomColor();
+                    DayOfWeek dayOfWeek = booking.getReservationDate().toLocalDate().getDayOfWeek();
+                    timeSlots.stream().filter(timeSlot -> isBetweenTimeSlots(booking.getFirstSlot(),
+                            booking.getLastSlot(), timeSlot)).forEach(timeSlot -> {
+                        MyCalendarCell item = bookingItemsMap.get(timeSlot);
+                        item.addColor(dayOfWeek, color);
+                        item.addBookingsMap(dayOfWeek, booking);
+                    });
+                });
+
+        return result;
+    }
+    private boolean isInThePeriod(Date start, Date end, Date date){
+        return !date.before(start) && !date.after(end);
     }
 
-    private String deleteRepetitions(Booking reservation, DayOfWeek dayOfWeek) {
-        int index = reservations.size() - 1;
-        if(index < 0) {
-            return reservation.getUniversityRoom().getNumber();
-        }
-        ReservationsPerWeek res = reservations.get(index);
-        switch (dayOfWeek) {
-            case MONDAY:
-                return res.getMonday().equals(reservation.getUniversityRoom().getNumber()) ? "." : reservation.getUniversityRoom().getNumber();
-            case TUESDAY:
-                return res.getTuesday().equals(reservation.getUniversityRoom().getNumber()) ? "." : reservation.getUniversityRoom().getNumber();
-            case WEDNESDAY:
-                return res.getWednesday().equals(reservation.getUniversityRoom().getNumber()) ? "." : reservation.getUniversityRoom().getNumber();
-            case THURSDAY:
-                return res.getThursday().equals(reservation.getUniversityRoom().getNumber()) ? "." : reservation.getUniversityRoom().getNumber();
-            case FRIDAY:
-                return res.getFriday().equals(reservation.getUniversityRoom().getNumber()) ? "." : reservation.getUniversityRoom().getNumber();
-            case SATURDAY:
-                return res.getSaturday().equals(reservation.getUniversityRoom().getNumber()) ? "." : reservation.getUniversityRoom().getNumber();
-            case SUNDAY:
-                return res.getSunday().equals(reservation.getUniversityRoom().getNumber()) ? "." : reservation.getUniversityRoom().getNumber();
-        }
-        return null;
-    }
-
-    private boolean containsTimeSlot(Booking reservation, TimeSlot timeSlot) {
-        if(reservation.getFirstSlot().getId() == timeSlot.getId() || reservation.getLastSlot().getId() == timeSlot.getId()) {
+    public boolean isBetweenTimeSlots(TimeSlot start, TimeSlot end, TimeSlot timeSlot){
+        if(start == null && end == null) return true;
+        if(start == null) return (end.compareTo(timeSlot) == 1 || end.getId() == timeSlot.getId());
+        if(end == null) return (start.compareTo(timeSlot) == -1 || start.getId() == timeSlot.getId());
+        if(start.getId() == timeSlot.getId() || end.getId() == timeSlot.getId()) {
             return true;
-        } else if (reservation.getFirstSlot().compareTo(timeSlot) == -1 && reservation.getLastSlot().compareTo(timeSlot) == 1) {
+        } else if (start.compareTo(timeSlot) == -1 && end.compareTo(timeSlot) == 1) {
             return true;
         }
         return false;
@@ -155,32 +150,22 @@ public class UserController implements ListChangeListener{
         return Date.valueOf(currentDate.plusDays(dayOfWeek.getValue() - currentDayOfWeek.getValue()));
     }
 
-    private void setData(LocalDate date) {
-        getReservations(date);
-        myCalendarTable.setItems(reservations);
-        myCalendarTable.getColumns().clear();
-        myCalendarTable.getColumns().addAll(slots, monday, tuesday, wednesday, thursday, friday, saturday, sunday);
-    }
-
     @Override
     public void onChanged(Change c) {
-        setData(LocalDate.now());
     }
 
     public void handleShowPreviousWeek(ActionEvent actionEvent) {
         currentEndDate = Date.valueOf(currentStartDate.toLocalDate().minusDays(1));
         currentStartDate = Date.valueOf(currentStartDate.toLocalDate().minusDays(7));
-        setData(currentStartDate.toLocalDate());
+        initializeMyCalendarContent(currentStartDate, currentEndDate);
         setDateRangeLabel();
-        setColors();
     }
 
     public void handleShowNextWeek(ActionEvent actionEvent) {
         currentStartDate = Date.valueOf(currentEndDate.toLocalDate().plusDays(1));
-        currentEndDate = Date.valueOf(currentStartDate.toLocalDate().plusDays(6));
-        setData(currentStartDate.toLocalDate());
+        currentEndDate = Date.valueOf(currentEndDate.toLocalDate().plusDays(7));
+        initializeMyCalendarContent(currentStartDate, currentEndDate);
         setDateRangeLabel();
-        setColors();
     }
 
     private void setIcons() {
@@ -200,52 +185,11 @@ public class UserController implements ListChangeListener{
         dateRangeLabel.setText(formattedStartDate + " - "+ formattedEndDate);
     }
 
-    private String getRandomColor(){
-        Random ra = new Random();
-        int r, g, b;
-        r=ra.nextInt(255);
-        g=ra.nextInt(255);
-        b=ra.nextInt(255);
-        Color color = new Color(r,g,b);
-        String hex = Integer.toHexString(color.getRGB() & 0xffffff);
-        if (hex.length() < 6) {
-            hex = "0" + hex;
-        }
-        return  "#" + hex;
-    }
-
-    private void setColors() {
-        for (TableColumn col : myCalendarTable.getColumns()) {
-            if(col.getId().equals("slots")) {
-                continue;
-            }
-            col.setCellFactory(column -> {
-                return new TableCell<TableColumn, String>() {
-                    String old;
-                    String color;
-                    @Override
-                    protected void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
-
-                        if (item == null || empty) {
-                            setText(null);
-                            setStyle("");
-                        } else {
-
-                            if (item.isEmpty()) {
-                                setStyle("");
-                            } else if(item.equals(".")){
-                                color = getRandomColor();
-                                setStyle("-fx-background-color: " + color);
-                            } else {
-                                setText(item);
-                                color = getRandomColor();
-                                setStyle("-fx-background-color: " + color);
-                            }
-                        }
-                    }
-                };
-            });
-        }
+    private Color getRandomColor(){
+        Random rand = new Random();
+        double r = rand.nextFloat() / 2f + 0.5;
+        double g = rand.nextFloat() / 2f + 0.5;
+        double b = rand.nextFloat() / 2f + 0.5;
+        return new Color(r, g, b, 1.0);
     }
 }

@@ -6,6 +6,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
 
+<?import rsvp.user.view.MyCalendarColumn?>
 <GridPane fx:controller="rsvp.user.controller.UserController"
           xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
     <Button GridPane.rowIndex="0"  GridPane.columnIndex="0" fx:id="previousButton" onAction="#handleShowPreviousWeek" prefWidth="32.0" prefHeight="32.0"/>
@@ -16,13 +17,13 @@
     <TableView GridPane.rowIndex="1"  GridPane.columnIndex="1" fx:id="myCalendarTable" prefHeight="500.0" prefWidth="1000.0">
         <columns>
             <TableColumn fx:id="slots" prefWidth="75.0"  style="-fx-alignment: center"/>
-            <TableColumn fx:id="monday" prefWidth="75.0" text="Monday" style="-fx-alignment: center" />
-            <TableColumn fx:id="tuesday" prefWidth="75.0" text="Tuesday" style="-fx-alignment: center" />
-            <TableColumn fx:id="wednesday" prefWidth="75.0" text="Wednesday" style="-fx-alignment: center" />
-            <TableColumn fx:id="thursday" prefWidth="75.0" text="Thursday" style="-fx-alignment: center" />
-            <TableColumn fx:id="friday" prefWidth="75.0" text="Friday" style="-fx-alignment: center" />
-            <TableColumn fx:id="saturday" prefWidth="75.0" text="Saturday" style="-fx-alignment: center" />
-            <TableColumn fx:id="sunday" prefWidth="75.0" text="Sunday" style="-fx-alignment: center" />
+            <MyCalendarColumn fx:id="monday" prefWidth="75.0" text="Monday" style="-fx-alignment: center" />
+            <MyCalendarColumn fx:id="tuesday" prefWidth="75.0" text="Tuesday" style="-fx-alignment: center" />
+            <MyCalendarColumn fx:id="wednesday" prefWidth="75.0" text="Wednesday" style="-fx-alignment: center" />
+            <MyCalendarColumn fx:id="thursday" prefWidth="75.0" text="Thursday" style="-fx-alignment: center" />
+            <MyCalendarColumn fx:id="friday" prefWidth="75.0" text="Friday" style="-fx-alignment: center" />
+            <MyCalendarColumn fx:id="saturday" prefWidth="75.0" text="Saturday" style="-fx-alignment: center" />
+            <MyCalendarColumn fx:id="sunday" prefWidth="75.0" text="Sunday" style="-fx-alignment: center" />
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
