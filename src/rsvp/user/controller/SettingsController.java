@@ -2,44 +2,35 @@ package rsvp.user.controller;
 
 import javafx.beans.binding.BooleanBinding;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import rsvp.user.API.AuthenticationService;
-import rsvp.user.API.UserProviderSingleton;
 import rsvp.user.DAO.DBUserDAO;
-import rsvp.user.model.User;
 import rsvp.user.DAO.UserDAO;
+import rsvp.user.model.User;
 import rsvp.user.view.Alert;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-public class SettingsController implements Initializable{
-    private UserProviderSingleton instance;
+public class SettingsController {
+    @FXML
     public TextField login;
+    @FXML
     public TextField firstName;
+    @FXML
     public TextField lastName;
-
+    @FXML
+    private Button changeUserDataButton;
     @FXML
     private TextField oldPassword;
-
     @FXML
     private TextField newPassword;
-
     @FXML
     private TextField newPassword2;
-
     @FXML
     private Button changePasswordButton;
 
     @FXML
-    private Button changeUserDataButton;
+    public void initialize() {
 
-
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        instance = UserProviderSingleton.getInstance();
         User currentUser = AuthenticationService.getCurrentUser();
         login.setText(currentUser.getLogin());
         firstName.setText(currentUser.getFirstName());
@@ -55,10 +46,11 @@ public class SettingsController implements Initializable{
                 if(newPassword.getText().equals(newPassword2.getText())) {
                     UserDAO userDAO = new DBUserDAO();
                     currentUser.setPassword(newPassword.getText());
+                    int index = UserListManagerSingleton.getInstance().indexOf(currentUser);
                     if(userDAO.updateUser(currentUser)) {
                         showInformationDialog("Password changed successfully!");
                         clearPasswordTextFields();
-                        instance.refreshUsers();
+                        UserListManagerSingleton.getInstance().updateUser(index, currentUser);
                     } else {
                         currentUser.setPassword(oldPassword.getText());
                         showErrorDialog("Failed to change password!");
@@ -80,13 +72,13 @@ public class SettingsController implements Initializable{
         String backupLogin = currentUser.getLogin();
         String backupFirstName = currentUser.getFirstName();
         String backupLastName = currentUser.getLastName();
+        int index = UserListManagerSingleton.getInstance().indexOf(currentUser);
         currentUser.setLogin(login.getText());
         currentUser.setFirstName(firstName.getText());
         currentUser.setLastName(lastName.getText());
-
         if(userDAO.updateUser(currentUser)) {
             showInformationDialog("User data changed successfully!");
-            instance.refreshUsers();
+            UserListManagerSingleton.getInstance().updateUser(index, currentUser);
             addChangeUserDataBinding(currentUser);
         } else {
             backupUser(backupLogin, backupFirstName, backupLastName, currentUser);

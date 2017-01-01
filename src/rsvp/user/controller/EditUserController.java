@@ -1,49 +1,40 @@
 package rsvp.user.controller;
 
-
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.event.ActionEvent;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
-import rsvp.user.API.UserProviderSingleton;
-import rsvp.user.DAO.DBUserDAO;
 import rsvp.user.DAO.UserDAO;
 import rsvp.user.model.User;
 import rsvp.user.view.Alert;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-public class EditUserController implements Initializable{
-    private UserDAO userDAO;
-    private UserProviderSingleton instance;
-    public CheckBox admin;
-    public Button saveEditedUser;
-    public TextField firstName;
-    public TextField lastName;
-    public TextField login;
-    public TextField password;
-    private User editedUser;
+public class EditUserController {
     private int index;
+    private User editedUser;
+    private UserDAO userDAO;
+    @FXML
+    public TextField login;
+    @FXML
+    public TextField firstName;
+    @FXML
+    public TextField lastName;
+    @FXML
+    public TextField password;
+    @FXML
+    public CheckBox admin;
+    @FXML
+    public Button saveEditedUser;
 
-
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        userDAO = new DBUserDAO();
-        instance = UserProviderSingleton.getInstance();
-    }
-
-    public void initData(User user, int index) {
-        editedUser = user;
+    void initData(int index, User user, UserDAO userDAO) {
         this.index = index;
+        editedUser = user;
+        this.userDAO = userDAO;
         if(user != null) {
             login.setText(user.getLogin());
             firstName.setText(user.getFirstName());
@@ -56,7 +47,6 @@ public class EditUserController implements Initializable{
         }
     }
 
-
     public void saveEditedUser(ActionEvent actionEvent) {
         if(editedUser ==  null) {
             createUser();
@@ -67,8 +57,7 @@ public class EditUserController implements Initializable{
         ((Node)(actionEvent.getSource())).getScene().getWindow().hide();
     }
 
-
-    public void createUser() {
+    private void createUser() {
         User u;
         if(login.getText().equals("")) {
             if(password.getText().equals("")) {
@@ -82,15 +71,14 @@ public class EditUserController implements Initializable{
         if(userDAO.createUser(u)) {
             Alert alert = new Alert("Created new user successfully!\nUser login: " + u.getLogin(), AlertType.INFORMATION);
             alert.showAndWait();
-            instance.getUsers().add(u);
+            UserListManagerSingleton.getInstance().addUser(u);
         } else {
             Alert alert = new Alert("Failed to create new user!", AlertType.ERROR);
             alert.showAndWait();
         }
     }
 
-
-    public void editUser() {
+    private void editUser() {
         editedUser.setLogin(login.getText());
         editedUser.setFirstName(firstName.getText());
         editedUser.setLastName(lastName.getText());
@@ -100,13 +88,12 @@ public class EditUserController implements Initializable{
         if(userDAO.updateUser(editedUser)) {
             Alert alert = new Alert("User edited successfully!\nUser login: " + editedUser.getLogin(), AlertType.INFORMATION);
             alert.showAndWait();
-            instance.getUsers().set(index, editedUser);
+            UserListManagerSingleton.getInstance().updateUser(index, editedUser);
         } else {
             Alert alert = new Alert("Failed to create new user!", AlertType.ERROR);
             alert.showAndWait();
         }
     }
-
 
     private void addUserBinding() {
         saveEditedUser.disableProperty().bind(firstName.textProperty().isEmpty()
@@ -124,7 +111,5 @@ public class EditUserController implements Initializable{
                 .and(admin.selectedProperty().isEqualTo(isAdmin));
 
         saveEditedUser.disableProperty().bind(changeUserDataBinding);
-
     }
-
 }

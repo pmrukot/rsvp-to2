@@ -36,7 +36,6 @@ public class Alert {
     }
 
     public Optional<ButtonType> showAndWait() {
-        alert.showAndWait();
-        return null;
+        return alert.showAndWait();
     }
 }
