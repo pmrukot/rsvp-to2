@@ -104,6 +104,9 @@ public class CalendarController {
     }
 
     private boolean isBetweenTimeSlots(TimeSlot start, TimeSlot end, TimeSlot timeSlot){
+        if(start == null && end == null) return true;
+        if(start == null) return (timeSlot.getEndTime().isBefore(end.getStartTime())) || end.equals(timeSlot);
+        if(end == null) return (timeSlot.getStartTime().isAfter(start.getEndTime())) || start.equals(timeSlot);
         return (timeSlot.getEndTime().isBefore(end.getStartTime()) &&
                 timeSlot.getStartTime().isAfter(start.getEndTime())) || start.equals(timeSlot) || end.equals(timeSlot);
     }
@@ -128,7 +131,7 @@ public class CalendarController {
         Map<TimeSlot, CalendarTableItem> bookingItemsMap = new HashMap<>();
 
         for (TimeSlot timeSlot : timeSlots){
-            CalendarTableItem item = new CalendarTableItem(timeSlot);
+            CalendarTableItem item = new CalendarTableItem(timeSlot, timeSlots);
             result.add(item);
             bookingItemsMap.put(timeSlot, item);
         }
