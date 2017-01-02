@@ -14,28 +14,30 @@ public class TimeSlotManager {
     private List<TimeSlot> timeSlots;
     private TimeSlotDAO timeSlotDAO;
 
-    public TimeSlotManager(){
+    public TimeSlotManager() {
         timeSlotDAO = new TimeSlotDAO();
         timeSlots = new ArrayList<>();
         timeSlots.addAll(timeSlotDAO.getAll());
     }
 
     private boolean isColliding(LocalTime insertedStartTime, LocalTime insertedEndTime, TimeSlot excludedTimeSlot) {
-        for(TimeSlot timeSlot : timeSlots) {
-            if(excludedTimeSlot == null || timeSlot != excludedTimeSlot) {
+        for (TimeSlot timeSlot : timeSlots) {
+            if (excludedTimeSlot == null || timeSlot != excludedTimeSlot) {
                 LocalTime currentStartTime = timeSlot.getStartTime();
                 LocalTime currentEndTime = timeSlot.getEndTime();
-                if(insertedStartTime.isBefore(currentStartTime) && insertedEndTime.isAfter(currentStartTime)) return true;
-                if(insertedStartTime.equals(currentStartTime) || insertedEndTime.equals(currentEndTime)) return true;
-                if(insertedStartTime.isAfter(currentStartTime) && insertedEndTime.isBefore(currentEndTime)) return true;
-                if(insertedStartTime.isBefore(currentEndTime) && insertedEndTime.isAfter(currentEndTime)) return true;
+                if (insertedStartTime.isBefore(currentStartTime) && insertedEndTime.isAfter(currentStartTime))
+                    return true;
+                if (insertedStartTime.equals(currentStartTime) || insertedEndTime.equals(currentEndTime)) return true;
+                if (insertedStartTime.isAfter(currentStartTime) && insertedEndTime.isBefore(currentEndTime))
+                    return true;
+                if (insertedStartTime.isBefore(currentEndTime) && insertedEndTime.isAfter(currentEndTime)) return true;
             }
         }
         return false;
     }
 
-    public Optional<String> createNewTimeSlot(TimeSlot timeSlot){
-        if(isColliding(timeSlot.getStartTime(), timeSlot.getEndTime(), null)){
+    public Optional<String> createNewTimeSlot(TimeSlot timeSlot) {
+        if (isColliding(timeSlot.getStartTime(), timeSlot.getEndTime(), null)) {
             return Optional.of(COLLISION_ALERT);
         }
         timeSlots.add(timeSlot);
@@ -43,17 +45,17 @@ public class TimeSlotManager {
         return Optional.empty();
     }
 
-    public List<TimeSlot> getTimeSlots(){
+    public List<TimeSlot> getTimeSlots() {
         return Collections.unmodifiableList(timeSlots);
     }
 
-    public void deleteTimeSlot(TimeSlot timeSlot){
+    public void deleteTimeSlot(TimeSlot timeSlot) {
         timeSlotDAO.delete(timeSlot);
         timeSlots.remove(timeSlot);
     }
 
-    public Optional<String> updateTimeSlot(TimeSlot timeSlot, LocalTime newStartTime, LocalTime newEndTime){
-        if(isColliding(newStartTime, newEndTime, timeSlot)) {
+    public Optional<String> updateTimeSlot(TimeSlot timeSlot, LocalTime newStartTime, LocalTime newEndTime) {
+        if (isColliding(newStartTime, newEndTime, timeSlot)) {
             return Optional.of(COLLISION_ALERT);
         }
         timeSlotDAO.update(timeSlot, newStartTime, newEndTime);

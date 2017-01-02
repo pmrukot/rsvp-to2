@@ -62,7 +62,7 @@ public class TimeSlotController {
             secondTextField.clear();
     }
 
-    private void updateTableViewItems(){
+    private void updateTableViewItems() {
         items.clear();
         items.addAll(timeSlotManager.getTimeSlots());
     }
@@ -106,10 +106,10 @@ public class TimeSlotController {
             return;
         }
 
-        TimeSlot createdTimeSlot = new TimeSlot(startTime, endTime);
+        TimeSlot createdTimeSlot = TimeSlot.createTimeSlot(startTime, endTime);
 
         Optional<String> addResult = timeSlotManager.createNewTimeSlot(createdTimeSlot);
-        if (addResult.isPresent()){
+        if (addResult.isPresent()) {
             handleErrorAlert(startTimeFieldCreate, endTimeFieldCreate, addResult.get());
         }
         updateTableViewItems();
@@ -161,7 +161,7 @@ public class TimeSlotController {
         }
 
         Optional<String> updateResult = timeSlotManager.updateTimeSlot(chosenTimeSlot, newStartTime, newEndTime);
-        if (updateResult.isPresent()){
+        if (updateResult.isPresent()) {
             handleErrorAlert(startTimeFieldUpdate, endTimeFieldUpdate, updateResult.get());
         }
         updateTableViewItems();

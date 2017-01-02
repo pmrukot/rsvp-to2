@@ -2,10 +2,12 @@ package rsvp.resources.model;
 
 import javax.persistence.*;
 import java.time.LocalTime;
+import java.util.Optional;
 
 @Entity
 @Table(name = "TimeSlot")
-public class TimeSlot implements Comparable<TimeSlot>{
+public class TimeSlot implements Comparable<TimeSlot> {
+    private static final String NOT_ENOUGH_ARGUMENTS_ALERT = "You have to provide all arguments";
 
     @Id
     @GeneratedValue
@@ -16,11 +18,22 @@ public class TimeSlot implements Comparable<TimeSlot>{
     private LocalTime startTime;
 
     @Column(name = "endTime")
-    private  LocalTime endTime;
+    private LocalTime endTime;
 
-    public TimeSlot() {}
+    /**
+     * public no argument constructor is a requirement for Hibernate
+     */
+    public TimeSlot() {
+    }
 
-    public TimeSlot(LocalTime startTime, LocalTime endTime) {
+    public static TimeSlot createTimeSlot(LocalTime startTime, LocalTime endTime) {
+        if (startTime != null && endTime != null && startTime.isBefore(endTime)) {
+            return new TimeSlot(startTime, endTime);
+        }
+        return null;
+    }
+
+    private TimeSlot(LocalTime startTime, LocalTime endTime) {
         setStartTime(startTime);
         setEndTime(endTime);
     }
@@ -33,16 +46,24 @@ public class TimeSlot implements Comparable<TimeSlot>{
         return startTime;
     }
 
-    public void setStartTime(LocalTime startTime) {
+    public Optional<String> setStartTime(LocalTime startTime) {
+        if (startTime == null) {
+            return Optional.of(NOT_ENOUGH_ARGUMENTS_ALERT);
+        }
         this.startTime = startTime;
+        return Optional.empty();
     }
 
     public LocalTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalTime endTime) {
+    public Optional<String> setEndTime(LocalTime endTime) {
+        if (endTime == null) {
+            return Optional.of(NOT_ENOUGH_ARGUMENTS_ALERT);
+        }
         this.endTime = endTime;
+        return Optional.empty();
     }
 
     @Override
@@ -56,7 +77,7 @@ public class TimeSlot implements Comparable<TimeSlot>{
         return this.startTime.compareTo(anotherTimeSlot.getStartTime());
     }
 
-    public String toString(){
+    public String toString() {
         return startTime.toString() + " - " + endTime.toString();
     }
 }
