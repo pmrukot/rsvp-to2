@@ -143,6 +143,7 @@ public class BookingController {
             final Stage dialogStage = new Stage();
             dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.initOwner(primaryStage);
+            dialogStage.setOnHiding(event -> setData());
 
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("view/BookingEditionPane.fxml"));
@@ -207,9 +208,13 @@ public class BookingController {
     }
 
     public void setData() {
-        bookings.addAll(dbBookingDao.getAllBookings());
-        timeSlots.addAll(timeSlotDAO.getAll());
-        universityRooms.addAll(universityRoomDAO.getAll());
+        bookings.setAll(dbBookingDao.getAllBookings());
+        timeSlots.setAll(timeSlotDAO.getAll());
+        universityRooms.setAll(universityRoomDAO.getAll());
         bookingsTable.setItems(bookings);
+    }
+
+    public ObservableList<Booking> getBookings() {
+        return this.bookings;
     }
 }

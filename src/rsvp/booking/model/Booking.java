@@ -122,4 +122,8 @@ public class Booking {
         }
         return getLastSlot().getEndTime();
     }
+
+    public boolean isValid() {
+        return getEndTime().compareTo(getStartTime()) >= 0;
+    }
 }
