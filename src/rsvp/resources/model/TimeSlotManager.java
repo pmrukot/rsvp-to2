@@ -25,10 +25,10 @@ public class TimeSlotManager {
             if(excludedTimeSlot == null || timeSlot != excludedTimeSlot) {
                 LocalTime currentStartTime = timeSlot.getStartTime();
                 LocalTime currentEndTime = timeSlot.getEndTime();
-                return (((insertedStartTime.isBefore(currentStartTime) && insertedEndTime.isAfter(currentStartTime))) ||
-                        ((insertedStartTime.equals(currentStartTime) || insertedEndTime.equals(currentEndTime))) ||
-                        ((insertedStartTime.isAfter(currentStartTime) && insertedEndTime.isBefore(currentEndTime))) ||
-                        ((insertedStartTime.isBefore(currentEndTime) && insertedEndTime.isAfter(currentEndTime))));
+                if(insertedStartTime.isBefore(currentStartTime) && insertedEndTime.isAfter(currentStartTime)) return true;
+                if(insertedStartTime.equals(currentStartTime) || insertedEndTime.equals(currentEndTime)) return true;
+                if(insertedStartTime.isAfter(currentStartTime) && insertedEndTime.isBefore(currentEndTime)) return true;
+                if(insertedStartTime.isBefore(currentEndTime) && insertedEndTime.isAfter(currentEndTime)) return true;
             }
         }
         return false;

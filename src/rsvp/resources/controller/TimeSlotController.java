@@ -162,9 +162,9 @@ public class TimeSlotController {
 
         Optional<String> updateResult = timeSlotManager.updateTimeSlot(chosenTimeSlot, newStartTime, newEndTime);
         if (updateResult.isPresent()){
-            handleErrorAlert(startTimeFieldCreate, endTimeFieldCreate, updateResult.get());
+            handleErrorAlert(startTimeFieldUpdate, endTimeFieldUpdate, updateResult.get());
         }
         updateTableViewItems();
-        handleErrorAlert(startTimeFieldCreate, endTimeFieldCreate, null);
+        handleErrorAlert(startTimeFieldUpdate, endTimeFieldUpdate, null);
     }
 }
