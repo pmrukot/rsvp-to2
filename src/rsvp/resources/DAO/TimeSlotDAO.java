@@ -35,11 +35,11 @@ public class TimeSlotDAO {
 
     public void update(TimeSlot timeSlot, LocalTime newStartTime, LocalTime newEndTime) {
         Session session = HibernateUtils.getSession();
-        Transaction transaction = session.beginTransaction();
         TimeSlot updatedTimeSlot = session.get(TimeSlot.class, timeSlot.getId());
-        updatedTimeSlot.setStartTime(newStartTime);
-        updatedTimeSlot.setEndTime(newEndTime);
-        transaction.commit();
+        if (updatedTimeSlot.setStartAndEndTime(newStartTime, newEndTime)) {
+            Transaction transaction = session.beginTransaction();
+            transaction.commit();
+        }
         session.close();
     }
 

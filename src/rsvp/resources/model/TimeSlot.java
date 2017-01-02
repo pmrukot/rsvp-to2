@@ -7,7 +7,6 @@ import java.util.Optional;
 @Entity
 @Table(name = "TimeSlot")
 public class TimeSlot implements Comparable<TimeSlot> {
-    private static final String NOT_ENOUGH_ARGUMENTS_ALERT = "You have to provide all arguments";
 
     @Id
     @GeneratedValue
@@ -46,24 +45,25 @@ public class TimeSlot implements Comparable<TimeSlot> {
         return startTime;
     }
 
-    public Optional<String> setStartTime(LocalTime startTime) {
-        if (startTime == null) {
-            return Optional.of(NOT_ENOUGH_ARGUMENTS_ALERT);
+    public boolean setStartAndEndTime(LocalTime startTime, LocalTime endTime) {
+        if (startTime == null || endTime == null || !startTime.isBefore(endTime)) {
+            return false;
         }
+        setStartTime(startTime);
+        setEndTime(endTime);
+        return true;
+    }
+
+    private void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
-        return Optional.empty();
     }
 
     public LocalTime getEndTime() {
         return endTime;
     }
 
-    public Optional<String> setEndTime(LocalTime endTime) {
-        if (endTime == null) {
-            return Optional.of(NOT_ENOUGH_ARGUMENTS_ALERT);
-        }
+    private void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
-        return Optional.empty();
     }
 
     @Override
