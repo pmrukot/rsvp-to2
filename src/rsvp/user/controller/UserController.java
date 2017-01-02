@@ -1,20 +1,19 @@
 package rsvp.user.controller;
 
-
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.paint.Color;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import javafx.util.Pair;
+import rsvp.booking.DAO.BookingDAO;
 import rsvp.booking.DAO.DBBookingDAO;
 import rsvp.booking.model.Booking;
 import rsvp.resources.DAO.TimeSlotDAO;
@@ -27,14 +26,18 @@ import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.List;
 
-public class UserController implements ListChangeListener{
+public class UserController {
+    private Date currentStartDate;
+    private Date currentEndDate;
+    private List<Booking> bookings;
 
-
-    public Button previousButton;
-    public Label dateRangeLabel;
-    public Button nextButton;
+    @FXML
+    private Button previousButton;
+    @FXML
+    private Label dateRangeLabel;
+    @FXML
+    private Button nextButton;
     @FXML
     private TableView<MyCalendarCell> myCalendarTable;
 
@@ -55,14 +58,9 @@ public class UserController implements ListChangeListener{
     @FXML
     private MyCalendarColumn sunday;
 
-    private Date currentStartDate;
-    private Date currentEndDate;
-    private List<Booking> bookings;
-
-
     @FXML
-    private void initialize() {
-        DBBookingDAO bookingDAO = new DBBookingDAO();
+    public void initialize() {
+        BookingDAO bookingDAO = new DBBookingDAO();
         bookings = bookingDAO.getAllBookingsForCurrentUser();
         myCalendarTable.setEditable(false);
         slots.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getTimeSlotRepresentation()));
@@ -150,18 +148,14 @@ public class UserController implements ListChangeListener{
         return Date.valueOf(currentDate.plusDays(dayOfWeek.getValue() - currentDayOfWeek.getValue()));
     }
 
-    @Override
-    public void onChanged(Change c) {
-    }
-
-    public void handleShowPreviousWeek(ActionEvent actionEvent) {
+    public void handleShowPreviousWeek() {
         currentEndDate = Date.valueOf(currentStartDate.toLocalDate().minusDays(1));
         currentStartDate = Date.valueOf(currentStartDate.toLocalDate().minusDays(7));
         initializeMyCalendarContent(currentStartDate, currentEndDate);
         setDateRangeLabel();
     }
 
-    public void handleShowNextWeek(ActionEvent actionEvent) {
+    public void handleShowNextWeek() {
         currentStartDate = Date.valueOf(currentEndDate.toLocalDate().plusDays(1));
         currentEndDate = Date.valueOf(currentEndDate.toLocalDate().plusDays(7));
         initializeMyCalendarContent(currentStartDate, currentEndDate);
