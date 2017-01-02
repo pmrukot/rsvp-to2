@@ -1,24 +1,27 @@
 package rsvp.booking.controller;
 
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import rsvp.booking.DAO.DBBookingDAO;
 import rsvp.booking.model.Booking;
-import rsvp.common.persistence.HibernateUtils;
 import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.TimeSlot;
 import rsvp.resources.model.UniversityRoom;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 public class BookingEditionController {
     private DBBookingDAO dbBookingDao = new DBBookingDAO();
+    private ObservableList<String> frequencyOptions = FXCollections.observableArrayList("no", "daily", "weekly", "monthly");
+    private ObservableList<Integer> recurrenceOptions = FXCollections.observableArrayList(IntStream.range(1, 31).boxed().collect(Collectors.toList()));
 
     private BookingController bookingController;
     private Stage dialogStage;
@@ -35,6 +38,12 @@ public class BookingEditionController {
 
     @FXML
     private ComboBox<TimeSlot> lastTimeSlot;
+
+    @FXML
+    private ComboBox<String> frequencyPicker;
+
+    @FXML
+    private ComboBox<Integer> recurrencePicker;
 
     @FXML
     private Button updateButton;
@@ -55,14 +64,44 @@ public class BookingEditionController {
         this.universityRoom.setValue(booking.getUniversityRoom());
         this.firstTimeSlot.setValue(booking.getFirstSlot());
         this.lastTimeSlot.setValue(booking.getLastSlot());
+        this.frequencyPicker.getItems().addAll(frequencyOptions);
+        this.recurrencePicker.getItems().addAll(recurrenceOptions);
     }
 
     @FXML
     private void processBooking() {
         try {
-            updateBooking();
-            persistBooking();
-            dialogStage.close();
+            String frequency = frequencyPicker.getValue();
+            Integer recurrence = recurrencePicker.getValue();
+            if(frequency == null || frequency.equals("no")){
+                updateBooking();
+                persistBooking();
+                dialogStage.close();
+            }else{
+                updateBooking();
+                LocalDate currentDate = reservationDatePicker.getValue();
+                switch(frequency){
+                    case "daily":
+                        for(int i=0; i<recurrence; i++){
+                            booking.setReservationDate(Date.valueOf(LocalDate.from(currentDate).plusDays(i)));
+                            persistBooking();
+                        }
+                        break;
+                    case "weekly":
+                        for(int i=0; i<recurrence; i++){
+                            booking.setReservationDate(Date.valueOf(LocalDate.from(currentDate).plusWeeks(i)));
+                            persistBooking();
+                        }
+                        break;
+                    case "monthly":
+                        for(int i=0; i<recurrence; i++){
+                            booking.setReservationDate(Date.valueOf(LocalDate.from(currentDate).plusMonths(i)));
+                            persistBooking();
+                        }
+                        break;
+                }
+                dialogStage.close();
+            }
         } catch (NullPointerException ignored) {}
     }
 
@@ -86,7 +125,7 @@ public class BookingEditionController {
         }
     }
 
-    public boolean isOverlappingOtherBookings() {
+    private boolean isOverlappingOtherBookings() {
         ObservableList<Booking> bookings = bookingController.getBookings();
         bookings.removeIf(booking1 -> booking1.getUniversityRoom().getId() != booking.getUniversityRoom().getId() ||
         booking1.getReservationDate().compareTo(booking.getReservationDate()) != 0);
@@ -100,7 +139,7 @@ public class BookingEditionController {
         return false;
     }
 
-    public void showAlert() {
+    private void showAlert() {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Warning");
         alert.setHeaderText("Invalid Booking Data");

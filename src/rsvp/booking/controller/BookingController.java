@@ -148,7 +148,7 @@ public class BookingController {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("view/BookingEditionPane.fxml"));
             VBox bookingEditionLayout = (VBox) loader.load();
-            Scene scene = new Scene(bookingEditionLayout, 300, 200);
+            Scene scene = new Scene(bookingEditionLayout, 300, 300);
 
             BookingEditionController bookingEditionController = loader.getController();
             bookingEditionController.setDialogStage(dialogStage);
@@ -179,7 +179,7 @@ public class BookingController {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("view/BookingParticipantsEditionPane.fxml"));
             VBox bookingParticipantsEditionLayout = (VBox) loader.load();
-            Scene scene = new Scene(bookingParticipantsEditionLayout, 300, 200);
+            Scene scene = new Scene(bookingParticipantsEditionLayout, 300, 300);
 
             BookingParticipantsEditionController bookingParticipantsEditionController = loader.getController();
             bookingParticipantsEditionController.setDialogStage(dialogStage);
