@@ -17,12 +17,12 @@ import rsvp.user.command.UpdateUserCommand;
 import rsvp.user.model.User;
 import rsvp.user.view.Alert;
 
-import java.util.Queue;
+import java.util.Stack;
 
 public class EditUserController {
     private User editedUser;
     private UserDAO userDAO;
-    private Queue<Command> executedCommands;
+    private Stack<Command> executedCommands;
     @FXML
     public TextField login;
     @FXML
@@ -36,7 +36,7 @@ public class EditUserController {
     @FXML
     public Button saveEditedUser;
 
-    void initData(User user, UserDAO userDAO, Queue<Command> executedCommands) {
+    void initData(User user, UserDAO userDAO, Stack<Command> executedCommands) {
         editedUser = user;
         this.userDAO = userDAO;
         this.executedCommands = executedCommands;
@@ -75,7 +75,7 @@ public class EditUserController {
         }
         Command c = new CreateUserCommand(userDAO, u);
         if(c.execute()) {
-            executedCommands.add(c);
+            executedCommands.push(c);
             Alert alert = new Alert("Created new user successfully!\nUser login: " + u.getLogin(), AlertType.INFORMATION);
             alert.showAndWait();
         } else {
@@ -88,7 +88,7 @@ public class EditUserController {
         Command c = new UpdateUserCommand(userDAO, editedUser, login.getText(),
                 firstName.getText(), lastName.getText(), password.getText(), admin.isSelected());
         if(c.execute()) {
-            executedCommands.add(c);
+            executedCommands.push(c);
             Alert alert = new Alert("User edited successfully!\nUser login: " + editedUser.getLogin(), AlertType.INFORMATION);
             alert.showAndWait();
         } else {

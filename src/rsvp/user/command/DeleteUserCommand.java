@@ -25,6 +25,7 @@ public class DeleteUserCommand implements Command {
     @Override
     public boolean undo() {
         // todo at this point user object is detached...
+        // http://stackoverflow.com/questions/912659/what-is-the-proper-way-to-re-attach-detached-objects-in-hibernate
         if(userDAO.createUser(user)) {
             UserListManagerSingleton.getInstance().addUser(user);
             return true;

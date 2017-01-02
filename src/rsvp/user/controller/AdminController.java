@@ -1,7 +1,11 @@
 package rsvp.user.controller;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -17,7 +21,6 @@ import rsvp.user.DAO.DBUserDAO;
 import rsvp.user.DAO.UserDAO;
 import rsvp.user.command.Command;
 import rsvp.user.command.DeleteUserCommand;
-import rsvp.user.model.ObservableQueue;
 import rsvp.user.model.User;
 import rsvp.user.upload.Upload;
 import rsvp.user.view.Alert;
@@ -25,11 +28,12 @@ import rsvp.user.view.Alert;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Stack;
 
 public class AdminController implements ListChangeListener {
     private UserDAO userDAO;
     private FilteredList<User> filteredList;
-    private ObservableQueue<Command> executedCommands;
+    private Stack<Command> executedCommands;
 
     @FXML
     private Button undoButton;
@@ -56,7 +60,7 @@ public class AdminController implements ListChangeListener {
     @SuppressWarnings("unchecked")
     public void initialize() {
         userDAO = new DBUserDAO();
-        executedCommands = new ObservableQueue<>();
+        executedCommands = new Stack<>();
         UserListManagerSingleton.getInstance().addListener(this);
         filteredList = new FilteredList<>(UserListManagerSingleton.getInstance().getUsers());
         isAdminColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().isAdmin()));
@@ -78,7 +82,7 @@ public class AdminController implements ListChangeListener {
         SortedList<User> sortedList = new SortedList<>(filteredList);
         sortedList.comparatorProperty().bind(usersTable.comparatorProperty());
         usersTable.setItems(sortedList);
-        undoButton.disableProperty().bind(Bindings.isEmpty(executedCommands));
+        //undoButton.disableProperty().bind(???)
         editButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
         deleteButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
     }
@@ -143,7 +147,7 @@ public class AdminController implements ListChangeListener {
                     String login = selectedUser.getLogin();
                     Command c = new DeleteUserCommand(userDAO, selectedUser);
                     if(c.execute()) {
-                        executedCommands.add(c);
+                        executedCommands.push(c);
                         Alert alert2 = new Alert(String.format("Deleting user %s succeeded!", login), AlertType.INFORMATION);
                         alert2.showAndWait();
                     } else {
@@ -158,7 +162,9 @@ public class AdminController implements ListChangeListener {
     }
 
     public void undoCommand() {
-        Command c = executedCommands.remove();
-        c.undo();
+        if(!executedCommands.empty()) { // todo this should be checked by button binding
+            Command c = executedCommands.pop();
+            c.undo();
+        }
     }
 }
