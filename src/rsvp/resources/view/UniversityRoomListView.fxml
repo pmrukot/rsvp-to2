@@ -18,14 +18,21 @@
         </columns>
     </TableView>
     <GridPane>
-        <TextField fx:id="numberFieldCreate" promptText="Number" prefWidth="100" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-        <TextField fx:id="capacityFieldCreate" promptText="Capacity" prefWidth="100" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-        <Button text="Create" onAction="#handleCreateButtonAction" prefWidth="100" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+        <TextField fx:id="numberFieldCreate" promptText="Number" prefWidth="100" GridPane.rowIndex="0"
+                   GridPane.columnIndex="0"/>
+        <TextField fx:id="capacityFieldCreate" promptText="Capacity" prefWidth="100" GridPane.rowIndex="0"
+                   GridPane.columnIndex="1"/>
+        <Button text="Create" onAction="#handleCreateButtonAction" prefWidth="100" GridPane.rowIndex="0"
+                GridPane.columnIndex="2"/>
 
-        <TextField fx:id="numberFieldUpdate" promptText="New number" prefWidth="100" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <TextField fx:id="capacityFieldUpdate" promptText="New capacity" prefWidth="100" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-        <Button text="Update" onAction="#handleUpdateButtonAction" prefWidth="100" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+        <TextField fx:id="numberFieldUpdate" promptText="New number" prefWidth="100" GridPane.rowIndex="1"
+                   GridPane.columnIndex="0"/>
+        <TextField fx:id="capacityFieldUpdate" promptText="New capacity" prefWidth="100" GridPane.rowIndex="1"
+                   GridPane.columnIndex="1"/>
+        <Button text="Update" onAction="#handleUpdateButtonAction" prefWidth="100" GridPane.rowIndex="1"
+                GridPane.columnIndex="2"/>
 
-        <Button text="Delete" onAction="#handleDeleteButtonAction" prefWidth="100" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <Button text="Delete" onAction="#handleDeleteButtonAction" prefWidth="100" GridPane.rowIndex="2"
+                GridPane.columnIndex="0"/>
     </GridPane>
 </VBox>

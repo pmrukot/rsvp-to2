@@ -31,7 +31,7 @@ import java.util.List;
 public class CalendarController {
 
     @FXML
-    TableView<CalendarTableItem>calendarTable;
+    TableView<CalendarTableItem> calendarTable;
     @FXML
     TableColumn<CalendarTableItem, String> slotsColumn;
     @FXML
@@ -80,7 +80,7 @@ public class CalendarController {
                 new Pair<>(p.getValue().getBookingDescriptionPerDay(7), p.getValue().getColor(7))));
     }
 
-    private void initializeCalendarTableContentForDates(Date start, Date end){
+    private void initializeCalendarTableContentForDates(Date start, Date end) {
         ObservableList<CalendarTableItem> calendarTableItems = FXCollections.observableArrayList();
         calendarTableItems.addAll(provideCalendarTableItems(start, end));
         calendarTable.setItems(calendarTableItems);
@@ -97,25 +97,25 @@ public class CalendarController {
         nextButton.setGraphic(nextView);
     }
 
-    private void setDateRangeLabel(){
+    private void setDateRangeLabel() {
         String formattedStartDate = new SimpleDateFormat("dd/MM").format(this.currentStartDate);
         String formattedEndDate = new SimpleDateFormat("dd/MM/yyyy").format(this.currentEndDate);
-        dateRangeLabel.setText(formattedStartDate + " - "+ formattedEndDate);
+        dateRangeLabel.setText(formattedStartDate + " - " + formattedEndDate);
     }
 
-    private boolean isBetweenTimeSlots(TimeSlot start, TimeSlot end, TimeSlot timeSlot){
-        if(start == null && end == null) return true;
-        if(start == null) return (timeSlot.getEndTime().isBefore(end.getStartTime())) || end.equals(timeSlot);
-        if(end == null) return (timeSlot.getStartTime().isAfter(start.getEndTime())) || start.equals(timeSlot);
+    private boolean isBetweenTimeSlots(TimeSlot start, TimeSlot end, TimeSlot timeSlot) {
+        if (start == null && end == null) return true;
+        if (start == null) return (timeSlot.getEndTime().isBefore(end.getStartTime())) || end.equals(timeSlot);
+        if (end == null) return (timeSlot.getStartTime().isAfter(start.getEndTime())) || start.equals(timeSlot);
         return (timeSlot.getEndTime().isBefore(end.getStartTime()) &&
                 timeSlot.getStartTime().isAfter(start.getEndTime())) || start.equals(timeSlot) || end.equals(timeSlot);
     }
 
-    private boolean isInThePeriod(Date start, Date end, Date date){
+    private boolean isInThePeriod(Date start, Date end, Date date) {
         return !date.before(start) && !date.after(end);
     }
 
-    private Color getRandomColor(){
+    private Color getRandomColor() {
         Random rand = new Random();
         double r = rand.nextFloat() / 2f + 0.5;
         double g = rand.nextFloat() / 2f + 0.5;
@@ -123,14 +123,14 @@ public class CalendarController {
         return new Color(r, g, b, 1.0);
     }
 
-    private List<CalendarTableItem> provideCalendarTableItems(Date start, Date end){
+    private List<CalendarTableItem> provideCalendarTableItems(Date start, Date end) {
         List<CalendarTableItem> result = new ArrayList<>();
         TimeSlotDAO timeSlotDAO = new TimeSlotDAO();
         List<TimeSlot> timeSlots = timeSlotDAO.getAll();
         Collections.sort(timeSlots);
         Map<TimeSlot, CalendarTableItem> bookingItemsMap = new HashMap<>();
 
-        for (TimeSlot timeSlot : timeSlots){
+        for (TimeSlot timeSlot : timeSlots) {
             CalendarTableItem item = new CalendarTableItem(timeSlot, timeSlots);
             result.add(item);
             bookingItemsMap.put(timeSlot, item);
@@ -176,7 +176,7 @@ public class CalendarController {
         setDateRangeLabel();
     }
 
-    public void setContentForUniversityRoom(UniversityRoom universityRoom){
+    public void setContentForUniversityRoom(UniversityRoom universityRoom) {
         DBBookingDAO bookingDAO = new DBBookingDAO();
         bookings = bookingDAO.getAllBookingsForUniversityRoom(universityRoom);
 

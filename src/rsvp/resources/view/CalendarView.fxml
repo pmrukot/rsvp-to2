@@ -18,13 +18,16 @@
         <TableView fx:id="calendarTable" prefHeight="400.0" prefWidth="750.0" BorderPane.alignment="CENTER">
             <columns>
                 <TableColumn fx:id="slotsColumn" style="-fx-alignment: center"/>
-                <CalendarDayColumn fx:id="mondayColumn" prefWidth="75.0" text="Monday" style="-fx-alignment: center" />
-                <CalendarDayColumn fx:id="tuesdayColumn" prefWidth="75.0" text="Tuesday" style="-fx-alignment: center" />
-                <CalendarDayColumn fx:id="wednesdayColumn" prefWidth="75.0" text="Wednesday" style="-fx-alignment: center" />
-                <CalendarDayColumn fx:id="thursdayColumn" prefWidth="75.0" text="Thursday" style="-fx-alignment: center" />
-                <CalendarDayColumn fx:id="fridayColumn" prefWidth="75.0" text="Friday" style="-fx-alignment: center" />
-                <CalendarDayColumn fx:id="saturdayColumn" prefWidth="75.0" text="Saturday" style="-fx-alignment: center" />
-                <CalendarDayColumn fx:id="sundayColumn" prefWidth="75.0" text="Sunday" style="-fx-alignment: center" />
+                <CalendarDayColumn fx:id="mondayColumn" prefWidth="75.0" text="Monday" style="-fx-alignment: center"/>
+                <CalendarDayColumn fx:id="tuesdayColumn" prefWidth="75.0" text="Tuesday" style="-fx-alignment: center"/>
+                <CalendarDayColumn fx:id="wednesdayColumn" prefWidth="75.0" text="Wednesday"
+                                   style="-fx-alignment: center"/>
+                <CalendarDayColumn fx:id="thursdayColumn" prefWidth="75.0" text="Thursday"
+                                   style="-fx-alignment: center"/>
+                <CalendarDayColumn fx:id="fridayColumn" prefWidth="75.0" text="Friday" style="-fx-alignment: center"/>
+                <CalendarDayColumn fx:id="saturdayColumn" prefWidth="75.0" text="Saturday"
+                                   style="-fx-alignment: center"/>
+                <CalendarDayColumn fx:id="sundayColumn" prefWidth="75.0" text="Sunday" style="-fx-alignment: center"/>
             </columns>
         </TableView>
     </VBox>

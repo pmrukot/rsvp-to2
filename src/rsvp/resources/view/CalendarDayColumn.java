@@ -19,8 +19,7 @@ public class CalendarDayColumn extends TableColumn<CalendarTableItem, Pair<Strin
                     setText(value.getKey());
                     if (value.getValue() != null) {
                         setBackground(new Background(new BackgroundFill(value.getValue(), CornerRadii.EMPTY, Insets.EMPTY)));
-                    }
-                    else{
+                    } else {
                         setBackground(null);
                     }
                 }

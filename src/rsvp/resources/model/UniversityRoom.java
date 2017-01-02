@@ -17,7 +17,8 @@ public class UniversityRoom {
     @Column(name = "capacity")
     private Integer capacity;
 
-    public UniversityRoom() {}
+    public UniversityRoom() {
+    }
 
     public UniversityRoom(String number, Integer capacity) {
         setNumber(number);
@@ -36,7 +37,7 @@ public class UniversityRoom {
         this.number = number;
     }
 
-    public Integer getCapacity(){
+    public Integer getCapacity() {
         return capacity;
     }
 

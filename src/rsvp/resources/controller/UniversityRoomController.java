@@ -61,7 +61,7 @@ public class UniversityRoomController {
             secondTextField.clear();
     }
 
-    public void createNewCalendarWindow(UniversityRoom universityRoom){
+    public void createNewCalendarWindow(UniversityRoom universityRoom) {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("../view/CalendarView.fxml"));

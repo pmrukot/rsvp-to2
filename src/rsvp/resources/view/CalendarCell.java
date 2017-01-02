@@ -9,18 +9,17 @@ public class CalendarCell extends TableCell<UniversityRoom, Boolean> {
     final Button cellButton = new Button("Show");
 
 
-    public CalendarCell(UniversityRoomController universityRoomController){
+    public CalendarCell(UniversityRoomController universityRoomController) {
         cellButton.setOnAction(t ->
-                universityRoomController.createNewCalendarWindow((UniversityRoom)this.getTableRow().getItem()));
+                universityRoomController.createNewCalendarWindow((UniversityRoom) this.getTableRow().getItem()));
     }
 
     @Override
     protected void updateItem(Boolean t, boolean empty) {
         super.updateItem(t, empty);
-        if(!empty){
+        if (!empty) {
             setGraphic(cellButton);
-        }
-        else{
+        } else {
             setGraphic(null);
         }
     }

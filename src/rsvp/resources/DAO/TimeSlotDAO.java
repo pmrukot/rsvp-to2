@@ -4,14 +4,15 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import rsvp.common.persistence.HibernateUtils;
 import rsvp.resources.model.TimeSlot;
+
 import java.time.LocalTime;
 import java.util.List;
 
 public class TimeSlotDAO {
 
-    public TimeSlot getTimeSlotByID(long id){
+    public TimeSlot getTimeSlotByID(long id) {
         Session session = HibernateUtils.getSession();
-        TimeSlot timeSlot =  session.get(TimeSlot.class, id);
+        TimeSlot timeSlot = session.get(TimeSlot.class, id);
         session.close();
         return timeSlot;
     }
