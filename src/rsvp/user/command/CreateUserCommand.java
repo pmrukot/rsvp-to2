@@ -18,9 +18,8 @@ public class CreateUserCommand implements Command {
         if(userDAO.createUser(user)) {
             UserListManagerSingleton.getInstance().addUser(user);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     @Override
@@ -28,8 +27,7 @@ public class CreateUserCommand implements Command {
         if(userDAO.deleteUser(user)) {
             UserListManagerSingleton.getInstance().removeUser(user);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 }

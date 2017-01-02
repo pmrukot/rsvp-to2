@@ -66,12 +66,14 @@ public class UpdateUserCommand implements Command {
         user.setLogin(newLogin);
         user.setFirstName(newFirstName);
         user.setLastName(newLastName);
+        user.setPassword(newPassword);
         user.setAdmin(newAdmin);
     }
     private void restoreData() {
         user.setLogin(oldLogin);
         user.setFirstName(oldFirstName);
         user.setLastName(oldLastName);
+        user.setPassword(oldPassword);
         user.setAdmin(oldAdmin);
     }
 }

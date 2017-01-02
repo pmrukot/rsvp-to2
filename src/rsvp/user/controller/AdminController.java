@@ -15,9 +15,13 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import rsvp.user.DAO.DBUserDAO;
 import rsvp.user.DAO.UserDAO;
+import rsvp.user.command.Command;
+import rsvp.user.command.DeleteUserCommand;
+import rsvp.user.model.ObservableQueue;
 import rsvp.user.model.User;
 import rsvp.user.upload.Upload;
 import rsvp.user.view.Alert;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -25,6 +29,10 @@ import java.util.List;
 public class AdminController implements ListChangeListener {
     private UserDAO userDAO;
     private FilteredList<User> filteredList;
+    private ObservableQueue<Command> executedCommands;
+
+    @FXML
+    private Button undoButton;
     @FXML
     private TextField searchField;
     @FXML
@@ -48,7 +56,9 @@ public class AdminController implements ListChangeListener {
     @SuppressWarnings("unchecked")
     public void initialize() {
         userDAO = new DBUserDAO();
+        executedCommands = new ObservableQueue<>();
         UserListManagerSingleton.getInstance().addListener(this);
+        filteredList = new FilteredList<>(UserListManagerSingleton.getInstance().getUsers());
         isAdminColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().isAdmin()));
         usersTable.getColumns().addListener( (ListChangeListener) (c -> { // prevent column reordering
             c.next();
@@ -57,9 +67,6 @@ public class AdminController implements ListChangeListener {
                 usersTable.getColumns().addAll(loginColumn, firstNameColumn, lastNameColumn, passwordColumn, isAdminColumn);
             }
         }));
-        editButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
-        deleteButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
-        filteredList = new FilteredList<>(UserListManagerSingleton.getInstance().getUsers());
         searchField.textProperty().addListener( (observable, oldValue, newValue) -> filteredList.setPredicate(user -> {
                 if(newValue == null || newValue.isEmpty()) {
                     return true;
@@ -71,6 +78,9 @@ public class AdminController implements ListChangeListener {
         SortedList<User> sortedList = new SortedList<>(filteredList);
         sortedList.comparatorProperty().bind(usersTable.comparatorProperty());
         usersTable.setItems(sortedList);
+        undoButton.disableProperty().bind(Bindings.isEmpty(executedCommands));
+        editButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
+        deleteButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
     }
 
     @Override
@@ -80,6 +90,7 @@ public class AdminController implements ListChangeListener {
             String lowerCaseFilter = searchField.getText().toLowerCase();
             return user.getLastName().toLowerCase().contains(lowerCaseFilter);
         });
+        usersTable.getSelectionModel().clearSelection();
     }
 
     public void upload() {
@@ -90,6 +101,7 @@ public class AdminController implements ListChangeListener {
         File file = chooser.showOpenDialog(new Stage());
         try {
             if(file != null){
+                // todo rewrite upload to support command
                 List<User> createdUsers = Upload.createUsersFromCsv(file);
                 Alert alert = new Alert(String.format("%s users were created!", createdUsers.size()), AlertType.INFORMATION);
                 alert.showAndWait();
@@ -102,11 +114,10 @@ public class AdminController implements ListChangeListener {
 
     public void editUser() {
         User selectedUser = usersTable.getSelectionModel().getSelectedItem();
-        int index = UserListManagerSingleton.getInstance().indexOf(selectedUser);
-        initEditUserLayout(index, selectedUser);
+        initEditUserLayout(selectedUser);
     }
 
-    private void initEditUserLayout(int index, User updatedUser) {
+    private void initEditUserLayout(User updatedUser) {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(rsvp.home.Main.class.getResource("../user/view/EditUserView.fxml"));
@@ -115,7 +126,7 @@ public class AdminController implements ListChangeListener {
             Stage secondaryStage = new Stage();
             secondaryStage.setScene(scene);
             EditUserController controller = loader.getController();
-            controller.initData(index, updatedUser, userDAO);
+            controller.initData(updatedUser, userDAO, executedCommands);
             secondaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -129,11 +140,12 @@ public class AdminController implements ListChangeListener {
         alert.showAndWait()
                 .filter(response -> response == ButtonType.OK)
                 .ifPresent(response -> {
-                    if(userDAO.deleteUser(selectedUser)) {
-                        String login = selectedUser.getLogin();
+                    String login = selectedUser.getLogin();
+                    Command c = new DeleteUserCommand(userDAO, selectedUser);
+                    if(c.execute()) {
+                        executedCommands.add(c);
                         Alert alert2 = new Alert(String.format("Deleting user %s succeeded!", login), AlertType.INFORMATION);
                         alert2.showAndWait();
-                        UserListManagerSingleton.getInstance().removeUser(selectedUser);
                     } else {
                         Alert alert2 = new Alert(String.format("Failed to delete user %s!", selectedUser.getLogin()), AlertType.ERROR);
                         alert2.showAndWait();
@@ -142,6 +154,11 @@ public class AdminController implements ListChangeListener {
     }
 
     public void addUser() {
-        initEditUserLayout(0, null);
+        initEditUserLayout(null);
+    }
+
+    public void undoCommand() {
+        Command c = executedCommands.remove();
+        c.undo();
     }
 }

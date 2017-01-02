@@ -11,13 +11,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import rsvp.user.DAO.UserDAO;
+import rsvp.user.command.Command;
+import rsvp.user.command.CreateUserCommand;
+import rsvp.user.command.UpdateUserCommand;
 import rsvp.user.model.User;
 import rsvp.user.view.Alert;
 
+import java.util.Queue;
+
 public class EditUserController {
-    private int index;
     private User editedUser;
     private UserDAO userDAO;
+    private Queue<Command> executedCommands;
     @FXML
     public TextField login;
     @FXML
@@ -31,10 +36,10 @@ public class EditUserController {
     @FXML
     public Button saveEditedUser;
 
-    void initData(int index, User user, UserDAO userDAO) {
-        this.index = index;
+    void initData(User user, UserDAO userDAO, Queue<Command> executedCommands) {
         editedUser = user;
         this.userDAO = userDAO;
+        this.executedCommands = executedCommands;
         if(user != null) {
             login.setText(user.getLogin());
             firstName.setText(user.getFirstName());
@@ -68,10 +73,11 @@ public class EditUserController {
         } else {
             u = new User(login.getText(), firstName.getText(), lastName.getText(), password.getText(), admin.isSelected());
         }
-        if(userDAO.createUser(u)) {
+        Command c = new CreateUserCommand(userDAO, u);
+        if(c.execute()) {
+            executedCommands.add(c);
             Alert alert = new Alert("Created new user successfully!\nUser login: " + u.getLogin(), AlertType.INFORMATION);
             alert.showAndWait();
-            UserListManagerSingleton.getInstance().addUser(u);
         } else {
             Alert alert = new Alert("Failed to create new user!", AlertType.ERROR);
             alert.showAndWait();
@@ -79,16 +85,12 @@ public class EditUserController {
     }
 
     private void editUser() {
-        editedUser.setLogin(login.getText());
-        editedUser.setFirstName(firstName.getText());
-        editedUser.setLastName(lastName.getText());
-        editedUser.setPassword(password.getText());
-        editedUser.setAdmin(admin.isSelected());
-
-        if(userDAO.updateUser(editedUser)) {
+        Command c = new UpdateUserCommand(userDAO, editedUser, login.getText(),
+                firstName.getText(), lastName.getText(), password.getText(), admin.isSelected());
+        if(c.execute()) {
+            executedCommands.add(c);
             Alert alert = new Alert("User edited successfully!\nUser login: " + editedUser.getLogin(), AlertType.INFORMATION);
             alert.showAndWait();
-            UserListManagerSingleton.getInstance().updateUser(index, editedUser);
         } else {
             Alert alert = new Alert("Failed to create new user!", AlertType.ERROR);
             alert.showAndWait();

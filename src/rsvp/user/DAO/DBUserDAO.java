@@ -26,7 +26,6 @@ public class DBUserDAO implements UserDAO {
     @Override
     @SuppressWarnings("unchecked")
     public List<User> findUsersByName(String fullName) {
-        // todo with new UserProviderSingleton this could be changed to no argument all users fetcher
         String[] names = fullName.split("\\s+");
         String firstName = names[0];
         String sql = "select u " +

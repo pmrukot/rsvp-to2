@@ -18,18 +18,17 @@ public class DeleteUserCommand implements Command {
         if(userDAO.deleteUser(user)) {
             UserListManagerSingleton.getInstance().removeUser(user);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     @Override
     public boolean undo() {
+        // todo at this point user object is detached...
         if(userDAO.createUser(user)) {
             UserListManagerSingleton.getInstance().addUser(user);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 }
