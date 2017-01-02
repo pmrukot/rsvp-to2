@@ -18,6 +18,9 @@ public class Booking {
     @Column(name = "id")
     private long id;
 
+    @Column(name = "root_id")
+    private long rootId;
+
     @Column(name = "reservationDate")
     private Date reservationDate;
 
@@ -59,6 +62,14 @@ public class Booking {
 
     public long getId() {
         return id;
+    }
+
+    public long getRootId() {
+        return rootId;
+    }
+
+    public void setRootId(long rootId) {
+        this.rootId = rootId;
     }
 
     public void setReservationDate(Date reservationDate) {

@@ -14,6 +14,9 @@ import rsvp.resources.model.UniversityRoom;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -79,7 +82,11 @@ public class BookingEditionController {
                 dialogStage.close();
             }else{
                 updateBooking();
-                LocalDate currentDate = reservationDatePicker.getValue();
+                LocalDate currentDate = booking.getReservationDate().toLocalDate();
+                LocalTime startTime = booking.getStartTime();
+                Long rootId = Long.parseLong(currentDate.format(DateTimeFormatter.ISO_DATE).replace("-", "")
+                                            + startTime.format(DateTimeFormatter.ISO_LOCAL_TIME).replace(":", ""));
+                booking.setRootId(rootId);
                 switch(frequency){
                     case "daily":
                         for(int i=0; i<recurrence; i++){
