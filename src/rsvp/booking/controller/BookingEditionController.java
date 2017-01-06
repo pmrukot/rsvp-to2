@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import rsvp.booking.DAO.DBBookingDAO;
+import rsvp.booking.alerts.FxAlerts;
 import rsvp.booking.model.Booking;
 import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.TimeSlot;
@@ -23,6 +24,7 @@ import java.util.stream.IntStream;
 
 
 public class BookingEditionController {
+    private FxAlerts fxAlerts = new FxAlerts();
     private DBBookingDAO dbBookingDao = new DBBookingDAO();
     private ObservableList<String> frequencyOptions = FXCollections.observableArrayList("no", "daily", "weekly", "monthly");
     private ObservableList<Integer> recurrenceOptions = FXCollections.observableArrayList(IntStream.range(1, 31).boxed().collect(Collectors.toList()));
@@ -128,7 +130,7 @@ public class BookingEditionController {
                 dbBookingDao.updateBooking(booking);
             }
         } else {
-            showAlert();
+            fxAlerts.showOverlappingAlert();
         }
     }
 
@@ -145,16 +147,6 @@ public class BookingEditionController {
         }
         return false;
     }
-
-    private void showAlert() {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Warning");
-        alert.setHeaderText("Invalid Booking Data");
-        alert.setContentText("Make sure you populated fields with appropriate values");
-
-        alert.showAndWait();
-    }
-
 
     public void setBookingController(BookingController bookingController) {
         this.bookingController = bookingController;

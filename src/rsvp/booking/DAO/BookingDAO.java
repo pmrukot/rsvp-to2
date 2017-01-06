@@ -11,6 +11,7 @@ public interface BookingDAO {
     List<Booking> deleteCyclicBookings(long rootId);
     void createBooking(Booking booking);
     void updateBooking(Booking booking);
+    List<Booking> getCyclicBookings(long rootId);
     List<Booking> getAllBookings();
     List<Booking> getAllBookingsForCurrentUser();
     List<Booking> getAllBookingsForUniversityRoom(UniversityRoom universityRoom);

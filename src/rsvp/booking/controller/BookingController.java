@@ -19,6 +19,7 @@ import rsvp.resources.DAO.UniversityRoomDAO;
 import rsvp.resources.model.TimeSlot;
 import rsvp.resources.model.UniversityRoom;
 import rsvp.user.API.AuthenticationService;
+import rsvp.booking.controller.CyclicBookingEditionController;
 
 import java.io.IOException;
 import java.sql.Date;
@@ -170,7 +171,11 @@ public class BookingController {
     @FXML
     public void handleEditAction() {
         Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
-        editBooking(selectedBooking);
+        if(selectedBooking.getRootId() > 0) {
+            editCyclicBooking(selectedBooking);
+        } else {
+            editBooking(selectedBooking);
+        }
     }
 
     private void editBooking(Booking booking) {
@@ -195,6 +200,34 @@ public class BookingController {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NullPointerException ignored) {}
+
+        bookingsTable.refresh();
+    }
+
+    private void editCyclicBooking(Booking booking) {
+        try {
+            final Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.initOwner(primaryStage);
+            dialogStage.setOnHiding(event -> setData());
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("view/CyclicBookingEditionPane.fxml"));
+            VBox bookingEditionLayout = (VBox) loader.load();
+            Scene scene = new Scene(bookingEditionLayout, 300, 200);
+
+            CyclicBookingEditionController cyclicBookingEditionController = loader.getController();
+            cyclicBookingEditionController.setDialogStage(dialogStage);
+            cyclicBookingEditionController.setBookingController(this);
+            cyclicBookingEditionController.setData(booking);
+
+            dialogStage.setScene(scene);
+            dialogStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException ignored) {
+            ignored.printStackTrace();
+        }
 
         bookingsTable.refresh();
     }

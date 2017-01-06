@@ -58,6 +58,18 @@ public class DBBookingDAO implements BookingDAO {
     }
 
     @Override
+    public List<Booking> getCyclicBookings(long rootId) {
+        Session session = HibernateUtils.getSession();
+        Transaction transaction = session.beginTransaction();
+        List<Booking> result = session.createQuery("from Booking b where b.rootId = :rootId", Booking.class)
+                                    .setParameter("rootId", rootId)
+                                    .getResultList();
+        transaction.commit();
+        session.close();
+        return result;
+    }
+
+    @Override
     public List<Booking> getAllBookings() {
         Session session = HibernateUtils.getSession();
         Transaction transaction = session.beginTransaction();
