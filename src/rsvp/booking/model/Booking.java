@@ -21,19 +21,19 @@ public class Booking {
     @Column(name = "root_id")
     private long rootId;
 
-    @Column(name = "reservationDate")
+    @Column(name = "reservation_date")
     private Date reservationDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "OWNER_ID")
+    @JoinColumn(name = "owner_id")
     private User owner;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "FIRST_SLOT_ID")
+    @JoinColumn(name = "first_slot_id")
     private TimeSlot firstSlot;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "LAST_SLOT_ID")
+    @JoinColumn(name = "last_slot_id")
     private TimeSlot lastSlot;
 
     @ManyToOne(fetch = FetchType.EAGER)

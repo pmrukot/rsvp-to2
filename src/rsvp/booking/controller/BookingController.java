@@ -23,6 +23,7 @@ import rsvp.user.API.AuthenticationService;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalTime;
+import java.util.Optional;
 
 public class BookingController {
 
@@ -117,10 +118,44 @@ public class BookingController {
     public void deleteBooking() {
         try{
             Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
-            dbBookingDao.deleteBooking(selectedBooking);
-            bookingsTable.getItems().remove(selectedBooking);
+            if(selectedBooking.getRootId() > 0){
+                Alert alert = prepareCyclicBookingsAlert();
+
+                Optional<ButtonType> result = alert.showAndWait();
+                String stringResult = result.get().getText();
+                switch(stringResult){
+                    case "Single":
+                        dbBookingDao.deleteBooking(selectedBooking);
+                        bookingsTable.getItems().remove(selectedBooking);
+                        return;
+                    case "All":
+                        dbBookingDao.deleteCyclicBookings(selectedBooking.getRootId());
+                        this.setData();
+                        return;
+                    case "Cancel":
+                        return;
+                }
+            } else {
+                dbBookingDao.deleteBooking(selectedBooking);
+                bookingsTable.getItems().remove(selectedBooking);
+            }
         } catch (NullPointerException ignored) {}
 
+    }
+
+    private Alert prepareCyclicBookingsAlert() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("This booking is a part of cyclic bookings");
+        alert.setHeaderText("Do you want to delete this specific booking or all in series?");
+        alert.setContentText("Choose your option.");
+
+        ButtonType buttonTypeYes = new ButtonType("Single");
+        ButtonType buttonTypeNo = new ButtonType("All");
+        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancel);
+
+        return alert;
     }
 
     @FXML

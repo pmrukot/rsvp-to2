@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -56,7 +57,6 @@ public class BookingEditionController {
     }
 
     public void setData(Booking booking) {
-        TimeSlotDAO timeSlotDAO = new TimeSlotDAO();
         this.booking = booking;
         try {
             this.reservationDatePicker.setValue(booking.getReservationDate().toLocalDate());
