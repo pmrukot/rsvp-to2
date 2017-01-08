@@ -18,19 +18,22 @@ public class Booking {
     @Column(name = "id")
     private long id;
 
-    @Column(name = "reservationDate")
+    @Column(name = "root_id")
+    private long rootId;
+
+    @Column(name = "reservation_date")
     private Date reservationDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "OWNER_ID")
+    @JoinColumn(name = "owner_id")
     private User owner;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "FIRST_SLOT_ID")
+    @JoinColumn(name = "first_slot_id")
     private TimeSlot firstSlot;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "LAST_SLOT_ID")
+    @JoinColumn(name = "last_slot_id")
     private TimeSlot lastSlot;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -59,6 +62,14 @@ public class Booking {
 
     public long getId() {
         return id;
+    }
+
+    public long getRootId() {
+        return rootId;
+    }
+
+    public void setRootId(long rootId) {
+        this.rootId = rootId;
     }
 
     public void setReservationDate(Date reservationDate) {
