@@ -1,23 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
-<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import rsvp.resources.view.CalendarDayColumn?>
+<HBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="rsvp.resources.controller.CalendarController" alignment="TOP_CENTER"
       prefHeight="400.0" prefWidth="750.0" BorderPane.alignment="CENTER">
-    <TableView fx:id="calendarTable" prefHeight="400.0" prefWidth="750.0" BorderPane.alignment="CENTER">
-        <columns>
-            <TableColumn fx:id="slotsColumn" style="-fx-alignment: center"/>
-            <TableColumn fx:id="mondayColumn" prefWidth="75.0" text="Monday" style="-fx-alignment: center" />
-            <TableColumn fx:id="tuesdayColumn" prefWidth="75.0" text="Tuesday" style="-fx-alignment: center" />
-            <TableColumn fx:id="wednesdayColumn" prefWidth="75.0" text="Wednesday" style="-fx-alignment: center" />
-            <TableColumn fx:id="thursdayColumn" prefWidth="75.0" text="Thursday" style="-fx-alignment: center" />
-            <TableColumn fx:id="fridayColumn" prefWidth="75.0" text="Friday" style="-fx-alignment: center" />
-            <TableColumn fx:id="saturdayColumn" prefWidth="75.0" text="Saturday" style="-fx-alignment: center" />
-            <TableColumn fx:id="sundayColumn" prefWidth="75.0" text="Sunday" style="-fx-alignment: center" />
-        </columns>
-    </TableView>
-</VBox>
+    <Button fx:id="previousButton" onAction="#handleShowPreviousWeek" prefWidth="32.0" prefHeight="32.0"/>
+    <VBox>
+        <Label fx:id="dateRangeLabel"/>
+        <TableView fx:id="calendarTable" prefHeight="400.0" prefWidth="750.0" BorderPane.alignment="CENTER">
+            <columns>
+                <TableColumn fx:id="slotsColumn" style="-fx-alignment: center"/>
+                <CalendarDayColumn fx:id="mondayColumn" prefWidth="75.0" text="Monday" style="-fx-alignment: center"/>
+                <CalendarDayColumn fx:id="tuesdayColumn" prefWidth="75.0" text="Tuesday" style="-fx-alignment: center"/>
+                <CalendarDayColumn fx:id="wednesdayColumn" prefWidth="75.0" text="Wednesday"
+                                   style="-fx-alignment: center"/>
+                <CalendarDayColumn fx:id="thursdayColumn" prefWidth="75.0" text="Thursday"
+                                   style="-fx-alignment: center"/>
+                <CalendarDayColumn fx:id="fridayColumn" prefWidth="75.0" text="Friday" style="-fx-alignment: center"/>
+                <CalendarDayColumn fx:id="saturdayColumn" prefWidth="75.0" text="Saturday"
+                                   style="-fx-alignment: center"/>
+                <CalendarDayColumn fx:id="sundayColumn" prefWidth="75.0" text="Sunday" style="-fx-alignment: center"/>
+            </columns>
+        </TableView>
+    </VBox>
+    <Button fx:id="nextButton" onAction="#handleShowNextWeek" prefWidth="32.0" prefHeight="32.0"/>
+</HBox>

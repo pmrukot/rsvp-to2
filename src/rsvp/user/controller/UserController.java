@@ -19,7 +19,7 @@ public class UserController {
 
     private static final List<Reservation> data = Arrays.asList(
             new Reservation(new User("Jan", "Kowalski", "abc", false),
-                    new TimeSlot(LocalTime.of(13, 30), LocalTime.of(14, 30)),
+                    TimeSlot.createTimeSlot(LocalTime.of(13, 30), LocalTime.of(14, 30)),
                     new UniversityRoom("13", 30)));
 
     private Stage primaryStage;

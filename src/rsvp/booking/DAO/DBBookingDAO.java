@@ -67,7 +67,7 @@ public class DBBookingDAO implements BookingDAO {
         Session session = HibernateUtils.getSession();
         Transaction transaction = session.beginTransaction();
         List<Booking> result = session.createQuery("from Booking b where b.roomId = :room", Booking.class)
-                .setParameter("room", universityRoom)
+                .setParameter("room", universityRoom.getId())
                 .getResultList();
         transaction.commit();
         session.close();

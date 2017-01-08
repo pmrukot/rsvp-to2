@@ -10,14 +10,14 @@ import java.util.List;
 
 public class ResourcesProvider {
 
-    public List<TimeSlot> getAllTimeSlots(){
+    public List<TimeSlot> getAllTimeSlots() {
         TimeSlotDAO timeSlotDAO = new TimeSlotDAO();
         List<TimeSlot> result = timeSlotDAO.getAll();
         Collections.sort(result);
         return result;
     }
 
-    public List<UniversityRoom> getAllUniversityRooms(){
+    public List<UniversityRoom> getAllUniversityRooms() {
         UniversityRoomDAO universityRoomDAO = new UniversityRoomDAO();
         return universityRoomDAO.getAll();
     }
