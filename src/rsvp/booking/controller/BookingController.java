@@ -138,7 +138,7 @@ public class BookingController {
         editBooking(selectedBooking);
     }
 
-    private void editBooking(Booking booking) {
+    public void editBooking(Booking booking) {
         try {
             final Stage dialogStage = new Stage();
             dialogStage.initModality(Modality.APPLICATION_MODAL);

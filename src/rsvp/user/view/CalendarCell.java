@@ -46,6 +46,22 @@ public class CalendarCell{
         this.color.set(color);
     }
 
+    public TimeSlot getTimeSlot() {
+        return timeSlot.get();
+    }
+
+    public SimpleObjectProperty<TimeSlot> timeSlotProperty() {
+        return timeSlot;
+    }
+
+    public Booking getBooking() {
+        return booking.get();
+    }
+
+    public SimpleObjectProperty<Booking> bookingProperty() {
+        return booking;
+    }
+
     public void setTooltip(Tooltip tooltip) {
         this.tooltip.set(tooltip);
     }

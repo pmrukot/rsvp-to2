@@ -10,6 +10,7 @@
           xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
     <Button GridPane.rowIndex="0"  GridPane.columnIndex="0" fx:id="previousButton" onAction="#handleShowPreviousWeek" prefWidth="32.0" prefHeight="32.0"/>
     <Label GridPane.rowIndex="0"  GridPane.columnIndex="1" fx:id="dateRangeLabel" prefWidth="1000.0" alignment="CENTER"/>
+    <Button GridPane.rowIndex="0"  GridPane.columnIndex="1" fx:id="refreshButton" onAction="#refresh" prefWidth="32.0" prefHeight="32.0" alignment="CENTER_LEFT"/>
     <Button GridPane.rowIndex="0"  GridPane.columnIndex="2" fx:id="nextButton" onAction="#handleShowNextWeek" prefWidth="32.0" prefHeight="32.0"/>
 
 
