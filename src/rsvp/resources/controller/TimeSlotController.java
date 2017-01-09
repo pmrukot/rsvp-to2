@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.LocalTimeStringConverter;
+import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.TimeSlot;
 import rsvp.resources.model.TimeSlotManager;
 
@@ -79,7 +80,7 @@ public class TimeSlotController {
         endTimeColumn.setCellValueFactory(new PropertyValueFactory<>("endTime"));
         endTimeColumn.setCellFactory(TextFieldTableCell.forTableColumn(new LocalTimeStringConverter()));
 
-        timeSlotManager = new TimeSlotManager();
+        timeSlotManager = new TimeSlotManager(new TimeSlotDAO());
         items = FXCollections.observableArrayList();
         updateTableViewItems();
         timeSlotListTableView.setItems(items);
