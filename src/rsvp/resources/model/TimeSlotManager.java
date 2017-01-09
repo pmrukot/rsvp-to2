@@ -14,8 +14,8 @@ public class TimeSlotManager {
     private List<TimeSlot> timeSlots;
     private TimeSlotDAO timeSlotDAO;
 
-    public TimeSlotManager() {
-        timeSlotDAO = new TimeSlotDAO();
+    public TimeSlotManager(TimeSlotDAO timeSlotDAO) {
+        this.timeSlotDAO = timeSlotDAO;
         timeSlots = new ArrayList<>();
         timeSlots.addAll(timeSlotDAO.getAll());
     }
