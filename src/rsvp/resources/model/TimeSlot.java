@@ -2,6 +2,7 @@ package rsvp.resources.model;
 
 import javax.persistence.*;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.Optional;
 
 @Entity
@@ -70,6 +71,10 @@ public class TimeSlot implements Comparable<TimeSlot> {
     public boolean equals(Object object) {
         return object instanceof TimeSlot && ((TimeSlot) object).getStartTime().equals(this.startTime) &&
                 ((TimeSlot) object).getEndTime().equals(this.endTime);
+    }
+
+    @Override public int hashCode() {
+        return Arrays.hashCode(new Object[]{startTime, endTime});
     }
 
     @Override

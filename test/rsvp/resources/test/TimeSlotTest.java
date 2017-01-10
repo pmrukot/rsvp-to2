@@ -17,7 +17,7 @@ public class TimeSlotTest {
     }
 
     @Test
-    public void TestCreateTimeSlot() {
+    public void testCreateTimeSlot() {
         assertEquals(null, TimeSlot.createTimeSlot(null, null));
         assertEquals(null, TimeSlot.createTimeSlot(LocalTime.parse("13:00"), null));
         assertEquals(null, TimeSlot.createTimeSlot(null, LocalTime.parse("14:00")));
@@ -48,6 +48,29 @@ public class TimeSlotTest {
     public void testToString() {
         timeSlot.setStartAndEndTime(LocalTime.parse("13:00"), LocalTime.parse("14:00"));
         assertEquals("13:00 - 14:00", timeSlot.toString());
+    }
+
+    @Test
+    public void testHashCodeReturnsTheSameValueWhenObjectsAreEqual() {
+        LocalTime someStartTime = LocalTime.parse("13:00");
+        LocalTime someEndTime = LocalTime.parse("15:00");
+        TimeSlot timeSlot1 = TimeSlot.createTimeSlot(someStartTime, someEndTime);
+        TimeSlot timeSlot2 = TimeSlot.createTimeSlot(someStartTime, someEndTime);
+
+        assertEquals(timeSlot1, timeSlot2);
+        assertEquals(timeSlot1.hashCode(), timeSlot2.hashCode());
+    }
+
+    @Test
+    public void testHashCodeReturnsDifferentValueWhenObjectsAreNotEqual() {
+        LocalTime someStartTime = LocalTime.parse("13:00");
+        LocalTime someEndTime = LocalTime.parse("15:00");
+        LocalTime someOtherEndTime = LocalTime.parse("18:00");
+        TimeSlot timeSlot1 = TimeSlot.createTimeSlot(someStartTime, someEndTime);
+        TimeSlot timeSlot2 = TimeSlot.createTimeSlot(someStartTime, someOtherEndTime);
+
+        assertNotEquals(timeSlot1, timeSlot2);
+        assertNotEquals(timeSlot1.hashCode(), timeSlot2.hashCode());
     }
 
 }
