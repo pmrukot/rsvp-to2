@@ -56,9 +56,10 @@ public class CalendarController {
     @FXML
     Label dateRangeLabel;
 
-    private List<Booking> bookings;
     private Date currentStartDate;
     private Date currentEndDate;
+
+    private UniversityRoom universityRoom;
 
     @FXML
     private void initialize() {
@@ -111,10 +112,6 @@ public class CalendarController {
                 timeSlot.getStartTime().isAfter(start.getEndTime())) || start.equals(timeSlot) || end.equals(timeSlot);
     }
 
-    private boolean isInThePeriod(Date start, Date end, Date date) {
-        return !date.before(start) && !date.after(end);
-    }
-
     private Color getRandomColor() {
         Random rand = new Random();
         double r = rand.nextFloat() / 2f + 0.5;
@@ -136,18 +133,22 @@ public class CalendarController {
             bookingItemsMap.put(timeSlot, item);
         }
 
-        bookings.stream().filter(booking ->
-                isInThePeriod(start, end, booking.getReservationDate())).
-                forEach(booking -> {
-                    Color color = getRandomColor();
-                    DayOfWeek dayOfWeek = booking.getReservationDate().toLocalDate().getDayOfWeek();
-                    timeSlots.stream().filter(timeSlot -> isBetweenTimeSlots(booking.getFirstSlot(),
-                            booking.getLastSlot(), timeSlot)).forEach(timeSlot -> {
-                        CalendarTableItem item = bookingItemsMap.get(timeSlot);
-                        item.addColor(dayOfWeek, color);
-                        item.addBookingsMap(dayOfWeek, booking);
-                    });
-                });
+        DBBookingDAO dbBookingDAO = new DBBookingDAO();
+        java.sql.Date sqlStartTime = new java.sql.Date(start.getTime());
+        java.sql.Date sqlEndTime = new java.sql.Date(end.getTime());
+        List<Booking> bookings = dbBookingDAO.getAllBookingsForGivenPeriodAndUniversityRoom(
+                sqlStartTime, sqlEndTime, universityRoom);
+
+        bookings.forEach(booking -> {
+            Color color = getRandomColor();
+            DayOfWeek dayOfWeek = booking.getReservationDate().toLocalDate().getDayOfWeek();
+            timeSlots.stream().filter(timeSlot -> isBetweenTimeSlots(booking.getFirstSlot(),
+                    booking.getLastSlot(), timeSlot)).forEach(timeSlot -> {
+                CalendarTableItem item = bookingItemsMap.get(timeSlot);
+                item.addColor(dayOfWeek, color);
+                item.addBookingsMap(dayOfWeek, booking);
+            });
+        });
 
         return result;
     }
@@ -177,9 +178,7 @@ public class CalendarController {
     }
 
     public void setContentForUniversityRoom(UniversityRoom universityRoom) {
-        DBBookingDAO bookingDAO = new DBBookingDAO();
-        bookings = bookingDAO.getAllBookingsForUniversityRoom(universityRoom);
-
+        this.universityRoom = universityRoom;
         Calendar cal = Calendar.getInstance();
         while (cal.get(Calendar.DAY_OF_WEEK) > cal.getFirstDayOfWeek()) {
             cal.add(Calendar.DATE, -1);

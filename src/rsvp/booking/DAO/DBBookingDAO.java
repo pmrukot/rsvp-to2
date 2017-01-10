@@ -96,8 +96,8 @@ public class DBBookingDAO implements BookingDAO {
     public List<Booking> getAllBookingsForUniversityRoom(UniversityRoom universityRoom) {
         Session session = HibernateUtils.getSession();
         Transaction transaction = session.beginTransaction();
-        List<Booking> result = session.createQuery("from Booking b where b.roomId = :room", Booking.class)
-                .setParameter("room", universityRoom.getId())
+        List<Booking> result = session.createQuery("from Booking b where b.universityRoom = :room", Booking.class)
+                .setParameter("room", universityRoom)
                 .getResultList();
         transaction.commit();
         session.close();
@@ -105,12 +105,16 @@ public class DBBookingDAO implements BookingDAO {
     }
 
     @Override
-    public List<Booking> getAllBookingsForGivenPeriod(Date startingDate, Date endingDate) {
+    public List<Booking> getAllBookingsForGivenPeriodAndUniversityRoom(
+            Date startingDate, Date endingDate, UniversityRoom universityRoom) {
         Session session = HibernateUtils.getSession();
         Transaction transaction = session.beginTransaction();
-        List<Booking> result = session.createQuery("from Booking b where b.reservationDate >= :startingDate and b.reservationDate <= :endingDate", Booking.class)
+        List<Booking> result = session.createQuery(
+                "from Booking b where b.universityRoom = :room " +
+                        "and b.reservationDate >= :startingDate and b.reservationDate <= :endingDate", Booking.class)
                 .setParameter("startingDate", startingDate)
                 .setParameter("endingDate", endingDate)
+                .setParameter("room", universityRoom)
                 .getResultList();
         transaction.commit();
         session.close();
