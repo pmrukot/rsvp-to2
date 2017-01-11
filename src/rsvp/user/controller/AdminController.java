@@ -11,6 +11,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import rsvp.user.DAO.DBUserDAO;
@@ -80,10 +82,8 @@ public class AdminController implements ListChangeListener {
         SortedList<User> sortedList = new SortedList<>(filteredList);
         sortedList.comparatorProperty().bind(usersTable.comparatorProperty());
         usersTable.setItems(sortedList);
-        undoButton.disableProperty().bind(commandManager.undoPossible);
-        redoButton.disableProperty().bind(commandManager.redoPossible);
-        editButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
-        deleteButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
+        setBindings();
+        setIcons();
     }
 
     @Override
@@ -165,5 +165,24 @@ public class AdminController implements ListChangeListener {
 
     public void redoCommand() {
         commandManager.redo();
+    }
+
+    private void setBindings() {
+        undoButton.disableProperty().bind(commandManager.undoPossible);
+        redoButton.disableProperty().bind(commandManager.redoPossible);
+        editButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
+        deleteButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
+    }
+
+    private void setIcons() {
+        ImageView undoView = new ImageView(new Image(getClass().getResourceAsStream("../view/images/undo.png")));
+        ImageView redoView = new ImageView(new Image(getClass().getResourceAsStream("../view/images/redo.png")));
+        int size = 15;
+        undoView.setFitWidth(size);
+        undoView.setFitHeight(size);
+        redoView.setFitWidth(size);
+        redoView.setFitHeight(size);
+        undoButton.setGraphic(undoView);
+        redoButton.setGraphic(redoView);
     }
 }

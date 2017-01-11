@@ -3,12 +3,7 @@ package rsvp.user.controller;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -17,20 +12,15 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import rsvp.booking.DAO.BookingDAO;
 import rsvp.booking.DAO.DBBookingDAO;
-import rsvp.booking.controller.BookingController;
 import rsvp.booking.model.Booking;
 import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.TimeSlot;
-import rsvp.resources.model.UniversityRoom;
-import rsvp.user.model.User;
 import rsvp.user.view.CalendarCell;
 import rsvp.user.view.ReservationPerWeek;
 
-import java.io.IOException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -72,23 +62,6 @@ public class UserController {
     private TableColumn<ReservationPerWeek, CalendarCell> sunday;
 
     @FXML
-    private DatePicker reservationDatePicker;
-
-    @FXML
-    private ComboBox<UniversityRoom> universityRoom;
-
-    @FXML
-    private ComboBox<TimeSlot> firstTimeSlot;
-
-    @FXML
-    private ComboBox<TimeSlot> lastTimeSlot;
-
-    @FXML
-    private Button updateButton;
-
-    private Booking booking;
-
-    @FXML
     public void initialize() {
         myCalendarTable.setEditable(true);
         slots.setCellValueFactory(new PropertyValueFactory<>("slots"));
@@ -100,14 +73,11 @@ public class UserController {
         saturday.setCellValueFactory(new PropertyValueFactory<>("saturday"));
         sunday.setCellValueFactory(new PropertyValueFactory<>("sunday"));
 
-
-
         currentStartDate = getDate(DayOfWeek.MONDAY, LocalDate.now());
         currentEndDate = getDate(DayOfWeek.SUNDAY, LocalDate.now());
         setDateRangeLabel();
         setIcons();
         initializeMyCalendarContent(currentStartDate, currentEndDate);
-
     }
 
 
@@ -115,8 +85,7 @@ public class UserController {
         column.setCellFactory(new Callback<TableColumn<ReservationPerWeek, CalendarCell>, TableCell<ReservationPerWeek, CalendarCell>>() {
             @Override
             public TableCell<ReservationPerWeek, CalendarCell> call(TableColumn<ReservationPerWeek, CalendarCell> param) {
-                TableCell<ReservationPerWeek, CalendarCell> tableCell = new TableCell<ReservationPerWeek, CalendarCell>(){
-
+                return new TableCell<ReservationPerWeek, CalendarCell>(){
                     @Override
                     protected void updateItem(CalendarCell item, boolean empty) {
                         super.updateItem(item, empty);
@@ -126,7 +95,6 @@ public class UserController {
                                     setText(item.getCellContent());
                                 }
                             }
-
                             if (item.getColor() != null) {
                                 setBackground(new Background(new BackgroundFill(item.getColor(), CornerRadii.EMPTY, EMPTY)));
                                 if(item.getTooltip() != null) {
@@ -141,8 +109,6 @@ public class UserController {
                         }
                     }
                 };
-
-                return tableCell;
             }
         });
     }
@@ -151,25 +117,17 @@ public class UserController {
         final ContextMenu contextMenu = new ContextMenu();
         final MenuItem removeMenuItem = new MenuItem("Remove");
         final MenuItem editMenuItem = new MenuItem("Edit");
-        removeMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
+        removeMenuItem.setOnAction(a -> {
                 BookingDAO bookingDAO = new DBBookingDAO();
                 bookingDAO.deleteBooking(item.getBooking());
                 initializeMyCalendarContent(currentStartDate, currentEndDate);
-            }
-        });
-        editMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
+            });
+        editMenuItem.setOnAction(a -> {
                 initEditBookingLayout(item.getBooking());
                 initializeMyCalendarContent(currentStartDate, currentEndDate);
-            }
-        });
+            });
 
         contextMenu.getItems().addAll(Arrays.asList(editMenuItem, removeMenuItem));
-
-
 
         tableCell.contextMenuProperty().bind(
                 Bindings.when(tableCell.emptyProperty())
@@ -213,7 +171,8 @@ public class UserController {
         }*/
     }
 
-    public void initializeMyCalendarContent(Date start, Date end) {
+    @SuppressWarnings("unchecked")
+    private void initializeMyCalendarContent(Date start, Date end) {
         calendarTableItems.clear();
         calendarTableItems.addAll(fillTableCells(start, end));
 
@@ -333,7 +292,7 @@ public class UserController {
         return new Color(r, g, b, 1.0);
     }
 
-    public void refresh(ActionEvent actionEvent) {
+    public void refresh() {
         initializeMyCalendarContent(currentStartDate, currentEndDate);
     }
 }

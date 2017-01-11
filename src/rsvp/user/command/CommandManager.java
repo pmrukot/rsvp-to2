@@ -7,15 +7,15 @@ import java.util.Stack;
 
 public class CommandManager {
     private Stack<Command> executedCommands;
-    private Stack<Command> waitingCommands;
+    private Stack<Command> redoableCommands;
     public BooleanProperty undoPossible;
     public BooleanProperty redoPossible;
 
     public CommandManager() {
         executedCommands = new Stack<>();
-        waitingCommands = new Stack<>();
+        redoableCommands = new Stack<>();
         undoPossible = new SimpleBooleanProperty(executedCommands.empty());
-        redoPossible = new SimpleBooleanProperty(waitingCommands.empty());
+        redoPossible = new SimpleBooleanProperty(redoableCommands.empty());
     }
 
     public boolean executeCommand(Command c) {
@@ -31,7 +31,7 @@ public class CommandManager {
     public void undo() {
         Command c = executedCommands.pop();
         if(c.undo()) {
-            waitingCommands.push(c);
+            redoableCommands.push(c);
         } else {
             executedCommands.push(c);
         }
@@ -39,17 +39,17 @@ public class CommandManager {
     }
 
     public void redo() {
-        Command c = waitingCommands.pop();
+        Command c = redoableCommands.pop();
         if(c.redo()) {
             executedCommands.push(c);
         } else {
-            waitingCommands.push(c);
+            redoableCommands.push(c);
         }
         updateBindings();
     }
 
     private void updateBindings() {
         undoPossible.setValue(executedCommands.empty());
-        redoPossible.setValue(waitingCommands.empty());
+        redoPossible.setValue(redoableCommands.empty());
     }
 }
