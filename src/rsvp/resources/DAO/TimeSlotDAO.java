@@ -4,14 +4,15 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import rsvp.common.persistence.HibernateUtils;
 import rsvp.resources.model.TimeSlot;
+
 import java.time.LocalTime;
 import java.util.List;
 
 public class TimeSlotDAO {
 
-    public TimeSlot getTimeSlotByID(long id){
+    public TimeSlot getTimeSlotByID(long id) {
         Session session = HibernateUtils.getSession();
-        TimeSlot timeSlot =  session.get(TimeSlot.class, id);
+        TimeSlot timeSlot = session.get(TimeSlot.class, id);
         session.close();
         return timeSlot;
     }
@@ -34,11 +35,11 @@ public class TimeSlotDAO {
 
     public void update(TimeSlot timeSlot, LocalTime newStartTime, LocalTime newEndTime) {
         Session session = HibernateUtils.getSession();
-        Transaction transaction = session.beginTransaction();
         TimeSlot updatedTimeSlot = session.get(TimeSlot.class, timeSlot.getId());
-        updatedTimeSlot.setStartTime(newStartTime);
-        updatedTimeSlot.setEndTime(newEndTime);
-        transaction.commit();
+        if (updatedTimeSlot.setStartAndEndTime(newStartTime, newEndTime)) {
+            Transaction transaction = session.beginTransaction();
+            transaction.commit();
+        }
         session.close();
     }
 

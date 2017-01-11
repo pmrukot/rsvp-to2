@@ -5,9 +5,8 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ComboBox?>
-<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="rsvp.booking.controller.BookingEditionController" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="300.0" BorderPane.alignment="CENTER">
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="rsvp.booking.controller.BookingEditionController" alignment="TOP_CENTER" prefHeight="300.0" prefWidth="300.0" BorderPane.alignment="CENTER">
     <opaqueInsets>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
     </opaqueInsets>
@@ -50,6 +49,30 @@
         </Label>
 
         <ComboBox fx:id="lastTimeSlot" GridPane.columnIndex="2" maxWidth="200">
+            <GridPane.margin>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </GridPane.margin>
+        </ComboBox>
+
+        <Label text="Frequency" GridPane.columnIndex="2">
+            <GridPane.margin>
+                <Insets bottom="0.0" left="5.0" right="5.0" top="5.0" />
+            </GridPane.margin>
+        </Label>
+
+        <ComboBox fx:id="frequencyPicker" GridPane.rowIndex="4">
+            <GridPane.margin>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </GridPane.margin>
+        </ComboBox>
+
+        <Label text="Repeat" GridPane.columnIndex="2">
+            <GridPane.margin>
+                <Insets bottom="0.0" left="5.0" right="5.0" top="5.0" />
+            </GridPane.margin>
+        </Label>
+
+        <ComboBox fx:id="recurrencePicker" GridPane.rowIndex="5">
             <GridPane.margin>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </GridPane.margin>

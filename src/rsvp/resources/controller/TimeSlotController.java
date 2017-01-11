@@ -11,10 +11,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.LocalTimeStringConverter;
-import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.TimeSlot;
+import rsvp.resources.model.TimeSlotManager;
+
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.Optional;
 
 public class TimeSlotController {
     private static final String NO_ITEM_SELECTED_ALERT = "You have to select some time slot in order to do modification";
@@ -22,7 +24,6 @@ public class TimeSlotController {
     private static final String NO_MODYFICATION_ALERT = "You have to provide different values than before";
     private static final String NOT_ENOUGH_ARGUMENTS_ALERT = "You have to provide all arguments";
     private static final String NON_CHRONOLOGICAL_ORDER_ALERT = "You have to provide start time earlier than end time";
-    private static final String COLLISION_ALERT = "You have to provide time slot not colliding with existing ones";
 
     @FXML
     TableView<TimeSlot> timeSlotListTableView;
@@ -46,7 +47,7 @@ public class TimeSlotController {
     private TextField endTimeFieldUpdate;
 
     ObservableList<TimeSlot> items;
-    TimeSlotDAO timeSlotDAO;
+    TimeSlotManager timeSlotManager;
 
     Alert errorAlert;
 
@@ -61,16 +62,9 @@ public class TimeSlotController {
             secondTextField.clear();
     }
 
-    private boolean isColliding(LocalTime insertedStartTime, LocalTime insertedEndTime) {
-        for(TimeSlot item : items) {
-            LocalTime currentStartTime = item.getStartTime();
-            LocalTime currentEndTime = item.getEndTime();
-            if(insertedStartTime.isBefore(currentStartTime) && insertedEndTime.isAfter(currentStartTime)) return true;
-            if(insertedStartTime.equals(currentStartTime) || insertedEndTime.equals(currentEndTime)) return true;
-            if(insertedStartTime.isAfter(currentStartTime) && insertedEndTime.isBefore(currentEndTime)) return true;
-            if(insertedStartTime.isBefore(currentEndTime) && insertedEndTime.isAfter(currentEndTime)) return true;
-        }
-        return false;
+    private void updateTableViewItems() {
+        items.clear();
+        items.addAll(timeSlotManager.getTimeSlots());
     }
 
     @FXML
@@ -79,16 +73,15 @@ public class TimeSlotController {
         errorAlert.setTitle("Error!");
         errorAlert.setHeaderText("Error while modyfying data");
 
-        items = FXCollections.observableArrayList();
-        timeSlotDAO = new TimeSlotDAO();
-
         startTimeColumn.setCellValueFactory(new PropertyValueFactory<>("startTime"));
         startTimeColumn.setCellFactory(TextFieldTableCell.forTableColumn(new LocalTimeStringConverter()));
 
         endTimeColumn.setCellValueFactory(new PropertyValueFactory<>("endTime"));
         endTimeColumn.setCellFactory(TextFieldTableCell.forTableColumn(new LocalTimeStringConverter()));
 
-        items.addAll(timeSlotDAO.getAll());
+        timeSlotManager = new TimeSlotManager();
+        items = FXCollections.observableArrayList();
+        updateTableViewItems();
         timeSlotListTableView.setItems(items);
     }
 
@@ -113,14 +106,14 @@ public class TimeSlotController {
             return;
         }
 
-        TimeSlot createdTimeSlot = new TimeSlot(startTime, endTime);
-        if (isColliding(createdTimeSlot.getStartTime(), createdTimeSlot.getEndTime())) {
-            handleErrorAlert(startTimeFieldCreate, endTimeFieldCreate, COLLISION_ALERT);
-            return;
-        }
+        TimeSlot createdTimeSlot = TimeSlot.createTimeSlot(startTime, endTime);
 
-        items.add(createdTimeSlot);
-        timeSlotDAO.create(createdTimeSlot);
+        Optional<String> addResult = timeSlotManager.createNewTimeSlot(createdTimeSlot);
+        if (addResult.isPresent()) {
+            handleErrorAlert(startTimeFieldCreate, endTimeFieldCreate, addResult.get());
+        }
+        updateTableViewItems();
+
         handleErrorAlert(startTimeFieldCreate, endTimeFieldCreate, null);
     }
 
@@ -131,9 +124,8 @@ public class TimeSlotController {
             handleErrorAlert(null, null, NO_ITEM_SELECTED_ALERT);
             return;
         }
-
-        timeSlotDAO.delete(chosenTimeSlot);
-        items.remove(chosenTimeSlot);
+        timeSlotManager.deleteTimeSlot(chosenTimeSlot);
+        updateTableViewItems();
     }
 
     @FXML
@@ -168,15 +160,11 @@ public class TimeSlotController {
             return;
         }
 
-        if(isColliding(newStartTime, newEndTime)) {
-            handleErrorAlert(startTimeFieldUpdate, endTimeFieldUpdate, COLLISION_ALERT);
-            return;
+        Optional<String> updateResult = timeSlotManager.updateTimeSlot(chosenTimeSlot, newStartTime, newEndTime);
+        if (updateResult.isPresent()) {
+            handleErrorAlert(startTimeFieldUpdate, endTimeFieldUpdate, updateResult.get());
         }
-
-        timeSlotDAO.update(chosenTimeSlot, newStartTime, newEndTime);
+        updateTableViewItems();
         handleErrorAlert(startTimeFieldUpdate, endTimeFieldUpdate, null);
-        items.clear();
-        items.addAll(timeSlotDAO.getAll());
-        timeSlotListTableView.setItems(items);
     }
 }

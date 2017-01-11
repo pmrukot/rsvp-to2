@@ -19,10 +19,12 @@ import rsvp.resources.DAO.UniversityRoomDAO;
 import rsvp.resources.model.TimeSlot;
 import rsvp.resources.model.UniversityRoom;
 import rsvp.user.API.AuthenticationService;
+import rsvp.booking.controller.CyclicBookingEditionController;
 
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalTime;
+import java.util.Optional;
 
 public class BookingController {
 
@@ -117,10 +119,44 @@ public class BookingController {
     public void deleteBooking() {
         try{
             Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
-            dbBookingDao.deleteBooking(selectedBooking);
-            bookingsTable.getItems().remove(selectedBooking);
+            if(selectedBooking.getRootId() > 0){
+                Alert alert = prepareCyclicBookingsAlert();
+
+                Optional<ButtonType> result = alert.showAndWait();
+                String stringResult = result.get().getText();
+                switch(stringResult){
+                    case "Single":
+                        dbBookingDao.deleteBooking(selectedBooking);
+                        bookingsTable.getItems().remove(selectedBooking);
+                        return;
+                    case "All":
+                        dbBookingDao.deleteCyclicBookings(selectedBooking.getRootId());
+                        this.setData();
+                        return;
+                    case "Cancel":
+                        return;
+                }
+            } else {
+                dbBookingDao.deleteBooking(selectedBooking);
+                bookingsTable.getItems().remove(selectedBooking);
+            }
         } catch (NullPointerException ignored) {}
 
+    }
+
+    private Alert prepareCyclicBookingsAlert() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("This booking is a part of cyclic bookings");
+        alert.setHeaderText("Do you want to delete this specific booking or all in series?");
+        alert.setContentText("Choose your option.");
+
+        ButtonType buttonTypeYes = new ButtonType("Single");
+        ButtonType buttonTypeNo = new ButtonType("All");
+        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancel);
+
+        return alert;
     }
 
     @FXML
@@ -135,7 +171,11 @@ public class BookingController {
     @FXML
     public void handleEditAction() {
         Booking selectedBooking = bookingsTable.getSelectionModel().getSelectedItem();
-        editBooking(selectedBooking);
+        if(selectedBooking.getRootId() > 0) {
+            editCyclicBooking(selectedBooking);
+        } else {
+            editBooking(selectedBooking);
+        }
     }
 
     public void editBooking(Booking booking) {
@@ -148,7 +188,7 @@ public class BookingController {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("view/BookingEditionPane.fxml"));
             VBox bookingEditionLayout = (VBox) loader.load();
-            Scene scene = new Scene(bookingEditionLayout, 300, 200);
+            Scene scene = new Scene(bookingEditionLayout, 300, 300);
 
             BookingEditionController bookingEditionController = loader.getController();
             bookingEditionController.setDialogStage(dialogStage);
@@ -160,6 +200,34 @@ public class BookingController {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NullPointerException ignored) {}
+
+        bookingsTable.refresh();
+    }
+
+    private void editCyclicBooking(Booking booking) {
+        try {
+            final Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.initOwner(primaryStage);
+            dialogStage.setOnHiding(event -> setData());
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("view/CyclicBookingEditionPane.fxml"));
+            VBox bookingEditionLayout = (VBox) loader.load();
+            Scene scene = new Scene(bookingEditionLayout, 300, 200);
+
+            CyclicBookingEditionController cyclicBookingEditionController = loader.getController();
+            cyclicBookingEditionController.setDialogStage(dialogStage);
+            cyclicBookingEditionController.setBookingController(this);
+            cyclicBookingEditionController.setData(booking);
+
+            dialogStage.setScene(scene);
+            dialogStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException ignored) {
+            ignored.printStackTrace();
+        }
 
         bookingsTable.refresh();
     }
@@ -179,7 +247,7 @@ public class BookingController {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("view/BookingParticipantsEditionPane.fxml"));
             VBox bookingParticipantsEditionLayout = (VBox) loader.load();
-            Scene scene = new Scene(bookingParticipantsEditionLayout, 300, 200);
+            Scene scene = new Scene(bookingParticipantsEditionLayout, 300, 300);
 
             BookingParticipantsEditionController bookingParticipantsEditionController = loader.getController();
             bookingParticipantsEditionController.setDialogStage(dialogStage);
