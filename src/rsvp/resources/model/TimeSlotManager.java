@@ -36,7 +36,7 @@ public class TimeSlotManager {
         return false;
     }
 
-    public Optional<String> createNewTimeSlot(TimeSlot timeSlot) {
+    public Optional<String> addNewTimeSlot(TimeSlot timeSlot) {
         if (isColliding(timeSlot.getStartTime(), timeSlot.getEndTime(), null)) {
             return Optional.of(COLLISION_ALERT);
         }

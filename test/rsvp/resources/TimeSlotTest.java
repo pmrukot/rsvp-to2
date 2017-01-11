@@ -17,29 +17,58 @@ public class TimeSlotTest {
     }
 
     @Test
-    public void testCreateTimeSlot() {
-        assertEquals(null, TimeSlot.createTimeSlot(null, null));
-        assertEquals(null, TimeSlot.createTimeSlot(LocalTime.parse("13:00"), null));
-        assertEquals(null, TimeSlot.createTimeSlot(null, LocalTime.parse("14:00")));
-        assertEquals(null, TimeSlot.createTimeSlot(LocalTime.parse("13:00"), LocalTime.parse("13:00")));
-        assertEquals(null, TimeSlot.createTimeSlot(LocalTime.parse("14:00"), LocalTime.parse("13:00")));
+    public void testCreateTimeSlotReturnsNullWhenGivenNullAsArgument() {
+        assertNull(TimeSlot.createTimeSlot(null, null));
+        assertNull(TimeSlot.createTimeSlot(LocalTime.parse("13:00"), null));
+        assertNull(TimeSlot.createTimeSlot(null, LocalTime.parse("14:00")));
+    }
 
+    @Test
+    public void testCreateTimeSlotReturnsNullWhenGivenWrongHours() {
+        assertNull(TimeSlot.createTimeSlot(LocalTime.parse("13:00"), LocalTime.parse("13:00")));
+        assertNull(TimeSlot.createTimeSlot(LocalTime.parse("14:00"), LocalTime.parse("13:00")));
+    }
+
+    @Test
+    public void testCreateTimeSlotDoesNotReturnNullWhenGivenCorrectHours() {
+        assertNotNull(TimeSlot.createTimeSlot(LocalTime.parse("13:00"), LocalTime.parse("14:00")));
+    }
+
+    @Test
+    public void testCreateTimeSlotReturnsInstanceOfTimeSlotClassWhenGivenCorrectHours() {
         assertTrue(TimeSlot.createTimeSlot(LocalTime.parse("13:00"), LocalTime.parse("14:00")) instanceof TimeSlot);
+    }
+
+    @Test
+    public void testCreateTimeSlotReturnsCorrectTimeSlotWhenGivenCorrectHours() {
         TimeSlot createdTimeSlot = TimeSlot.createTimeSlot(LocalTime.parse("13:00"), LocalTime.parse("14:00"));
-        assertNotNull(createdTimeSlot);
+
         assertEquals(LocalTime.parse("13:00"), createdTimeSlot.getStartTime());
         assertEquals(LocalTime.parse("14:00"), createdTimeSlot.getEndTime());
     }
 
     @Test
-    public void testSetStartAndEndTime() {
+    public void testSetStartAndEndTimeReturnsFalseWhenGivenNullAsArgument() {
         assertFalse(timeSlot.setStartAndEndTime(null, null));
         assertFalse(timeSlot.setStartAndEndTime(null, LocalTime.parse("14:00")));
         assertFalse(timeSlot.setStartAndEndTime(LocalTime.parse("13:00"), null));
+    }
+
+    @Test
+    public void testSetStartAndEndTimeReturnsFalseWhenGivenWrongHours() {
         assertFalse(timeSlot.setStartAndEndTime(LocalTime.parse("13:00"), LocalTime.parse("13:00")));
         assertFalse(timeSlot.setStartAndEndTime(LocalTime.parse("14:00"), LocalTime.parse("13:00")));
+    }
 
+    @Test
+    public void testSetStartAndEndTimeReturnsTrueWhenGivenCorrectHours() {
         assertTrue(timeSlot.setStartAndEndTime(LocalTime.parse("13:00"), LocalTime.parse("14:00")));
+    }
+
+    @Test
+    public void testSetStartAndEndTimeSetsCorrectStartAndEndTimeWhenGivenCorrectHours() {
+        timeSlot.setStartAndEndTime(LocalTime.parse("13:00"), LocalTime.parse("14:00"));
+
         assertEquals(LocalTime.parse("13:00"), timeSlot.getStartTime());
         assertEquals(LocalTime.parse("14:00"), timeSlot.getEndTime());
     }
@@ -47,6 +76,7 @@ public class TimeSlotTest {
     @Test
     public void testToString() {
         timeSlot.setStartAndEndTime(LocalTime.parse("13:00"), LocalTime.parse("14:00"));
+
         assertEquals("13:00 - 14:00", timeSlot.toString());
     }
 
