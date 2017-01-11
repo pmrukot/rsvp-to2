@@ -18,30 +18,39 @@ public class CommandManager {
         redoPossible = new SimpleBooleanProperty(waitingCommands.empty());
     }
 
-    public void executeCommand(Command c) {
+    public boolean executeCommand(Command c) {
+        boolean success = false;
         if(c.execute()) {
             executedCommands.push(c);
-            undoPossible.setValue(executedCommands.empty());
+            success = true;
         }
+        updateBindings();
+        return success;
     }
 
     public void undo() {
         Command c = executedCommands.pop();
         if(c.undo()) {
             waitingCommands.push(c);
-            redoPossible.setValue(waitingCommands.empty());
         } else {
             executedCommands.push(c);
         }
+        updateBindings();
     }
 
     public void redo() {
         Command c = waitingCommands.pop();
         if(c.execute()) {
             executedCommands.push(c);
-            undoPossible.setValue(executedCommands.empty());
+
         } else {
             waitingCommands.push(c);
         }
+        updateBindings();
+    }
+
+    private void updateBindings() {
+        undoPossible.setValue(executedCommands.empty());
+        redoPossible.setValue(waitingCommands.empty());
     }
 }

@@ -25,12 +25,10 @@ import rsvp.user.view.Alert;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Stack;
 
 public class AdminController implements ListChangeListener {
     private UserDAO userDAO;
     private FilteredList<User> filteredList;
-    private Stack<Command> executedCommands;
     private CommandManager commandManager;
 
     @FXML
@@ -60,7 +58,6 @@ public class AdminController implements ListChangeListener {
     @SuppressWarnings("unchecked")
     public void initialize() {
         userDAO = new DBUserDAO();
-        executedCommands = new Stack<>();
         commandManager = new CommandManager();
         UserListManagerSingleton.getInstance().addListener(this);
         filteredList = new FilteredList<>(UserListManagerSingleton.getInstance().getUsers());
@@ -132,7 +129,7 @@ public class AdminController implements ListChangeListener {
             Stage secondaryStage = new Stage();
             secondaryStage.setScene(scene);
             EditUserController controller = loader.getController();
-            controller.initData(updatedUser, userDAO, executedCommands);
+            controller.initData(updatedUser, userDAO, commandManager);
             secondaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -148,8 +145,7 @@ public class AdminController implements ListChangeListener {
                 .ifPresent(response -> {
                     String login = selectedUser.getLogin();
                     Command c = new DeleteUserCommand(userDAO, selectedUser);
-                    if(c.execute()) {
-                        executedCommands.push(c);
+                    if(commandManager.executeCommand(c)) {
                         Alert alert2 = new Alert(String.format("Deleting user %s succeeded!", login), AlertType.INFORMATION);
                         alert2.showAndWait();
                     } else {
@@ -164,13 +160,10 @@ public class AdminController implements ListChangeListener {
     }
 
     public void undoCommand() {
-        if(!executedCommands.empty()) { // todo this should be checked by button binding
-            Command c = executedCommands.pop();
-            c.undo();
-        }
+        commandManager.undo();
     }
 
     public void redoCommand() {
-        System.out.println("redo command");
+        commandManager.redo();
     }
 }

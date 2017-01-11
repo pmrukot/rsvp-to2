@@ -12,17 +12,16 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import rsvp.user.DAO.UserDAO;
 import rsvp.user.command.Command;
+import rsvp.user.command.CommandManager;
 import rsvp.user.command.CreateUserCommand;
 import rsvp.user.command.UpdateUserCommand;
 import rsvp.user.model.User;
 import rsvp.user.view.Alert;
 
-import java.util.Stack;
-
 public class EditUserController {
     private User editedUser;
     private UserDAO userDAO;
-    private Stack<Command> executedCommands;
+    private CommandManager commandManager;
     @FXML
     public TextField login;
     @FXML
@@ -36,10 +35,10 @@ public class EditUserController {
     @FXML
     public Button saveEditedUser;
 
-    void initData(User user, UserDAO userDAO, Stack<Command> executedCommands) {
+    void initData(User user, UserDAO userDAO, CommandManager commandManager) {
         editedUser = user;
         this.userDAO = userDAO;
-        this.executedCommands = executedCommands;
+        this.commandManager = commandManager;
         if(user != null) {
             login.setText(user.getLogin());
             firstName.setText(user.getFirstName());
@@ -74,8 +73,7 @@ public class EditUserController {
             u = new User(login.getText(), firstName.getText(), lastName.getText(), password.getText(), admin.isSelected());
         }
         Command c = new CreateUserCommand(userDAO, u);
-        if(c.execute()) {
-            executedCommands.push(c);
+        if(commandManager.executeCommand(c)) {
             Alert alert = new Alert("Created new user successfully!\nUser login: " + u.getLogin(), AlertType.INFORMATION);
             alert.showAndWait();
         } else {
@@ -87,8 +85,7 @@ public class EditUserController {
     private void editUser() {
         Command c = new UpdateUserCommand(userDAO, editedUser, login.getText(),
                 firstName.getText(), lastName.getText(), password.getText(), admin.isSelected());
-        if(c.execute()) {
-            executedCommands.push(c);
+        if(commandManager.executeCommand(c)) {
             Alert alert = new Alert("User edited successfully!\nUser login: " + editedUser.getLogin(), AlertType.INFORMATION);
             alert.showAndWait();
         } else {
