@@ -2,6 +2,7 @@ package rsvp.resources;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.cglib.core.Local;
 import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.TimeSlot;
 import rsvp.resources.model.TimeSlotManager;
@@ -26,101 +27,150 @@ public class TimeSlotManagerTest {
     }
 
     @Test
-    public void testCreateNewTimeSlot() {
-        assertEquals(Optional.empty(),
-                timeSlotManager.createNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00"))));
+    public void testAddNewTimeSlotReturnsCollisionAlertWhenNewTimeSlotsCollideCase1() {
+        timeSlotManager.addNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
 
-        assertEquals(Optional.of(COLLISION_ALERT),
-                timeSlotManager.createNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("07:30"), LocalTime.parse("08:30"))));
-        assertEquals(Optional.of(COLLISION_ALERT),
-                timeSlotManager.createNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("08:30"))));
-        assertEquals(Optional.of(COLLISION_ALERT),
-                timeSlotManager.createNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:15"), LocalTime.parse("08:45"))));
-        assertEquals(Optional.of(COLLISION_ALERT),
-                timeSlotManager.createNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:30"), LocalTime.parse("09:00"))));
-        assertEquals(Optional.of(COLLISION_ALERT),
-                timeSlotManager.createNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00"))));
-        assertEquals(Optional.of(COLLISION_ALERT),
-                timeSlotManager.createNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:30"), LocalTime.parse("09:30"))));
-        assertEquals(Optional.of(COLLISION_ALERT),
-                timeSlotManager.createNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("07:00"), LocalTime.parse("10:00"))));
+        assertEquals(Optional.of(COLLISION_ALERT), timeSlotManager.addNewTimeSlot(
+                TimeSlot.createTimeSlot(LocalTime.parse("07:30"), LocalTime.parse("08:30"))));
+    }
 
+    @Test
+    public void testAddNewTimeSlotReturnsCollisionAlertWhenNewTimeSlotsCollideCase2() {
+        timeSlotManager.addNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
+
+        assertEquals(Optional.of(COLLISION_ALERT), timeSlotManager.addNewTimeSlot(
+                TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("08:30"))));
+    }
+
+    @Test
+    public void testAddNewTimeSlotReturnsCollisionAlertWhenNewTimeSlotsCollideCase3() {
+        timeSlotManager.addNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
+
+        assertEquals(Optional.of(COLLISION_ALERT), timeSlotManager.addNewTimeSlot(
+                TimeSlot.createTimeSlot(LocalTime.parse("08:15"), LocalTime.parse("08:45"))));
+    }
+
+    @Test
+    public void testAddNewTimeSlotReturnsCollisionAlertWhenNewTimeSlotsCollideCase4() {
+        timeSlotManager.addNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
+
+        assertEquals(Optional.of(COLLISION_ALERT), timeSlotManager.addNewTimeSlot(
+                TimeSlot.createTimeSlot(LocalTime.parse("08:30"), LocalTime.parse("09:00"))));
+    }
+
+    @Test
+    public void testAddNewTimeSlotReturnsCollisionAlertWhenNewTimeSlotsCollideCase5() {
+        timeSlotManager.addNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
+
+        assertEquals(Optional.of(COLLISION_ALERT), timeSlotManager.addNewTimeSlot(
+                TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00"))));
+    }
+
+    @Test
+    public void testAddNewTimeSlotReturnsCollisionAlertWhenNewTimeSlotsCollideCase6() {
+        timeSlotManager.addNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
+
+        assertEquals(Optional.of(COLLISION_ALERT), timeSlotManager.addNewTimeSlot(
+                TimeSlot.createTimeSlot(LocalTime.parse("08:30"), LocalTime.parse("09:30"))));
+    }
+
+    @Test
+    public void testAddNewTimeSlotReturnsCollisionAlertWhenNewTimeSlotsCollideCase7() {
+        timeSlotManager.addNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
+
+        assertEquals(Optional.of(COLLISION_ALERT), timeSlotManager.addNewTimeSlot(
+                TimeSlot.createTimeSlot(LocalTime.parse("07:00"), LocalTime.parse("10:00"))));
+    }
+
+    @Test
+    public void testAddNewTimeSlotReturnsOptionalEmptyWhenGivenCorrectHours() {
+        timeSlotManager.addNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
+
+        assertEquals(Optional.empty(), timeSlotManager.addNewTimeSlot(
+                TimeSlot.createTimeSlot(LocalTime.parse("19:00"), LocalTime.parse("20:00"))));
+    }
+
+    @Test
+    public void testAddNewTimeSlotsAddsNewTimeSlotWhenGivenCorrectHours() {
         List<TimeSlot> someTimeSlots = new ArrayList<>();
         someTimeSlots.add(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
+
+        timeSlotManager.addNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
 
         assertEquals(someTimeSlots, timeSlotManager.getTimeSlots());
     }
 
     @Test
-    public void testGetTimeSlots() {
-        timeSlotManager.createNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
-        timeSlotManager.createNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("10:00"), LocalTime.parse("11:00")));
-        timeSlotManager.createNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("12:00"), LocalTime.parse("13:00")));
+    public void testGetTimeSlotsReturnsCorrectTimeSlotsCase1() {
+        List<TimeSlot> someTimeSlots = new ArrayList<>();
 
+        assertEquals(someTimeSlots, timeSlotManager.getTimeSlots());
+    }
+
+    @Test
+    public void testGetTimeSlotsReturnsCorrectTimeSlotsCase2() {
         List<TimeSlot> someTimeSlots = new ArrayList<>();
         someTimeSlots.add(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
         someTimeSlots.add(TimeSlot.createTimeSlot(LocalTime.parse("10:00"), LocalTime.parse("11:00")));
         someTimeSlots.add(TimeSlot.createTimeSlot(LocalTime.parse("12:00"), LocalTime.parse("13:00")));
+
+        timeSlotManager.addNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
+        timeSlotManager.addNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("10:00"), LocalTime.parse("11:00")));
+        timeSlotManager.addNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("12:00"), LocalTime.parse("13:00")));
 
         assertEquals(someTimeSlots, timeSlotManager.getTimeSlots());
     }
 
     @Test
     public void testDeleteTimeSlot() {
-        timeSlotManager.createNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
-        timeSlotManager.createNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("10:00"), LocalTime.parse("11:00")));
-        timeSlotManager.createNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("12:00"), LocalTime.parse("13:00")));
-
         List<TimeSlot> someTimeSlots = new ArrayList<>();
         someTimeSlots.add(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
         someTimeSlots.add(TimeSlot.createTimeSlot(LocalTime.parse("10:00"), LocalTime.parse("11:00")));
-        someTimeSlots.add(TimeSlot.createTimeSlot(LocalTime.parse("12:00"), LocalTime.parse("13:00")));
 
-        assertEquals(someTimeSlots, timeSlotManager.getTimeSlots());
-
-
+        timeSlotManager.addNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
+        timeSlotManager.addNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("10:00"), LocalTime.parse("11:00")));
+        timeSlotManager.addNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("12:00"), LocalTime.parse("13:00")));
         timeSlotManager.deleteTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("12:00"), LocalTime.parse("13:00")));
-        someTimeSlots.remove(TimeSlot.createTimeSlot(LocalTime.parse("12:00"), LocalTime.parse("13:00")));
 
         assertEquals(someTimeSlots, timeSlotManager.getTimeSlots());
     }
 
     @Test
-    public void testUpdateTimeSlot() {
-        TimeSlot timeSlot1 = TimeSlot.createTimeSlot(LocalTime.parse("06:00"), LocalTime.parse("07:00"));
-        TimeSlot timeSlot2 = TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00"));
+    public void testUpdateTimeSlotReturnsOptionalEmptyWhenGivenCorrectHours() {
+        TimeSlot timeSlot = TimeSlot.createTimeSlot(LocalTime.parse("07:00"), LocalTime.parse("08:00"));
 
-        assertEquals(Optional.empty(), timeSlotManager.createNewTimeSlot(timeSlot1));
-        assertEquals(Optional.empty(), timeSlotManager.createNewTimeSlot(timeSlot2));
+        assertEquals(Optional.empty(), timeSlotManager.updateTimeSlot(
+                timeSlot, LocalTime.parse("09:00"), LocalTime.parse("10:00")));
+    }
 
-        assertEquals(Optional.of(COLLISION_ALERT),
-                timeSlotManager.updateTimeSlot(timeSlot1, LocalTime.parse("07:30"), LocalTime.parse("08:30")));
-        assertEquals(Optional.of(COLLISION_ALERT),
-                timeSlotManager.updateTimeSlot(timeSlot1, LocalTime.parse("08:00"), LocalTime.parse("08:30")));
-        assertEquals(Optional.of(COLLISION_ALERT),
-                timeSlotManager.updateTimeSlot(timeSlot1, LocalTime.parse("08:15"), LocalTime.parse("08:45")));
-        assertEquals(Optional.of(COLLISION_ALERT),
-                timeSlotManager.updateTimeSlot(timeSlot1, LocalTime.parse("08:30"), LocalTime.parse("09:00")));
-        assertEquals(Optional.of(COLLISION_ALERT),
-                timeSlotManager.updateTimeSlot(timeSlot1, LocalTime.parse("08:00"), LocalTime.parse("09:00")));
-        assertEquals(Optional.of(COLLISION_ALERT),
-                timeSlotManager.updateTimeSlot(timeSlot1, LocalTime.parse("08:30"), LocalTime.parse("09:30")));
-        assertEquals(Optional.of(COLLISION_ALERT),
-                timeSlotManager.updateTimeSlot(timeSlot1, LocalTime.parse("07:00"), LocalTime.parse("10:00")));
-
-
+    @Test
+    public void testUpdateTimeSlotDoesNotRemoveOriginalTimeSlotWhenGivenWrongHours() {
         List<TimeSlot> someTimeSlots = new ArrayList<>();
-        someTimeSlots.add(TimeSlot.createTimeSlot(LocalTime.parse("06:00"), LocalTime.parse("07:00")));
-        someTimeSlots.add(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
+        someTimeSlots.add(TimeSlot.createTimeSlot(LocalTime.parse("07:00"), LocalTime.parse("08:00")));
+        someTimeSlots.add(TimeSlot.createTimeSlot(LocalTime.parse("09:00"), LocalTime.parse("10:00")));
+
+        TimeSlot timeSlot1 = TimeSlot.createTimeSlot(LocalTime.parse("07:00"), LocalTime.parse("08:00"));
+        TimeSlot timeSlot2 = TimeSlot.createTimeSlot(LocalTime.parse("09:00"), LocalTime.parse("10:00"));
+        timeSlotManager.addNewTimeSlot(timeSlot1);
+        timeSlotManager.addNewTimeSlot(timeSlot2);
+        timeSlotManager.updateTimeSlot(timeSlot1, LocalTime.parse("08:30"), LocalTime.parse("09:30"));
 
         assertEquals(someTimeSlots, timeSlotManager.getTimeSlots());
+    }
 
-//        TODO: fix this
-//        assertEquals(Optional.empty(), timeSlotManager.updateTimeSlot(timeSlot2, LocalTime.parse("10:00"), LocalTime.parse("11:00")));
-//
-//        someTimeSlots.remove(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
+//    TODO fix it
+//    @Test
+//    public void testUpdateTimeSlotUpdatesTimeSlotWhenGivenCorrectHours() {
+//        List<TimeSlot> someTimeSlots = new ArrayList<>();
+//        someTimeSlots.add(TimeSlot.createTimeSlot(LocalTime.parse("06:00"), LocalTime.parse("07:00")));
 //        someTimeSlots.add(TimeSlot.createTimeSlot(LocalTime.parse("10:00"), LocalTime.parse("11:00")));
 //
+//        TimeSlot timeSlot1 = TimeSlot.createTimeSlot(LocalTime.parse("06:00"), LocalTime.parse("07:00"));
+//        TimeSlot timeSlot2 = TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00"));
+//        timeSlotManager.addNewTimeSlot(timeSlot1);
+//        timeSlotManager.addNewTimeSlot(timeSlot2);
+//        timeSlotManager.updateTimeSlot(timeSlot2, LocalTime.parse("10:00"), LocalTime.parse("11:00"));
+//
 //        assertEquals(someTimeSlots, timeSlotManager.getTimeSlots());
-    }
+//    }
 }

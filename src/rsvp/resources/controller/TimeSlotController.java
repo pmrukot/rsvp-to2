@@ -109,7 +109,7 @@ public class TimeSlotController {
 
         TimeSlot createdTimeSlot = TimeSlot.createTimeSlot(startTime, endTime);
 
-        Optional<String> addResult = timeSlotManager.createNewTimeSlot(createdTimeSlot);
+        Optional<String> addResult = timeSlotManager.addNewTimeSlot(createdTimeSlot);
         if (addResult.isPresent()) {
             handleErrorAlert(startTimeFieldCreate, endTimeFieldCreate, addResult.get());
         }
