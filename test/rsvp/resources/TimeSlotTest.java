@@ -1,4 +1,4 @@
-package rsvp.resources.test;
+package rsvp.resources;
 
 import org.junit.Before;
 import org.junit.Test;
