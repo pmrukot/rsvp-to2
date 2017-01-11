@@ -88,11 +88,13 @@ public class AdminController implements ListChangeListener {
 
     @Override
     public void onChanged(Change c) {
-        // when source list changed re-apply filter
-        filteredList.filtered(user -> {
-            String lowerCaseFilter = searchField.getText().toLowerCase();
-            return user.getLastName().toLowerCase().contains(lowerCaseFilter);
-        });
+        // when source list changed and filter is not empty re-apply filter
+        if(!searchField.getText().isEmpty()) {
+            filteredList.filtered(user -> {
+                String lowerCaseFilter = searchField.getText().toLowerCase();
+                return user.getLastName().toLowerCase().contains(lowerCaseFilter);
+            });
+        }
         usersTable.getSelectionModel().clearSelection();
     }
 
