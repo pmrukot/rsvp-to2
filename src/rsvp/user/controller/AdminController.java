@@ -139,7 +139,6 @@ public class AdminController implements ListChangeListener {
     }
 
     public void deleteUser() {
-        // todo alert decomposition broke this. adding return in showAndWait kind of fixed it.
         User selectedUser = usersTable.getSelectionModel().getSelectedItem();
         Alert alert = new Alert(String.format("Are you sure that you want to delete user %s?", selectedUser.getLogin()), AlertType.CONFIRMATION);
         alert.showAndWait()

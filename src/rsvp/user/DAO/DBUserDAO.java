@@ -1,25 +1,33 @@
 package rsvp.user.DAO;
 
-import rsvp.common.persistence.HibernateUtils;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import rsvp.common.persistence.HibernateUtils;
 import rsvp.user.model.User;
+
 import java.util.List;
 
 public class DBUserDAO implements UserDAO {
     @Override
     public boolean createUser(User u) {
+        Session session = HibernateUtils.getSession();
+        Transaction transaction = session.beginTransaction();
         try {
-            Session session = HibernateUtils.getSession();
-            Transaction transaction = session.beginTransaction();
             session.persist(u);
-            transaction.commit();
-            session.close();
+            //session.saveOrUpdate(u); - redoing will throw the same as redoing delete user
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            try {
+                session.merge(u);
+                return true;
+            } catch (Exception e1) {
+                e.printStackTrace();
+                return false;
+            }
+        } finally {
+            transaction.commit();
+            session.close();
         }
     }
 
@@ -69,6 +77,21 @@ public class DBUserDAO implements UserDAO {
             Session session = HibernateUtils.getSession();
             Transaction transaction = session.beginTransaction();
             session.delete(u);
+            transaction.commit();
+            session.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean mergeUser(User u) {
+        try {
+            Session session = HibernateUtils.getSession();
+            Transaction transaction = session.beginTransaction();
+            session.merge(u);
             transaction.commit();
             session.close();
             return true;

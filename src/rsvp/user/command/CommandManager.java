@@ -42,7 +42,6 @@ public class CommandManager {
         Command c = waitingCommands.pop();
         if(c.execute()) {
             executedCommands.push(c);
-
         } else {
             waitingCommands.push(c);
         }
