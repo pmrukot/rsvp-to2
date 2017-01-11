@@ -33,7 +33,7 @@ public class UserListManagerSingleton {
     }
 
     ObservableList<User> getUsers() {
-        return FXCollections.unmodifiableObservableList(users);
+        return users;
     }
 
     public void addUser(User u) {
