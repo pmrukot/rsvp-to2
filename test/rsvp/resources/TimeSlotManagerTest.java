@@ -101,14 +101,14 @@ public class TimeSlotManagerTest {
     }
 
     @Test
-    public void testGetTimeSlotsReturnsCorrectTimeSlotsCase1() {
+    public void testGetTimeSlotsReturnsCorrectTimeSlotsEmptyList() {
         List<TimeSlot> someTimeSlots = new ArrayList<>();
 
         assertEquals(someTimeSlots, timeSlotManager.getTimeSlots());
     }
 
     @Test
-    public void testGetTimeSlotsReturnsCorrectTimeSlotsCase2() {
+    public void testGetTimeSlotsReturnsCorrectTimeSlots() {
         List<TimeSlot> someTimeSlots = new ArrayList<>();
         someTimeSlots.add(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
         someTimeSlots.add(TimeSlot.createTimeSlot(LocalTime.parse("10:00"), LocalTime.parse("11:00")));
