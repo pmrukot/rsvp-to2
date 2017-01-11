@@ -106,7 +106,6 @@ public class AdminController implements ListChangeListener {
         File file = chooser.showOpenDialog(new Stage());
         try {
             if(file != null){
-                // todo rewrite upload to support command
                 List<User> createdUsers = Upload.createUsersFromCsv(file);
                 Alert alert = new Alert(String.format("%s users were created!", createdUsers.size()), AlertType.INFORMATION);
                 alert.showAndWait();

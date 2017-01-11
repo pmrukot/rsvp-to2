@@ -62,6 +62,11 @@ public class UpdateUserCommand implements Command {
         }
     }
 
+    @Override
+    public boolean redo() {
+        return this.execute();
+    }
+
     private void updateData() {
         user.setLogin(newLogin);
         user.setFirstName(newFirstName);

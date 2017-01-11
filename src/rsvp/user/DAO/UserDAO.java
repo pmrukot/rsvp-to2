@@ -8,5 +8,4 @@ public interface UserDAO {
     List<User> findUsersByName(String fullName);
     boolean updateUser(User u);
     boolean deleteUser(User u);
-    boolean mergeUser(User u);
 }

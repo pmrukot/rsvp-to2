@@ -11,23 +11,14 @@ import java.util.List;
 public class DBUserDAO implements UserDAO {
     @Override
     public boolean createUser(User u) {
-        Session session = HibernateUtils.getSession();
-        Transaction transaction = session.beginTransaction();
-        try {
+        try (Session session = HibernateUtils.getSession()) {
+            Transaction transaction = session.beginTransaction();
             session.persist(u);
-            //session.saveOrUpdate(u); - redoing will throw the same as redoing delete user
+            transaction.commit();
             return true;
         } catch (Exception e) {
-            try {
-                session.merge(u);
-                return true;
-            } catch (Exception e1) {
-                e.printStackTrace();
-                return false;
-            }
-        } finally {
-            transaction.commit();
-            session.close();
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -58,12 +49,10 @@ public class DBUserDAO implements UserDAO {
 
     @Override
     public boolean updateUser(User u) {
-        try {
-            Session session = HibernateUtils.getSession();
+        try (Session session = HibernateUtils.getSession()) {
             Transaction transaction = session.beginTransaction();
             session.update(u);
             transaction.commit();
-            session.close();
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,27 +62,10 @@ public class DBUserDAO implements UserDAO {
 
     @Override
     public boolean deleteUser(User u) {
-        try {
-            Session session = HibernateUtils.getSession();
+        try (Session session = HibernateUtils.getSession()) {
             Transaction transaction = session.beginTransaction();
             session.delete(u);
             transaction.commit();
-            session.close();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean mergeUser(User u) {
-        try {
-            Session session = HibernateUtils.getSession();
-            Transaction transaction = session.beginTransaction();
-            session.merge(u);
-            transaction.commit();
-            session.close();
             return true;
         } catch (Exception e) {
             e.printStackTrace();

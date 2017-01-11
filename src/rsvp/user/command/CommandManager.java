@@ -40,7 +40,7 @@ public class CommandManager {
 
     public void redo() {
         Command c = waitingCommands.pop();
-        if(c.execute()) {
+        if(c.redo()) {
             executedCommands.push(c);
         } else {
             waitingCommands.push(c);

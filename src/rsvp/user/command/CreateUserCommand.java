@@ -30,4 +30,15 @@ public class CreateUserCommand implements Command {
         }
         return false;
     }
+
+    @Override
+    public boolean redo() {
+        User newUser = new User(user.getLogin(), user.getFirstName(), user.getLastName(), user.getPassword(), user.isAdmin());
+        if(userDAO.createUser(newUser)) {
+            UserListManagerSingleton.getInstance().addUser(newUser);
+            this.user = newUser;
+            return true;
+        }
+        return false;
+    }
 }
