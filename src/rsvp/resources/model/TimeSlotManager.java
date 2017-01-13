@@ -59,8 +59,8 @@ public class TimeSlotManager {
             return Optional.of(COLLISION_ALERT);
         }
         timeSlotDAO.update(timeSlot, newStartTime, newEndTime);
-        timeSlots.clear();
-        timeSlots.addAll(timeSlotDAO.getAll());
+        timeSlots.stream().filter(slot -> slot.equals(timeSlot)).forEach(
+                slot -> slot.setStartAndEndTime(newStartTime, newEndTime));
         return Optional.empty();
     }
 

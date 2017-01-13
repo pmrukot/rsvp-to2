@@ -2,7 +2,6 @@ package rsvp.resources;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.cglib.core.Local;
 import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.TimeSlot;
 import rsvp.resources.model.TimeSlotManager;
@@ -158,19 +157,19 @@ public class TimeSlotManagerTest {
         assertEquals(someTimeSlots, timeSlotManager.getTimeSlots());
     }
 
-//    TODO fix it
-//    @Test
-//    public void testUpdateTimeSlotUpdatesTimeSlotWhenGivenCorrectHours() {
-//        List<TimeSlot> someTimeSlots = new ArrayList<>();
-//        someTimeSlots.add(TimeSlot.createTimeSlot(LocalTime.parse("06:00"), LocalTime.parse("07:00")));
-//        someTimeSlots.add(TimeSlot.createTimeSlot(LocalTime.parse("10:00"), LocalTime.parse("11:00")));
-//
-//        TimeSlot timeSlot1 = TimeSlot.createTimeSlot(LocalTime.parse("06:00"), LocalTime.parse("07:00"));
-//        TimeSlot timeSlot2 = TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00"));
-//        timeSlotManager.addNewTimeSlot(timeSlot1);
-//        timeSlotManager.addNewTimeSlot(timeSlot2);
-//        timeSlotManager.updateTimeSlot(timeSlot2, LocalTime.parse("10:00"), LocalTime.parse("11:00"));
-//
-//        assertEquals(someTimeSlots, timeSlotManager.getTimeSlots());
-//    }
+    @Test
+    public void testUpdateTimeSlotUpdatesTimeSlotWhenGivenCorrectHours() {
+        List<TimeSlot> expectedTimeSlotList = new ArrayList<>();
+        expectedTimeSlotList.add(TimeSlot.createTimeSlot(LocalTime.parse("06:00"), LocalTime.parse("07:00")));
+        expectedTimeSlotList.add(TimeSlot.createTimeSlot(LocalTime.parse("10:00"), LocalTime.parse("11:00")));
+
+        TimeSlot timeSlot1 = TimeSlot.createTimeSlot(LocalTime.parse("06:00"), LocalTime.parse("07:00"));
+        TimeSlot timeSlot2 = TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00"));
+        timeSlotManager.addNewTimeSlot(timeSlot1);
+        timeSlotManager.addNewTimeSlot(timeSlot2);
+        timeSlotManager.updateTimeSlot(timeSlot2, LocalTime.parse("10:00"), LocalTime.parse("11:00"));
+        List<TimeSlot> actualTimeSlots = timeSlotManager.getTimeSlots();
+
+        assertEquals(expectedTimeSlotList, actualTimeSlots);
+    }
 }
