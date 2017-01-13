@@ -18,14 +18,17 @@ public class TimeSlotTest {
 
     @Test
     public void testCreateTimeSlotReturnsNullWhenGivenNullAsArgument() {
-        assertNull(TimeSlot.createTimeSlot(null, null));
         assertNull(TimeSlot.createTimeSlot(LocalTime.parse("13:00"), null));
         assertNull(TimeSlot.createTimeSlot(null, LocalTime.parse("14:00")));
     }
 
     @Test
-    public void testCreateTimeSlotReturnsNullWhenGivenWrongHours() {
+    public void testCreateTimeSlotReturnsNullWhenGivenTheSameHourForStartAndEnd() {
         assertNull(TimeSlot.createTimeSlot(LocalTime.parse("13:00"), LocalTime.parse("13:00")));
+    }
+
+    @Test
+    public void testCreateTimeSlotReturnsNullWhenGivenEndHourBeforeStartHour() {
         assertNull(TimeSlot.createTimeSlot(LocalTime.parse("14:00"), LocalTime.parse("13:00")));
     }
 
@@ -55,8 +58,12 @@ public class TimeSlotTest {
     }
 
     @Test
-    public void testSetStartAndEndTimeReturnsFalseWhenGivenWrongHours() {
+    public void testSetStartAndEndTimeReturnsNullWhenGivenTheSameHourForStartAndEnd() {
         assertFalse(timeSlot.setStartAndEndTime(LocalTime.parse("13:00"), LocalTime.parse("13:00")));
+    }
+
+    @Test
+    public void testSetStartAndEndTimeReturnsNullWhenGivenEndHourBeforeStartHour() {
         assertFalse(timeSlot.setStartAndEndTime(LocalTime.parse("14:00"), LocalTime.parse("13:00")));
     }
 
