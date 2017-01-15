@@ -92,6 +92,18 @@ public class TimeSlotManagerTest {
     }
 
     @Test
+    public void testAddNewTimeSlotsAddsNewTimeSlotJustAfterAnotherWhenGivenCorrectHours() {
+        List<TimeSlot> expectedTimeSlotList = new ArrayList<>();
+        expectedTimeSlotList.add(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
+        expectedTimeSlotList.add(TimeSlot.createTimeSlot(LocalTime.parse("09:00"), LocalTime.parse("10:00")));
+
+        timeSlotManager.addNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("08:00"), LocalTime.parse("09:00")));
+        timeSlotManager.addNewTimeSlot(TimeSlot.createTimeSlot(LocalTime.parse("09:00"), LocalTime.parse("10:00")));
+
+        assertEquals(expectedTimeSlotList, timeSlotManager.getTimeSlots());
+    }
+
+    @Test
     public void testGetTimeSlotsReturnsCorrectTimeSlotsEmptyList() {
         List<TimeSlot> expectedTimeSlotsList = new ArrayList<>();
 
