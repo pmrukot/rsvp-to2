@@ -4,23 +4,31 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import rsvp.booking.DAO.BookingDAO;
 import rsvp.booking.DAO.DBBookingDAO;
+import rsvp.booking.Main;
+import rsvp.booking.controller.BookingController;
+import rsvp.booking.controller.BookingEditionController;
+import rsvp.booking.controller.CyclicBookingEditionController;
 import rsvp.booking.model.Booking;
 import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.TimeSlot;
 import rsvp.user.view.CalendarCell;
 import rsvp.user.view.ReservationPerWeek;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -43,6 +51,8 @@ public class UserController {
     private Button nextButton;
     @FXML
     private TableView<ReservationPerWeek> myCalendarTable;
+
+
 
     @FXML
     public TableColumn<ReservationPerWeek, CalendarCell> slots;
@@ -103,7 +113,6 @@ public class UserController {
                                 addContextMenu(item, this);
                             }
                             else{
-                                //addContextMenuAdd(item, this);
                                 setBackground(null);
                             }
                         }
@@ -136,40 +145,29 @@ public class UserController {
 
     }
 
-/*    private void addContextMenuAdd(CalendarCell item, TableCell<ReservationPerWeek, CalendarCell> tableCell) {
-        final ContextMenu contextMenuAdd = new ContextMenu();
-        final MenuItem addMenuItem = new MenuItem("Add");
-        addMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                initEditBookingLayout();
-                initializeMyCalendarContent(currentStartDate, currentEndDate);
-            }
-        });
-        contextMenuAdd.getItems().add(addMenuItem);
-        tableCell.contextMenuProperty().bind(
-                Bindings.when(tableCell.emptyProperty())
-                        .then(contextMenuAdd)
-                        .otherwise((ContextMenu)null));
-    }*/
-
-
     private void initEditBookingLayout(Booking booking) {
-/*        BookingController bc = new BookingController();
-        bc.editBooking(booking);*/
-        /*try {
+        try {
+            final Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(rsvp.home.Main.class.getResource("../booking/view/BookingEditionPane.fxml"));
+            loader.setLocation(rsvp.home.Main.class.getResource("../user/view/BookingEditionPane.fxml"));
             Parent editBookingLayout = loader.load();
-            Scene scene = new Scene(editBookingLayout, 600, 300);
-            Stage secondaryStage = new Stage();
-            secondaryStage.setScene(scene);
-            //todo : command here
-            secondaryStage.show();
+            Scene scene = new Scene(editBookingLayout, 300, 300);
+
+            EditBookingController editBookingController = loader.getController();
+            editBookingController.setDialogStage(dialogStage);
+            editBookingController.setData(booking);
+
+            dialogStage.setScene(scene);
+            dialogStage.showAndWait();
+
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
     }
+
+
 
     @SuppressWarnings("unchecked")
     private void initializeMyCalendarContent(Date start, Date end) {
@@ -188,6 +186,8 @@ public class UserController {
         init(saturday);
         init(sunday);
     }
+
+
 
     private List<ReservationPerWeek> fillTableCells(Date start, Date end){
         BookingDAO bookingDAO = new DBBookingDAO();
