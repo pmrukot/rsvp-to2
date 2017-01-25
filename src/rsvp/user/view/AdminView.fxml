@@ -11,8 +11,11 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="rsvp.user.controller.AdminController">
     <top>
         <HBox alignment="BASELINE_CENTER" spacing="25">
+            <Button fx:id="undoButton" onAction="#undoCommand"/>
+            <Button fx:id="redoButton" onAction="#redoCommand"/>
             <TextField fx:id="searchField" promptText="Search users by lastname"/>
             <Button text="Create users from file" onAction="#upload"/>
+            <Button text="Add user" onAction="#addUser"/>
             <Button fx:id="editButton" text="Edit selected user" onAction="#editUser"/>
             <Button fx:id="deleteButton" text="Delete selected user" onAction="#deleteUser"/>
         </HBox>
@@ -40,26 +43,11 @@
                         <PropertyValueFactory property="password" />
                     </cellValueFactory>
                 </TableColumn>
-                <TableColumn fx:id="isAdminColumn" prefWidth="75" text="Admin" resizable="false">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="isAdmin" />
-                        <!-- todo above fails to bind property (probably because field has same name as method) -->
-                    </cellValueFactory>
-                </TableColumn>
+                <TableColumn fx:id="isAdminColumn" prefWidth="75" text="Admin" resizable="false"/>
             </columns>
             <sortOrder>
                 <fx:reference source="loginColumn" />
             </sortOrder>
         </TableView>
     </center>
-    <bottom>
-        <HBox>
-            <TextField fx:id="loginField" prefWidth="200" promptText="Login" alignment="CENTER"/>
-            <TextField fx:id="firstNameField" prefWidth="125" promptText="First Name" alignment="CENTER"/>
-            <TextField fx:id="lastNameField" prefWidth="175" promptText="Last Name" alignment="CENTER"/>
-            <TextField fx:id="passwordField" prefWidth="125" promptText="Password" alignment="CENTER"/>
-            <TextField fx:id="isAdminField" prefWidth="75" promptText="Admin?" alignment="CENTER"/> <!-- todo this could be a checkbox -->
-            <Button fx:id="addButton" text="Create user" maxWidth="Infinity" alignment="CENTER" onAction="#createSingleUser"/>
-        </HBox>
-    </bottom>
 </BorderPane>

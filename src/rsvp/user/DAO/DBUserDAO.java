@@ -1,21 +1,20 @@
 package rsvp.user.DAO;
 
-import rsvp.common.persistence.HibernateUtils;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import rsvp.common.persistence.HibernateUtils;
 import rsvp.user.model.User;
+
 import java.util.List;
 
 public class DBUserDAO implements UserDAO {
     @Override
     public boolean createUser(User u) {
-        try {
-            Session session = HibernateUtils.getSession();
+        try (Session session = HibernateUtils.getSession()) {
             Transaction transaction = session.beginTransaction();
             session.persist(u);
             transaction.commit();
-            session.close();
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -26,7 +25,6 @@ public class DBUserDAO implements UserDAO {
     @Override
     @SuppressWarnings("unchecked")
     public List<User> findUsersByName(String fullName) {
-        // todo with new UserProviderSingleton this could be changed to no argument all users fetcher
         String[] names = fullName.split("\\s+");
         String firstName = names[0];
         String sql = "select u " +
@@ -51,12 +49,10 @@ public class DBUserDAO implements UserDAO {
 
     @Override
     public boolean updateUser(User u) {
-        try {
-            Session session = HibernateUtils.getSession();
+        try (Session session = HibernateUtils.getSession()) {
             Transaction transaction = session.beginTransaction();
             session.update(u);
             transaction.commit();
-            session.close();
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,12 +62,10 @@ public class DBUserDAO implements UserDAO {
 
     @Override
     public boolean deleteUser(User u) {
-        try {
-            Session session = HibernateUtils.getSession();
+        try (Session session = HibernateUtils.getSession()) {
             Transaction transaction = session.beginTransaction();
             session.delete(u);
             transaction.commit();
-            session.close();
             return true;
         } catch (Exception e) {
             e.printStackTrace();
