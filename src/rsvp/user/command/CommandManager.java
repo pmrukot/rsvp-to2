@@ -52,4 +52,20 @@ public class CommandManager {
         undoPossible.setValue(executedCommands.empty());
         redoPossible.setValue(redoableCommands.empty());
     }
+
+    public int getExecutedCommandsStackSize() {
+        return executedCommands.size();
+    }
+
+    public int getRedoableCommandsStackSize () {
+        return redoableCommands.size();
+    }
+
+    public Stack<Command> getExecutedCommands() {
+        return executedCommands;
+    }
+
+    public Stack<Command> getRedoableCommands() {
+        return redoableCommands;
+    }
 }
