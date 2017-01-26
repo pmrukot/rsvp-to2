@@ -17,12 +17,16 @@ public class UniversityRoom {
     @Column(name = "capacity")
     private Integer capacity;
 
+    @Column(name = "isComputer")
+    private Boolean isComputer;
+
     public UniversityRoom() {
     }
 
-    public UniversityRoom(String number, Integer capacity) {
-        setNumber(number);
-        setCapacity(capacity);
+    public UniversityRoom(String number, Integer capacity, boolean isComputer) {
+        this.number = number;
+        this.capacity = capacity;
+        this.isComputer = isComputer;
     }
 
     public long getId() {
@@ -47,5 +51,13 @@ public class UniversityRoom {
 
     public String toString() {
         return getNumber();
+    }
+
+    public boolean getIsComputer(){
+        return isComputer;
+    }
+
+    public void setIsComputer(boolean isComputer){
+        this.isComputer = isComputer;
     }
 }

@@ -8,23 +8,26 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 import rsvp.resources.DAO.UniversityRoomDAO;
 import rsvp.resources.model.UniversityRoom;
+import rsvp.resources.view.BooleanPropertyCell;
 import rsvp.resources.view.CalendarCell;
 
 import java.io.IOException;
 
 public class UniversityRoomController {
-    private static final String CAPACITY_ALERT = "You have to provide capacity greater than 0 and lesser than 200";
-    private static final String NO_ITEM_SELECTED_ALERT = "You have to select some room in order to do modification";
-    private static final String IMPROPER_NUMBER_FORMAT_ALERT = "You have to provide valid number format";
-    private static final String NO_MODYFICATION_ALERT = "You have to provide different values than before";
-    private static final String NOT_ENOUGH_ARGUMENTS_ALERT = "You have to provide all arguments";
+    private static final String CAPACITY_ALERT = "You have to provide capacity greater than 0.";
+    private static final String NO_ITEM_SELECTED_ALERT = "You have to select some room in order to do modification.";
+    private static final String IMPROPER_NUMBER_FORMAT_ALERT = "You have to provide valid number format.";
+    private static final String NO_MODYFICATION_ALERT = "You have to provide different values than before.";
+    private static final String NOT_ENOUGH_ARGUMENTS_ALERT = "You have to provide all arguments.";
 
     @FXML
     TableView<UniversityRoom> universityRoomListTableView;
@@ -34,16 +37,22 @@ public class UniversityRoomController {
     TableColumn<UniversityRoom, Integer> capacityColumn;
     @FXML
     TableColumn<UniversityRoom, Boolean> calendarColumn;
+    @FXML
+    TableColumn<UniversityRoom, Boolean> isComputerRoomColumn;
 
     @FXML
     private TextField numberFieldCreate;
     @FXML
     private TextField capacityFieldCreate;
+    @FXML
+    private CheckBox isComputerRoomCheckboxCreate;
 
     @FXML
     private TextField numberFieldUpdate;
     @FXML
     private TextField capacityFieldUpdate;
+    @FXML
+    private CheckBox isComputerRoomCheckboxUpdate;
 
     ObservableList<UniversityRoom> items;
     UniversityRoomDAO universityRoomDAO;
@@ -53,6 +62,7 @@ public class UniversityRoomController {
     private void handleErrorAlert(TextField firstTextField, TextField secondTextField, String alertMessage) {
         if (alertMessage != null) {
             errorAlert.setContentText(alertMessage);
+            errorAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
             errorAlert.showAndWait();
         }
         if (firstTextField != null)
@@ -94,6 +104,9 @@ public class UniversityRoomController {
         calendarColumn.setCellValueFactory(p -> new SimpleBooleanProperty(p.getValue() != null));
         calendarColumn.setCellFactory(p -> new CalendarCell(this));
 
+        isComputerRoomColumn.setCellValueFactory(p -> new SimpleBooleanProperty(p.getValue().getIsComputer()));
+        isComputerRoomColumn.setCellFactory(p -> new BooleanPropertyCell());
+
         items.addAll(universityRoomDAO.getAll());
         universityRoomListTableView.setItems(items);
     }
@@ -114,12 +127,14 @@ public class UniversityRoomController {
             return;
         }
 
-        if (capacity < 1 || capacity > 200) {
+        if (capacity < 1) {
             handleErrorAlert(numberFieldCreate, capacityFieldCreate, CAPACITY_ALERT);
             return;
         }
 
-        UniversityRoom createdUniversityRoom = new UniversityRoom(number, capacity);
+        UniversityRoom createdUniversityRoom = new UniversityRoom(number, capacity,
+                isComputerRoomCheckboxCreate.isSelected());
+        isComputerRoomCheckboxCreate.setSelected(false);
         items.add(createdUniversityRoom);
         universityRoomDAO.create(createdUniversityRoom);
         handleErrorAlert(numberFieldCreate, capacityFieldCreate, null);
@@ -146,6 +161,7 @@ public class UniversityRoomController {
 
         String newNumber = numberFieldUpdate.getText();
         Integer newCapacity;
+        Boolean newIsComputer = isComputerRoomCheckboxUpdate.isSelected();
         try {
             newCapacity = Integer.parseInt(capacityFieldUpdate.getText());
         } catch (NumberFormatException e) {
@@ -159,18 +175,21 @@ public class UniversityRoomController {
             return;
         }
 
-        if (chosenUniversityRoom.getNumber().equals(newNumber) && chosenUniversityRoom.getCapacity().equals(newCapacity)) {
+        if (chosenUniversityRoom.getNumber().equals(newNumber) &&
+                chosenUniversityRoom.getCapacity().equals(newCapacity) &&
+                chosenUniversityRoom.getIsComputer() == newIsComputer) {
             handleErrorAlert(numberFieldUpdate, capacityFieldUpdate, NO_MODYFICATION_ALERT);
             return;
         }
 
-        if (newCapacity < 1 || newCapacity > 200) {
+        if (newCapacity < 1) {
             handleErrorAlert(numberFieldUpdate, capacityFieldUpdate, CAPACITY_ALERT);
             return;
         }
 
-        universityRoomDAO.update(chosenUniversityRoom, newNumber, newCapacity);
+        universityRoomDAO.update(chosenUniversityRoom, newNumber, newCapacity, newIsComputer);
         handleErrorAlert(numberFieldUpdate, capacityFieldUpdate, null);
+        isComputerRoomCheckboxUpdate.setSelected(false);
         items.clear();
         items.addAll(universityRoomDAO.getAll());
         universityRoomListTableView.setItems(items);

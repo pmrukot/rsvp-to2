@@ -25,12 +25,13 @@ public class UniversityRoomDAO {
         session.close();
     }
 
-    public void update(UniversityRoom universityRoom, String newNumber, Integer newCapacity) {
+    public void update(UniversityRoom universityRoom, String newNumber, Integer newCapacity, Boolean isComputer) {
         Session session = HibernateUtils.getSession();
         Transaction transaction = session.beginTransaction();
         UniversityRoom updatedUniversityRoom = session.get(UniversityRoom.class, universityRoom.getId());
         updatedUniversityRoom.setNumber(newNumber);
         updatedUniversityRoom.setCapacity(newCapacity);
+        updatedUniversityRoom.setIsComputer(isComputer);
         transaction.commit();
         session.close();
     }

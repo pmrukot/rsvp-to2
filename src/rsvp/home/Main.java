@@ -3,6 +3,8 @@ package rsvp.home;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import rsvp.common.persistence.HibernateUtils;
+import rsvp.user.DAO.DBUserDAO;
+import rsvp.user.model.User;
 
 public class Main extends Application{
     private Stage primaryStage;

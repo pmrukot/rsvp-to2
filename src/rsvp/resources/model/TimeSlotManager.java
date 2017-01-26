@@ -14,8 +14,8 @@ public class TimeSlotManager {
     private List<TimeSlot> timeSlots;
     private TimeSlotDAO timeSlotDAO;
 
-    public TimeSlotManager() {
-        timeSlotDAO = new TimeSlotDAO();
+    public TimeSlotManager(TimeSlotDAO timeSlotDAO) {
+        this.timeSlotDAO = timeSlotDAO;
         timeSlots = new ArrayList<>();
         timeSlots.addAll(timeSlotDAO.getAll());
     }
@@ -36,7 +36,7 @@ public class TimeSlotManager {
         return false;
     }
 
-    public Optional<String> createNewTimeSlot(TimeSlot timeSlot) {
+    public Optional<String> addNewTimeSlot(TimeSlot timeSlot) {
         if (isColliding(timeSlot.getStartTime(), timeSlot.getEndTime(), null)) {
             return Optional.of(COLLISION_ALERT);
         }
@@ -59,8 +59,8 @@ public class TimeSlotManager {
             return Optional.of(COLLISION_ALERT);
         }
         timeSlotDAO.update(timeSlot, newStartTime, newEndTime);
-        timeSlots.clear();
-        timeSlots.addAll(timeSlotDAO.getAll());
+        timeSlots.stream().filter(slot -> slot.equals(timeSlot)).forEach(
+                slot -> slot.setStartAndEndTime(newStartTime, newEndTime));
         return Optional.empty();
     }
 
