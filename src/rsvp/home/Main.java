@@ -28,8 +28,6 @@ public class Main extends Application{
     }
 
     public static void main(String[] args) {
-        DBUserDAO userDAO = new DBUserDAO();
-        userDAO.createUser(new User("a", "a", "a", true));
         launch(args);
     }
 }
