@@ -1,6 +1,7 @@
 package rsvp.booking.controller;
 
 
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -52,6 +53,9 @@ public class BookingEditionController {
     private ComboBox<Integer> recurrencePicker;
 
     @FXML
+    private TextField description;
+
+    @FXML
     private Button updateButton;
 
     public void setDialogStage(Stage dialogStage) {
@@ -63,6 +67,7 @@ public class BookingEditionController {
         try {
             this.reservationDatePicker.setValue(booking.getReservationDate().toLocalDate());
         } catch (NullPointerException ignored) {}
+        this.description.setText(booking.getDescription());
         this.universityRoom.getItems().addAll(bookingController.getUniversityRooms());
         this.firstTimeSlot.getItems().addAll(bookingController.getTimeSlots());
         this.lastTimeSlot.getItems().addAll(bookingController.getTimeSlots());
@@ -119,6 +124,7 @@ public class BookingEditionController {
         booking.setLastSlot(lastTimeSlot.getValue());
         booking.setReservationDate(Date.valueOf(reservationDatePicker.getValue()));
         booking.setUniversityRoom(universityRoom.getValue());
+        booking.setDescription(description.getText());
     }
 
     private void persistBooking() {
