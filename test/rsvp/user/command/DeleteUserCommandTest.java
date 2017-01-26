@@ -13,7 +13,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateUserCommandTest {
+public class DeleteUserCommandTest {
 
     @Mock
     private UserDAO userDAO;
@@ -22,25 +22,25 @@ public class CreateUserCommandTest {
     private User user;
 
     @InjectMocks
-    private CreateUserCommand command;
+    private DeleteUserCommand command;
 
     @Test
     public void execute() throws Exception {
-        when(userDAO.createUser(user)).thenReturn(true);
+        when(userDAO.deleteUser(user)).thenReturn(true);
         boolean result = command.execute();
         assertTrue(result);
     }
 
     @Test
     public void undo() throws Exception {
-        when(userDAO.deleteUser(user)).thenReturn(true);
+        when(userDAO.createUser(any(User.class))).thenReturn(true);
         boolean result = command.undo();
         assertTrue(result);
     }
 
     @Test
     public void redo() throws Exception {
-        when(userDAO.createUser(any(User.class))).thenReturn(true);
+        when(userDAO.deleteUser(user)).thenReturn(true);
         boolean result = command.redo();
         assertTrue(result);
     }
