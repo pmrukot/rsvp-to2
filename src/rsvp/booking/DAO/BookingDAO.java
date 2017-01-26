@@ -15,5 +15,6 @@ public interface BookingDAO {
     List<Booking> getAllBookings();
     List<Booking> getAllBookingsForCurrentUser();
     List<Booking> getAllBookingsForUniversityRoom(UniversityRoom universityRoom);
-    List<Booking> getAllBookingsForGivenPeriod(Date startingDate, Date endingDate);
+    List<Booking> getAllBookingsForGivenPeriodAndUniversityRoom(
+            Date startingDate, Date endingDate, UniversityRoom universityRoom);
 }

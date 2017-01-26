@@ -10,7 +10,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.Region;
 import javafx.util.converter.LocalTimeStringConverter;
+import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.TimeSlot;
 import rsvp.resources.model.TimeSlotManager;
 
@@ -19,11 +21,11 @@ import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 public class TimeSlotController {
-    private static final String NO_ITEM_SELECTED_ALERT = "You have to select some time slot in order to do modification";
-    private static final String IMPROPER_HOUR_FORMAT_ALERT = "You have to provide valid hour format (hh:mm)";
-    private static final String NO_MODYFICATION_ALERT = "You have to provide different values than before";
-    private static final String NOT_ENOUGH_ARGUMENTS_ALERT = "You have to provide all arguments";
-    private static final String NON_CHRONOLOGICAL_ORDER_ALERT = "You have to provide start time earlier than end time";
+    private static final String NO_ITEM_SELECTED_ALERT = "You have to select some time slot in order to do modification.";
+    private static final String IMPROPER_HOUR_FORMAT_ALERT = "You have to provide valid hour format (hh:mm).";
+    private static final String NO_MODYFICATION_ALERT = "You have to provide different values than before.";
+    private static final String NOT_ENOUGH_ARGUMENTS_ALERT = "You have to provide all arguments.";
+    private static final String NON_CHRONOLOGICAL_ORDER_ALERT = "You have to provide start time earlier than end time.";
 
     @FXML
     TableView<TimeSlot> timeSlotListTableView;
@@ -54,6 +56,7 @@ public class TimeSlotController {
     private void handleErrorAlert(TextField firstTextField, TextField secondTextField, String alertMessage) {
         if (alertMessage != null) {
             errorAlert.setContentText(alertMessage);
+            errorAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
             errorAlert.showAndWait();
         }
         if (firstTextField != null)
@@ -79,7 +82,7 @@ public class TimeSlotController {
         endTimeColumn.setCellValueFactory(new PropertyValueFactory<>("endTime"));
         endTimeColumn.setCellFactory(TextFieldTableCell.forTableColumn(new LocalTimeStringConverter()));
 
-        timeSlotManager = new TimeSlotManager();
+        timeSlotManager = new TimeSlotManager(new TimeSlotDAO());
         items = FXCollections.observableArrayList();
         updateTableViewItems();
         timeSlotListTableView.setItems(items);
@@ -108,7 +111,7 @@ public class TimeSlotController {
 
         TimeSlot createdTimeSlot = TimeSlot.createTimeSlot(startTime, endTime);
 
-        Optional<String> addResult = timeSlotManager.createNewTimeSlot(createdTimeSlot);
+        Optional<String> addResult = timeSlotManager.addNewTimeSlot(createdTimeSlot);
         if (addResult.isPresent()) {
             handleErrorAlert(startTimeFieldCreate, endTimeFieldCreate, addResult.get());
         }

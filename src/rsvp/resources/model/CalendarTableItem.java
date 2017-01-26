@@ -57,4 +57,13 @@ public class CalendarTableItem {
     public void addColor(DayOfWeek day, Color color) {
         colors.put(day, color);
     }
+
+    public Booking getBooking(int dayNumber) {
+        DayOfWeek day = DayOfWeek.of(dayNumber);
+        if (bookingsMap.containsKey(day)) {
+            return bookingsMap.get(day);
+        }
+        return null;
+    }
+
 }
