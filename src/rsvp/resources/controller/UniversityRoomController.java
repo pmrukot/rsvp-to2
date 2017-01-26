@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
@@ -16,6 +17,7 @@ import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 import rsvp.resources.DAO.UniversityRoomDAO;
 import rsvp.resources.model.UniversityRoom;
+import rsvp.resources.view.BooleanPropertyCell;
 import rsvp.resources.view.CalendarCell;
 
 import java.io.IOException;
@@ -35,16 +37,22 @@ public class UniversityRoomController {
     TableColumn<UniversityRoom, Integer> capacityColumn;
     @FXML
     TableColumn<UniversityRoom, Boolean> calendarColumn;
+    @FXML
+    TableColumn<UniversityRoom, Boolean> isComputerRoomColumn;
 
     @FXML
     private TextField numberFieldCreate;
     @FXML
     private TextField capacityFieldCreate;
+    @FXML
+    private CheckBox isComputerRoomCheckboxCreate;
 
     @FXML
     private TextField numberFieldUpdate;
     @FXML
     private TextField capacityFieldUpdate;
+    @FXML
+    private CheckBox isComputerRoomCheckboxUpdate;
 
     ObservableList<UniversityRoom> items;
     UniversityRoomDAO universityRoomDAO;
@@ -96,6 +104,9 @@ public class UniversityRoomController {
         calendarColumn.setCellValueFactory(p -> new SimpleBooleanProperty(p.getValue() != null));
         calendarColumn.setCellFactory(p -> new CalendarCell(this));
 
+        isComputerRoomColumn.setCellValueFactory(p -> new SimpleBooleanProperty(p.getValue().getIsComputer()));
+        isComputerRoomColumn.setCellFactory(p -> new BooleanPropertyCell());
+
         items.addAll(universityRoomDAO.getAll());
         universityRoomListTableView.setItems(items);
     }
@@ -121,7 +132,9 @@ public class UniversityRoomController {
             return;
         }
 
-        UniversityRoom createdUniversityRoom = new UniversityRoom(number, capacity);
+        UniversityRoom createdUniversityRoom = new UniversityRoom(number, capacity,
+                isComputerRoomCheckboxCreate.isSelected());
+        isComputerRoomCheckboxCreate.setSelected(false);
         items.add(createdUniversityRoom);
         universityRoomDAO.create(createdUniversityRoom);
         handleErrorAlert(numberFieldCreate, capacityFieldCreate, null);
@@ -148,6 +161,7 @@ public class UniversityRoomController {
 
         String newNumber = numberFieldUpdate.getText();
         Integer newCapacity;
+        Boolean newIsComputer = isComputerRoomCheckboxUpdate.isSelected();
         try {
             newCapacity = Integer.parseInt(capacityFieldUpdate.getText());
         } catch (NumberFormatException e) {
@@ -161,7 +175,9 @@ public class UniversityRoomController {
             return;
         }
 
-        if (chosenUniversityRoom.getNumber().equals(newNumber) && chosenUniversityRoom.getCapacity().equals(newCapacity)) {
+        if (chosenUniversityRoom.getNumber().equals(newNumber) &&
+                chosenUniversityRoom.getCapacity().equals(newCapacity) &&
+                chosenUniversityRoom.getIsComputer() == newIsComputer) {
             handleErrorAlert(numberFieldUpdate, capacityFieldUpdate, NO_MODYFICATION_ALERT);
             return;
         }
@@ -171,8 +187,9 @@ public class UniversityRoomController {
             return;
         }
 
-        universityRoomDAO.update(chosenUniversityRoom, newNumber, newCapacity);
+        universityRoomDAO.update(chosenUniversityRoom, newNumber, newCapacity, newIsComputer);
         handleErrorAlert(numberFieldUpdate, capacityFieldUpdate, null);
+        isComputerRoomCheckboxUpdate.setSelected(false);
         items.clear();
         items.addAll(universityRoomDAO.getAll());
         universityRoomListTableView.setItems(items);
