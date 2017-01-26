@@ -1,6 +1,5 @@
 package rsvp.resources.controller;
 
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +19,8 @@ import rsvp.resources.model.CalendarTableItem;
 import rsvp.resources.model.TimeSlot;
 import rsvp.resources.model.UniversityRoom;
 import rsvp.resources.view.CalendarDayColumn;
+import rsvp.resources.view.annotations.WeekDayColumn;
+import rsvp.resources.view.annotations.processors.WeekDayColumnAnnotationProcessor;
 
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -33,19 +34,19 @@ public class CalendarController {
     TableView<CalendarTableItem> calendarTable;
     @FXML
     TableColumn<CalendarTableItem, String> slotsColumn;
-    @FXML
+    @FXML @WeekDayColumn(dayNumber = 1)
     CalendarDayColumn mondayColumn;
-    @FXML
+    @FXML @WeekDayColumn(dayNumber = 2)
     CalendarDayColumn tuesdayColumn;
-    @FXML
+    @FXML @WeekDayColumn(dayNumber = 3)
     CalendarDayColumn wednesdayColumn;
-    @FXML
+    @FXML @WeekDayColumn(dayNumber = 4)
     CalendarDayColumn thursdayColumn;
-    @FXML
+    @FXML @WeekDayColumn(dayNumber = 5)
     CalendarDayColumn fridayColumn;
-    @FXML
+    @FXML @WeekDayColumn(dayNumber = 6)
     CalendarDayColumn saturdayColumn;
-    @FXML
+    @FXML @WeekDayColumn(dayNumber = 7)
     CalendarDayColumn sundayColumn;
 
     @FXML
@@ -63,22 +64,8 @@ public class CalendarController {
 
     @FXML
     private void initialize() {
-
         slotsColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().getTimeSlotRepresentation()));
-
-        initializeWeekDayColumn(mondayColumn, 1);
-        initializeWeekDayColumn(tuesdayColumn, 2);
-        initializeWeekDayColumn(wednesdayColumn, 3);
-        initializeWeekDayColumn(thursdayColumn, 4);
-        initializeWeekDayColumn(fridayColumn, 5);
-        initializeWeekDayColumn(saturdayColumn, 6);
-        initializeWeekDayColumn(sundayColumn, 7);
-    }
-
-    private void initializeWeekDayColumn(CalendarDayColumn column, int dayNumber){
-        column.setDayNumber(dayNumber);
-        column.setCalendarController(this);
-        column.setCellValueFactory(p -> new SimpleObjectProperty<>(p.getValue()));
+        new WeekDayColumnAnnotationProcessor().process(this);
     }
 
     public void initializeCalendarTableContent() {

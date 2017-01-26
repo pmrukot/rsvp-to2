@@ -49,12 +49,20 @@ public class CalendarDayColumn extends TableColumn<CalendarTableItem, CalendarTa
         });
     }
 
-    public void setDayNumber(int dayNumber){
-        this.dayNumber = dayNumber;
+    /**
+     * Invoked via reflection by {@link rsvp.resources.view.annotations.processors.WeekDayColumnAnnotationProcessor}
+     */
+    @SuppressWarnings("unused")
+    public void setCalendarController(CalendarController calendarController) {
+        this.calendarController = calendarController;
     }
 
-    public void setCalendarController(CalendarController calendarController){
-        this.calendarController = calendarController;
+    /**
+     * Invoked via reflection by {@link rsvp.resources.view.annotations.processors.WeekDayColumnAnnotationProcessor}
+     */
+    @SuppressWarnings("unused")
+    public void setDayNumber(int dayNumber) {
+        this.dayNumber = dayNumber;
     }
 
     private void addContextMenu(TableCell<CalendarTableItem, CalendarTableItem> tableCell, CalendarTableItem item) {
