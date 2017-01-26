@@ -33,11 +33,11 @@ public class CalendarTableItem {
             Booking booking = bookingsMap.get(day);
             if (booking.getFirstSlot() == null) {
                 if (timeSlot.equals(timeSlots.get(0))) {
-                    return booking.getOwner().getFirstName() + " " + booking.getOwner().getLastName();
+                    return booking.getDescription();
                 } else return "";
             }
             if (booking.getFirstSlot().equals(timeSlot))
-                return booking.getOwner().getFirstName() + " " + booking.getOwner().getLastName();
+                return booking.getDescription();
         }
         return "";
     }
