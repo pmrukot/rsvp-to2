@@ -168,8 +168,8 @@ public class AdminController implements ListChangeListener {
     }
 
     private void setBindings() {
-        undoButton.disableProperty().bind(commandManager.undoPossible);
-        redoButton.disableProperty().bind(commandManager.redoPossible);
+        undoButton.disableProperty().bind(commandManager.undoImpossible);
+        redoButton.disableProperty().bind(commandManager.redoImpossible);
         editButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
         deleteButton.disableProperty().bind(Bindings.isEmpty(usersTable.getSelectionModel().getSelectedItems()));
     }

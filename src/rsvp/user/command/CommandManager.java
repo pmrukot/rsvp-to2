@@ -8,14 +8,14 @@ import java.util.Stack;
 public class CommandManager {
     private Stack<Command> executedCommands;
     private Stack<Command> redoableCommands;
-    public BooleanProperty undoPossible;
-    public BooleanProperty redoPossible;
+    public BooleanProperty undoImpossible;
+    public BooleanProperty redoImpossible;
 
     public CommandManager() {
         executedCommands = new Stack<>();
         redoableCommands = new Stack<>();
-        undoPossible = new SimpleBooleanProperty(executedCommands.empty());
-        redoPossible = new SimpleBooleanProperty(redoableCommands.empty());
+        undoImpossible = new SimpleBooleanProperty(executedCommands.empty());
+        redoImpossible = new SimpleBooleanProperty(redoableCommands.empty());
     }
 
     public boolean executeCommand(Command c) {
@@ -49,8 +49,8 @@ public class CommandManager {
     }
 
     private void updateBindings() {
-        undoPossible.setValue(executedCommands.empty());
-        redoPossible.setValue(redoableCommands.empty());
+        undoImpossible.setValue(executedCommands.empty());
+        redoImpossible.setValue(redoableCommands.empty());
     }
 
     public int getExecutedCommandsStackSize() {
