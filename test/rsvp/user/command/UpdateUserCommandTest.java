@@ -24,12 +24,11 @@ public class UpdateUserCommandTest {
     private User user;
 
     @InjectMocks
-    private UpdateUserCommand command = new UpdateUserCommand(userDAO, mock(User.class), "newLogin", "newFirstName", "newLastName", "newPassword", false);
+    private UpdateUserCommand command;
 
     @Test
     public void execute() throws Exception {
         when(userDAO.updateUser(user)).thenReturn(true);
-        // when(UserListManagerSingleton.getInstance().updateUser(any(), any())).then(); // todo somehow stop updateUser from being called
         boolean result = command.execute();
         assertTrue(result);
     }
