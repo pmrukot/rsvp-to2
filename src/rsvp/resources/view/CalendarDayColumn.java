@@ -1,18 +1,27 @@
 package rsvp.resources.view;
 
 import javafx.beans.binding.Bindings;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import rsvp.booking.DAO.BookingDAO;
 import rsvp.booking.DAO.DBBookingDAO;
 import rsvp.booking.model.Booking;
 import rsvp.resources.controller.CalendarController;
+import rsvp.resources.controller.EditBookingController;
 import rsvp.resources.model.CalendarTableItem;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 public class CalendarDayColumn extends TableColumn<CalendarTableItem, CalendarTableItem> {
@@ -56,13 +65,11 @@ public class CalendarDayColumn extends TableColumn<CalendarTableItem, CalendarTa
             BookingDAO bookingDAO = new DBBookingDAO();
             Booking booking = item.getBooking(dayNumber);
             bookingDAO.deleteBooking(booking);
-            tableCell.setBackground(null);
-            tableCell.setText(null);
             calendarController.initializeCalendarTableContent();
         });
         editMenuItem.setOnAction(a -> {
-//            initEditBookingLayout(item.getBooking());
-//            initializeMyCalendarContent(currentStartDate, currentEndDate);
+            initEditBookingLayout(item.getBooking(dayNumber));
+            calendarController.initializeCalendarTableContent();
         });
 
         contextMenu.getItems().addAll(Arrays.asList(editMenuItem, removeMenuItem));
@@ -71,7 +78,28 @@ public class CalendarDayColumn extends TableColumn<CalendarTableItem, CalendarTa
                 Bindings.when(tableCell.emptyProperty())
                         .then((ContextMenu)null)
                         .otherwise(contextMenu));
+    }
 
+    private void initEditBookingLayout(Booking booking) {
+        try {
+            final Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(rsvp.home.Main.class.getResource("../resources/view/BookingEditionPane.fxml"));
+            Parent editBookingLayout = loader.load();
+            Scene scene = new Scene(editBookingLayout, 300, 300);
+
+            EditBookingController editBookingController = loader.getController();
+            editBookingController.setDialogStage(dialogStage);
+            editBookingController.setData(booking);
+
+            dialogStage.setScene(scene);
+            dialogStage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
