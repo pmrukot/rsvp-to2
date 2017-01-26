@@ -21,6 +21,9 @@ public class Booking {
     @Column(name = "root_id")
     private long rootId;
 
+    @Column(name = "description")
+    private String description;
+
     @Column(name = "reservation_date")
     private Date reservationDate;
 
@@ -136,5 +139,13 @@ public class Booking {
 
     public boolean isValid() {
         return getEndTime().compareTo(getStartTime()) >= 0;
+    }
+
+    public String getDescription(){
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

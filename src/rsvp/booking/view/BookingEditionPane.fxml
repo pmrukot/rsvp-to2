@@ -6,6 +6,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextField?>
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="rsvp.booking.controller.BookingEditionController" alignment="TOP_CENTER" prefHeight="300.0" prefWidth="300.0" BorderPane.alignment="CENTER">
     <opaqueInsets>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -18,6 +19,18 @@
             </VBox.margin>
         </DatePicker>
 
+        <Label text="Description" GridPane.rowIndex="3">
+            <GridPane.margin>
+                <Insets bottom="0.0" left="5.0" right="5.0" top="5.0" />
+            </GridPane.margin>
+        </Label>
+
+        <TextField fx:id="description" GridPane.columnIndex="2" maxWidth="200">
+            <GridPane.margin>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </GridPane.margin>
+        </TextField>
+
         <Label text="Room" GridPane.rowIndex="3">
             <GridPane.margin>
                 <Insets bottom="0.0" left="5.0" right="5.0" top="5.0" />
@@ -29,6 +42,7 @@
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </GridPane.margin>
         </ComboBox>
+
 
         <Label text="Start Time Slot" GridPane.rowIndex="3">
             <GridPane.margin>
