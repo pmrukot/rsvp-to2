@@ -13,6 +13,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 import rsvp.resources.DAO.UniversityRoomDAO;
@@ -20,7 +21,12 @@ import rsvp.resources.model.UniversityRoom;
 import rsvp.resources.view.BooleanPropertyCell;
 import rsvp.resources.view.CalendarCell;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UniversityRoomController {
     private static final String CAPACITY_ALERT = "You have to provide capacity greater than 0.";
@@ -193,5 +199,32 @@ public class UniversityRoomController {
         items.clear();
         items.addAll(universityRoomDAO.getAll());
         universityRoomListTableView.setItems(items);
+    }
+
+    @FXML
+    private void handleFileReading(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select file for reading");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv"));
+        File file = fileChooser.showOpenDialog(new Stage());
+        if(file != null){
+            try {
+                List<UniversityRoom> newUniversityRooms = new ArrayList<>();
+                BufferedReader bufferedFileReader = new BufferedReader(new FileReader(file.getAbsolutePath()));
+                String line;
+                while ((line = bufferedFileReader.readLine()) != null) {
+                    String[] parsedUniversityRoom = line.split(",");
+                    UniversityRoom room = new UniversityRoom(parsedUniversityRoom[0].trim(),
+                            Integer.valueOf(parsedUniversityRoom[1].trim()),
+                            Boolean.valueOf(parsedUniversityRoom[2].trim()));
+                    universityRoomDAO.create(room);
+                    newUniversityRooms.add(room);
+                }
+                items.addAll(newUniversityRooms);
+                bufferedFileReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
