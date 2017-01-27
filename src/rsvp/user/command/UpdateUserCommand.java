@@ -20,6 +20,10 @@ public class UpdateUserCommand implements Command {
     private String newPassword;
     private boolean newAdmin;
 
+    public UpdateUserCommand() {
+
+    }
+
     public UpdateUserCommand(UserDAO userDAO, User user, String newLogin, String newFirstName,
                              String newLastName, String newPassword, boolean newAdmin) {
         this.userDAO = userDAO;
