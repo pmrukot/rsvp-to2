@@ -11,13 +11,21 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.Region;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.converter.LocalTimeStringConverter;
 import rsvp.resources.DAO.TimeSlotDAO;
 import rsvp.resources.model.TimeSlot;
 import rsvp.resources.model.TimeSlotManager;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class TimeSlotController {
@@ -169,5 +177,31 @@ public class TimeSlotController {
         }
         updateTableViewItems();
         handleErrorAlert(startTimeFieldUpdate, endTimeFieldUpdate, null);
+    }
+
+    @FXML
+    private void handleFileReading(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select file for reading");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv"));
+        File file = fileChooser.showOpenDialog(new Stage());
+        if(file != null){
+            try {
+                List<TimeSlot> newTimeSlots = new ArrayList<>();
+                BufferedReader bufferedFileReader = new BufferedReader(new FileReader(file.getAbsolutePath()));
+                String line;
+                while ((line = bufferedFileReader.readLine()) != null) {
+                    String[] parsedTimeSlots = line.split(",");
+                    TimeSlot room = TimeSlot.createTimeSlot(LocalTime.parse(parsedTimeSlots[0].trim()),
+                            LocalTime.parse(parsedTimeSlots[1].trim()));
+                    timeSlotManager.addNewTimeSlot(room);
+                    newTimeSlots.add(room);
+                }
+                items.addAll(newTimeSlots);
+                bufferedFileReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

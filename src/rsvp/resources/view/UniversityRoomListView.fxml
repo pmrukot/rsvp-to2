@@ -42,4 +42,5 @@
         <Button text="Delete" onAction="#handleDeleteButtonAction" prefWidth="100" GridPane.rowIndex="2"
                 GridPane.columnIndex="0"/>
     </GridPane>
+    <Button text="Read rooms from file" onAction="#handleFileReading"/>
 </VBox>
